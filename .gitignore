@@ -137,3 +137,21 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+#Custom
+node_modules
+build
+npm-debug.log
+public/AdminLTE-3.2.0/
+test_area
+dbBkup
+out
+docs
+.DS_Store
+AdminLTE-3.2.0
+MushBorgApp.code-workspace
+docs.json
+nodemon.json
+jsdoc.json
+modelliSvg.js
+resetTables.js
