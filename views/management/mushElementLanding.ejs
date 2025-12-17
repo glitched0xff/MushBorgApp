@@ -1,0 +1,338 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="mushElement-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione elementi <span id="titoloFiltro"> </span>  
+            <!-- <button class="btn btn-xs btn-primary" id="modMushElement_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca lotto</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newMushElement_Btn"><i class="fas fa-plus"></i> Nuova lotto</button> -->
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna all'elenco</button>
+            </h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Lotti coltivazione</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.mushElement-fluid -->
+    </div>
+    <section class="content">
+      <div class="mushElement-fluid" >
+        
+          <div class="card w-100" id="">
+            <div class="row m-3">
+              <h4 class="mx-auto"><%= mushElement.element_code %></h4>
+                <div class="row w-100 mt-3">
+                  <!--Raccolto  -->
+                  <div class="col-lg-8 col-sm-12 mx-auto my-2">
+                    <div class="card w-100 collapsed-card mx-auto">
+                    <div class="card-header"  data-card-widget="collapse">
+                      <h3 class="card-title">Inserisci raccolto</h3>
+                      <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <div class="row w-100 m-2">
+                        <form class="form w-100" enctype="multipart/form-data" id="mushElementHarvest_Form" >
+                        <input type="hidden" class="form-control" name="idMushElementHarvest"  tp="hidden" value="<%= mushElement.id %>">
+                        <input type="hidden" class="form-control" name="filterCategoryHarvest"  tp="hidden" value="<%= mushElement.type %>">
+                        <div class="row w-100">
+                          <div class="col-md-6">
+                            <dl>
+                              <dt>Data raccolto</dt>
+                              <dd class="mushElementNoteForm">
+                                <div class="form-group">
+                                  <div class="input-group date" id="harvest_date_DT" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" data-target="#harvest_date_DT " name="harvest_date">
+                                    <div class="input-group-append" data-target="#harvest_date_DT" data-toggle="datetimepicker">
+                                      <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </dd>
+                            </dl>
+                          </div>
+                          <div class="col-6">
+                            <dl>
+                              <dt>Peso</dt>
+                              <dd class="mushElementNoteForm">
+                                <div class="form-group">
+                                  <input type="text"
+                                    class="form-control" name="harvest_weight" id="harvest_weight" required placeholder="Inserisci peso in grammi">
+                                </div>
+                              </dd>
+                            </dl>
+                          </div>
+                        </div>
+                        <div class="row w-100">
+                          <div class="col-12">
+                            <dl>
+                              <dt>Note</dt>
+                              <dd class="mushElementNoteForm">
+                                <div class="form-group">
+                                  <textarea class="form-control" name="harvest_note" id="harvest_note_Fld"></textarea>
+                                </div>
+                              </dd>
+                            </dl>
+                          </div>
+                        </div>
+                        <button class="btn btn-xs btn-primary mx-1" id="saveHarvest_Btn"> <i class="fas fa-plus"></i> Salva raccolta</button>
+                        <button class="btn btn-xs btn-secondary mx-1" id="abortHarvest_Btn"> <i class="fas fa-plus"></i> Annulla inserimento</button>
+                      </form>
+                      </div>
+                      <div class="row w-100">
+                        <table class="table table-sm table-striped col-11 mx-auto" id="harvestTable_Tbl">
+                          <thead>
+                            <tr>
+                              <th>Data</th>
+                              <th>Raccolto in g</th>
+                            </tr>
+                          </thead>
+                          <tbody id="harvestTable_Tblb">
+                            <tr>
+                              <td scope="row"></td>
+                              <td></td>
+                            </tr>
+                            
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+                  <!-- Nota -->
+                  <div class="col-lg-8 col-sm-12 mx-auto my-2">
+                    <div class="card w-100 collapsed-card mx-auto">
+                    <div class="card-header"  data-card-widget="collapse">
+                      <h3 class="card-title">Inserisci nota</h3>
+                      <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                  <div class="row w-100 m-2">
+                    <form class="form w-100" enctype="multipart/form-data" id="mushElementNote_Form" >
+              <input type="hidden" class="form-control" name="idMushElementNote" id="idMushElementNote_Fld" tp="hidden" value="<%= mushElement.id %>">
+              <input type="hidden" class="form-control" name="filterCategoryNote" id="filterCategoryNote_Fld" tp="hidden" value="<%= mushElement.type %>">
+              <div class="row w-100">
+                <div class="col-md-6">
+                  <dl>
+                    <dt>Data controllo</dt>
+                    <dd class="mushElementNoteForm">
+                      <div class="form-group">
+                        <div class="input-group date" id="check_date_DT" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" data-target="#check_date_DT " name="check_date">
+                          <div class="input-group-append" data-target="#check_date_DT " data-toggle="datetimepicker">
+                            <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
+                          </div>
+                        </div>
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="col-6">
+                  <dl>
+                    <dt>Stato elemento</dt>
+                    <dd class="mushElementNoteForm">
+                      <div class="form-group">
+                        <select tp="selectField" class="form-control form-control-sm form-control-minimal" name="statoMushElementNote" id="statoMushElementNote_Fld" required="">
+                          <option value="">Seleziona lo stato</option>
+                          <option value="Buono">Buono</option>
+                          <option value="Cattivo">Cattivo</option>
+                          <option value="Contaminato">Contaminato</option>
+                          <option value="In osservazione">In osservazione</option>
+                        </select>
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+              <div class="row w-100">
+                <div class="col-12">
+                  <dl>
+                    <dt>Note</dt>
+                    <dd class="mushElementNoteForm">
+                      <div class="form-group">
+                        <textarea class="form-control" name="noteMushElementNote" id="noteMushElementNote_Fld"></textarea>
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+              <div class="row w-100">
+                <div class="col-md-12">
+                  <dl>
+                    <dt>Picture</dt>
+                    <div class="input-group mb-3">
+                      <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="imgMushElementNote" id="imgMushElementNote">
+                        <label class="custom-file-label" for="imgMushElementNote" aria-describedby="imgMushElementNoteAddon02" >
+                          Seleziona immagine
+                        </label>
+                      </div>
+                    </div>
+                  </dl>
+                </div>
+              </div>  
+                
+                
+              <button class="btn btn-xs btn-primary mx-1" id="saveMushElementNote_Btn"> <i class="fas fa-plus"></i> Salva nota</button>
+              <button class="btn btn-xs btn-secondary mx-1" id="abortMushElementNote_Btn"> <i class="fas fa-plus"></i> Annulla inserimento</button>
+            </form>
+                  </div>
+                  </div>
+                    </div>
+                  </div>
+<div class="col-lg-8 col-sm-12 mx-auto my-2">
+                  <% if (mushElement.type=="CULTIVATION"){
+                      if(mushElement.stage==1){%>
+                    <button type="button" name="" id="fructElement_Btn" class="btn btn-success btn-block"> 
+                        Metti in fruttificazione <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></button>
+                  <% } else { %>
+                    <div class="col mx-auto h4 text-center">Elemento in fruttificazione</div>
+                  <% }} %>
+                  </div>
+                  <div class="col-lg-8 col-sm-12 mx-auto my-2">
+                    <a href="/mushElement/singleMushElement?id=<%= mushElement.id%>&filterCategory=<%= mushElement.type%>">
+                      <button type="button" name="" id="" class="btn btn-primary btn-block"> 
+                         Dati elemento <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></button>
+                    </a>
+                  </div>
+                  <div class="col-lg-8 col-sm-12 mx-auto my-2">
+                    <button type="button" name="" id="" class="btn btn-danger btn-block">Pick elemento
+                      <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+
+                </div>
+            </div>
+          </div>
+      </div>
+  </section>
+</div>
+
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>
+
+let mushElement =<%- JSON.stringify(mushElement) %> 
+// Harvest table
+function drawHarvestTable(limit=0) {
+  $.ajax({
+    type: "GET",
+    url: "/mushElement/getHarvest?idMushElementHarvest="+mushElement.id+"&filterCategoryHarvest="+mushElement.type,
+    success: function (response) {
+      let html=""
+        let total=0
+        let harvest=response.harvest.slice(limit*-1).reverse()
+        console.log(harvest)
+          for (let i = 0; i < harvest.length; i++) {
+            const hv = harvest[i];
+            total+=hv.harvest_weight
+             html+=`<tr>
+              <td>${moment(hv.harvest_date).format("DD-MM-YY")}</td>
+             <td>${hv.harvest_weight}</td>
+             </tr>`
+
+          } 
+      $("#harvestTable_Tblb").html(html)
+    }
+  });
+  
+  }
+
+$(document).ready(async function () {
+  $('#harvest_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+  $('#harvest_date_DT').datetimepicker('date', new Date())
+  $('#check_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY",autoclose:true})
+  $('#check_date_DT').datetimepicker('date', new Date())
+  drawHarvestTable(3)
+// Element Note
+    $("#saveHarvest_Btn").click(function (e) { 
+      e.preventDefault();
+      checkForm("mushElementHarvest_Form")
+      $.ajax({
+        type: "POST",
+        url: "/mushElement/insertHarvest",
+        data: $("#mushElementHarvest_Form").serialize(),
+        success: function (response) {
+          drawHarvestTable(3)
+          $(document).Toasts('create', {
+            title: 'Inserimento raccolto',
+            body: 'Il raccolto è stato inserito correttamente',
+            class:'toast-danger'
+          })
+          resetForm("mushElementHarvest_Form")
+          //window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
+        }
+      });
+    });
+    $("#abortHarvest_Btn").click(function (e) { 
+      e.preventDefault();
+      
+    });
+    $("#fructElement_Btn").click(function (e) { 
+    e.preventDefault();
+    let c=confirm("Stai mettendo l'elemento in fruttificazione, continuare l'operazione?")
+    if (c==true){
+      $.ajax({
+        type: "GET",
+        url: "/mushElement/changeStage?stage=2&idElement="+mushElement.id+"&codElement="+mushElement.element_code,
+        success: function (response) {
+          window.location="/mushElement/mushElementLanding?elementCode="+mushElement.element_code
+        }
+      });
+    }
+  });
+  
+    //  Element note
+        $("#saveMushElementNote_Btn").click(function (e) { 
+      e.preventDefault();
+      let idMushElement=$("#idMushElementNote_Fld").val()
+      //console.log(idMushElement)
+      let el=document.getElementById("mushElementNote_Form")
+      console.log(el)
+      let formdata = new FormData(document.getElementById("mushElementNote_Form"));
+      for (var [key, value] of formdata.entries()) { 
+          console.log(key, value);
+        }
+      $.ajax({
+        type: "POST",
+        url: "/mushElement/newMushElementNote?type="+filterCategory,
+        data: formdata,
+        processData: false,
+        contentType: false,
+        success: async function (response) {
+          console.log(response)
+            if (response.error==true){
+              alert(response.data)
+            }else{
+          window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
+          }
+        },
+        error: function(err){
+          console.log(err)
+        }
+      });
+    });
+
+    $("#abortMushElementNote_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#mushElementNote_Form").hide()
+      $("#mushElementNote_Tbl").show()
+      $("#addMushElementNote_Btn").show()
+    });
+    
+});
+    
+
+</script>
+<%- include ('../closeTag') %>

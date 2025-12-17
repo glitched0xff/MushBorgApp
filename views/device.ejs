@@ -1,0 +1,269 @@
+<%- include ('header') %>
+<%- include ('navbar') %>
+<%- include ('sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Dashboard</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard v1</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Device
+                      <button type="button" class="btn btn-primary btn-xs mx-3"  data-toggle="modal" data-target="#editDevice_Mdl"><i class="fa fa-plus" aria-hidden="true"></i> Aggiungi device</button>
+
+                  
+                      
+                      <!-- Modal -->
+                      <div class="modal fade" id="editDevice_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="editDevice_Mdl_Ttl"> </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                              <form id="editDevice_Frm">
+                                 <%- include('include/ejsForm',
+                                { classTxt: "deviceText",
+                                  classField: "deviceForm",
+                                  form:[
+                                  { 
+                                    type:"hidden",
+                                    fieldName:"idDevice"
+                                  },
+                                  { type:"startRow"},
+                                  {
+                                    type:"text",
+                                    classBox:"col-md-3 col-sm-6",
+                                    fieldName:"cod_device",
+                                    label:"Codice device",
+                                    required:'', 
+                                  },
+                                  {
+                                    type:"text",
+                                    classBox:"col-md-3 col-sm-6",
+                                    fieldName:"descrizione",
+                                    label:"Descrizione",
+                                    required:'', 
+                                  },
+                                  {
+                                    type:"select",
+                                    classBox:"col-md-3 col-sm-6",
+                                    fieldName:"storageId",
+                                    label:"Magazzino",
+                                    firstField:"Seleziona magazzino",
+                                    required:'', 
+                                    option:storageDD
+                                  },
+                                  {
+                                    type:"number",
+                                    classBox:"col-md-1 col-sm-6",
+                                    fieldName:"posizione",
+                                    label:"Posizione",
+                                    required:'', 
+                                  },{ type:"endRow"}
+                    ]  
+                }) %>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </h3>
+    
+                    <div class="card-tools">
+                      <input type="text" name="datetimes"  id="daterange" />
+                       <!--<div class="input-group input-group-sm" style="width: 150px;">
+                        
+                        <input type="text" name="table_search" class="form-control float-right" placeholder="Search"> 
+    
+                        <div class="input-group-append">
+                          <button type="submit" class="btn btn-default">
+                            <i class="fas fa-search"></i>
+                          </button>
+                        </div>
+                      </div>-->
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body table-responsive p-0" >
+                    <table class="table table-hover text-nowrap">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Device</th>
+                          <th>Posizione</th>
+                          <th>Descrizione</th>
+                          <th>Note</th>
+                          <th>Creato il</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody id="telemetry_Tbl">
+                        <% devices.forEach(function(dt){ %>
+                            <tr>
+                                <td><%= dt.id %></td>
+                                <td><%= dt.cod_device %></td>
+                                <td><%= dt.storage.name_storage %></td>
+                                <td><%= dt.descrizione %></td>
+                                <td><%= dt.posizione %></td>
+                                <td><%= dt.note %></td>
+                                <td><%= dt.createdAt %></td>
+                                <td>
+                                    <button type="button" class="btn  btn-warning btn-xs editDevice" idDevice="<%= dt.id %>"><i class="fa fa-pen"></i></button>
+                                    <button type="button" class="btn  btn-danger btn-xs deleteDevice" idDevice="<%= dt.id %>"><i class="fas fa-trash-alt"></i></button>
+                                    <button type="button" class="btn  btn-primary btn-xs testDevice" idDevice="<%= dt.id %>"><i class="fas fa-comment-dots"></i></button>
+                                </td>
+                              </tr>
+                          <% }); %>
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                  
+                </div>
+                <!-- /.card -->
+              </div>
+        </div>
+      </div>
+      </div>
+    </section>
+    
+  </div>
+  <!-- Modal test sensore -->
+  <div class="modal fade" id="testSensor_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Test device <span id="testSensor_Ttl"></span></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+          <div class="row w-100">
+            <div class="col-12" >
+              <pre id="testSensorResult_Msg"></pre>
+            </div>
+            <div class="col-12" id="testSensorTime_Msg">
+            </div>
+            <div class="col-12" >
+              <pre id="testSensorData_Msg"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <%- include ('footer') %>
+  <%- include ('jsLoad') %>
+  <script>
+    let devices = '<%- JSON.stringify(devices) %>'
+    devices=JSON.parse(devices)
+    console.log(devices)
+    
+
+    //datepicker
+  $(function() {
+    $('input[name="datetimes"]').daterangepicker({
+      timePicker: true,
+      timePicker24Hour:true,
+      startDate: moment().startOf('hour'),
+      endDate: moment().startOf('hour'),
+      locale: {
+        format: 'M/DD hh:mm A'
+      }
+    });
+  });
+  
+  
+    $(document).ready(function () {
+      // $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+      //   ev.preventDefault();
+      // //   $.ajax({
+      // //   type: "GET",
+      // //   url: "/telemetry/getAllData?dtFrom="+picker.startDate.format("DD-MM-YYYY HH:mm:ss")+"&dtTo="+picker.endDate.format("DD-MM-YYYY HH:mm:ss"),
+      // //  success: function (response) {
+      // //       let html=""
+      // //       for (let i = 0; i < response.length; i++) {
+      // //         const elem = response[i];
+      // //         html+= `
+      // //         <tr>
+      // //             <td>${elem.id}</td>
+      // //             <td>${elem.createdAt}</td>
+      // //             <td>${elem.cod_device}</td>
+      // //             <td>${elem.temp}</td>
+      // //             <td>${elem.hum}</td>
+      // //             <td>${elem.co2}</td>
+      // //           </tr>
+      // //         `
+      // //       }  
+      // //       $('#telemetry_Tbl').html(html)
+      // //   }
+      // // });
+      // });
+      $(document).on("click",".editDevice",function (e) { 
+          e.preventDefault();
+          let idDevice=$(this).attr("idDevice")
+          console.log(idDevice)
+        });
+        $(document).on("click",".deleteDevice",function (e) { 
+          e.preventDefault();
+          let idDevice=$(this).attr("idDevice")
+          console.log(idDevice)
+        });
+        $(document).on("click",".testDevice",function (e) { 
+          e.preventDefault();
+          let idDevice=$(this).attr("idDevice")
+          console.log(idDevice)
+          $.ajax({
+            type: "GET",
+            url: "/device/testDevice?idDevice="+idDevice,
+            
+            success: function (response) {  
+              console.log(response)
+              if (response.result==false){
+                $("#testSensorResult_Msg").html(`<h6 class="text-bold mt-1">Result:</h6>
+                                                  <div class="bg-danger text-wihte"> Il sensore non è raggiungibile</div>`)
+                $("#testSensor_Mdl").modal("show")
+              } else{
+                $("#testSensorResult_Msg").html(`<h6 class="text-bold mt-1">Result:</h6> ${JSON.stringify(response.result,null,8)}`)
+              $("#testSensorTime_Msg").html(`<h6 class="text-bold mt-2">Tempo fetch: </h6>${JSON.stringify(response.time,null,8)}`)
+              $("#testSensorData_Msg").html(`<h6 class="text-bold mt-2">Dati sensore:</h6> ${JSON.stringify(response.deviceData,null,8)}`)
+              $("#testSensor_Ttl").html(response.deviceData.cod_device)
+              $("#testSensor_Mdl").modal("show")
+              }
+              
+            },
+            error: function(err){
+              console.log(err)
+            }
+          });
+        });
+      
+    });
+
+  </script>
+  <%- include ('closeTag') %>
+  

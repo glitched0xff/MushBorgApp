@@ -1,0 +1,807 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione substrati
+            <button type="button" class="btn btn-xs btn-primary" id="newSubstrate_Btn" style="display: none;"><i class="fas fa-plus"></i> Nuovo substrato</button>
+              <button type="button" class="btn btn-xs btn-primary" id="modSubstrate_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifica substrato</button>
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna ai substrati</button>
+            </h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Substrati</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- Substrate card -->
+          <div class="card w-100" id="tableSubstrate_Crd">
+            <div class="card-body">
+              <table class="display table table-striped table-bordered compact" id="substrate_Tbl" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 40px; "></th>
+                        <th>Codice substrato</th>
+                        <th>Nome substrato</th>
+                        <th>Destinazone</th>
+                        <th style="width: 50px; ">Qt</th>
+                        <th>N inoculi</th>
+                        <th>N spawn</th>
+                        <th>N propagazione</th>
+                        <th>Creata il</th>
+                    </tr>
+                </thead>
+                <tbody id="substrate_Tblb">
+                    
+                </tbody>
+            </table>
+            </div>
+          </div>
+          <!-- Show/mod substrates Card -->
+          <div class="card w-100" id="substrate_Data" style="display: none;">
+            <div class="card-body">
+              <h4 id="titoloForm">Nuovo substrato</h4>
+              <div class="row">
+                <div class="col">
+              <form id="substrates_Form" class="p-3">
+                <div class="row w-100">
+                    <div class="col">
+                  <%- include('../include/ejsForm',
+                  {classTxt: "substrateText",
+                  classField: "substrateForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"id"
+                    },
+                    { type:"startRow"},
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"cod_substrate",
+                      label:"Codice substrato",
+                      step:"",
+                      readonly:true, 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"name_substrate",
+                      label:"Nome substrato",
+                      required:true, 
+                    },
+                    // {
+                    //   type:"text",
+                    //   classBox:"col-md-2 col-sm-6",
+                    //   fieldName:"sub_code",
+                    //   label:"Sub code",
+                    //   required:true, 
+                    // },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"destination",
+                      label:"Destinazione",
+                      required:true,
+                      firstField:"Seleziona destinazione",
+                      option:destinationDD
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"storageId",
+                      label:"Magazzino",
+                      required:true,
+                      firstField:"Seleziona magazzino",
+                      option:storageDD
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"pretreatmentId",
+                      label:"Trattamento",
+                      required:true,
+                      firstField:"Seleziona trattamento",
+                      option:pretreatmentDD
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"forPurchased",
+                      label:"Substrato per acquisto",
+                    },
+                    { type:"endRow"},
+                    { type:"startRow"},
+                    
+                    {
+                      type:"textarea",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"note",
+                      label:"Note",
+                    },
+                    { type:"endRow"},
+                    { type:"startRow"},
+                    {
+                      type:"number",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"qt",
+                      label:"Quantità substrato",
+                      min:0,
+                      max:1000000,
+                      required:true,
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"uom",
+                      label:"Udm",
+                      required:true,
+                      firstField:"Seleziona UDM",
+                      option:udmDD
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"recipeId",
+                      label:"Ricetta",
+                      required:true, 
+                      firstField:"Seleziona ricetta",
+                      disabled:true,
+                      option:recipeDD
+                    },
+                    {
+                      type:"hidden",
+                      fieldName:"recipeSubCode",
+                    },
+                    
+                    { type:"endRow"},
+                    ]  }) %>
+  
+                    </div>
+                  </div>
+              
+              </form>
+                </div>
+                </div>
+                <hr>
+            <div class="row m-3" id="rowRecipe" style="display: none;">
+              <div class="col-12">
+                <div class="row">
+                  <dl class="col-3">
+                    <dt>cod_recipe</dt>
+                    <dd id="cod_recipe"></dd>
+                  </dl>
+                  <dl class="col-3">
+                    <dt>recipe_name</dt>
+                    <dd id="recipe_name"></dd>
+                  </dl>
+                  <dl class="col-3">
+                    <dt>note</dt>
+                    <dd id="noteRecipe"></dd>
+                  </dl>
+                </div>        
+                <div class="row w-100">
+                  <table id="recipeElement_Tbl" class="table w-100">
+                    <thead>
+                      <tr>
+                        <th>Categoria</th>
+                        <th>Percentuale</th>
+                        <th>Materiale</th>
+                        <th>Qt. umida</th>
+                        <th>Qt. secca</th>
+                      </tr>
+                    </thead>
+                    <tbody id="recipeElement_Tblb">
+
+                    </tbody>
+                    <tfoot id="recipeElement_Tblf">
+
+                    </tfoot>
+                  </table>
+                </div>
+              
+                  <div class="col-12">
+                    <button type="button" class="btn btn-xs btn-primary" id="saveNewSubstarte_Btn"><i class="fas fa-plus"></i> Salva substrato</button>
+                  </div>
+                </div>
+            </div>
+              </div>
+            
+            <div class="row m-3" id="rowSubstrate">
+                          <hr>
+              <div class="col">
+                 <div class="row" >
+                    <div class="col-12 h5">
+                      Elementi substrato
+                    </div>
+                  <table class="table table-sm " id="substrate_Tbl">
+                    <thead>
+                      <tr>
+                        <th>Cat materiale</th>
+                        <th>Materiale</th>
+                        <th>Fornitore</th>
+                        <th>Qt mat. umido</th>
+                        <th >Qt mat. secco</th>
+                      </tr>
+                    </thead>
+                    <tbody id="substrateElem_Tblb">
+                      
+                    </tbody>
+                  </table>
+                 </div>
+              </div>
+            </div>
+            <div class="row m-3" id="rowInoculum" style="display: none;">
+                          <hr>
+              <div class="col">
+                 <div class="row" >
+                    <div class="col-12 h5">
+                      Lotti inoculi
+                    </div>
+                  <table class="table table-sm " id="usedInProp_Tbl">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Codice lotto</th>
+                        <th>Nome lotto</th>
+                        
+                      </tr>
+                    </thead>
+                    <tbody id="usedInInoculum_Tblb">
+                      
+                    </tbody>
+                  </table>
+                 </div>
+              </div>
+            </div>
+            <div class="row m-3" id="rowInoculum" style="display: none;">
+                          <hr>
+              <div class="col">
+                 <div class="row" >
+                    <div class="col-12 h5">
+                      Inoculum
+                    </div>
+                  <table class="table table-sm " id="usedInInoculum_Tbl">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Codice inoculum</th>
+                        <th>Nome inoculum</th>
+                      </tr>
+                    </thead>
+                    <tbody id="usedInSpawn_Tblb">
+                      
+                    </tbody>
+                  </table>
+                 </div>
+              </div>
+            </div>
+            <div class="row m-3" id="rowSpawn" style="display: none;">
+                          <hr>
+              <div class="col">
+                 <div class="row" >
+                    <div class="col-12 h5">
+                      Spawn
+                    </div>
+                  <table class="table table-sm " id="usedInSpawn_Tbl">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Codice spawn</th>
+                        <th>Nome spawn</th>
+                      </tr>
+                    </thead>
+                    <tbody id="usedInSpawn_Tblb">
+                      
+                    </tbody>
+                  </table>
+                 </div>
+              </div>
+            </div>
+            <div class="row m-3" id="rowPropagation" style="display: none;">
+                          <hr>
+              <div class="col">
+                 <div class="row" >
+                    <div class="col-12 h5">
+                      Lotti propagazione
+                    </div>
+                  <table class="table table-sm " id="usedInProp_Tbl">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Codice lotto</th>
+                        <th>Nome lotto</th>
+                        
+                      </tr>
+                    </thead>
+                    <tbody id="usedInProp_Tblb">
+                      
+                    </tbody>
+                  </table>
+                 </div>
+              </div>
+            </div>
+          </dvi>  
+    </div>
+</div>
+</section>
+
+</div>
+
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>
+
+let tableSubstrate
+let recipeId
+let redirectId= <%- JSON.stringify( redirectId) %>
+let udmDD= <%- JSON.stringify( udmDD ) %>
+
+  let uomTxt
+
+  async function  drawTable (){
+   await $.ajax({
+        type: "GET",
+        url: "/substrate/getAll",
+        success: async function (response) {
+          console.log(response)
+            let html=""
+            for (let i = 0; i < response.substrates.length; i++) {
+                let el=response.substrates[i]
+                let delBtnDisable=""
+                let countUsedSpawn=0
+                let countUsedPropagation=0
+                let countUsedInoculum=0
+                if ((el.propagations.length>0)||(el.spawns.length>0)||(el.inoculums.length>0)){
+                  delBtnDisable="disabled"
+                  countUsedSpawn=el.spawns.length
+                  countUsedPropagation=el.propagations.length
+                  countUsedInoculum=el.inoculums.length
+                }
+                let udmTxt=response.udmDD.find(e => {return e.val==el.uom} )
+                udmTxt=udmTxt.txt
+                html+=`<tr>
+                           <td>
+                            <button type="button" name="" id="showBtn${el.id}" 
+                            class="btn btn-primary btn-xs showSubstrate" style="width:25px"
+                            idSubstrate="${el.id}" substrateName="${el.cod_substrate}">
+                              <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" name="" id="delete${el.id}" 
+                          class="btn btn-danger btn-xs deleteSubstrate_Btn" style="width: 25px" 
+                          idSubstrate="${el.id}" substrateName="${el.name_substrate}" ${delBtnDisable}>
+                            <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                          </button>
+                        </td>
+                                <td>${el.cod_substrate}</td>
+                                <td>${el.name_substrate}</td>
+                                <td>${el.destination}</td>
+                                <td>${el.qt} ${udmTxt}</td>
+                                <td>${countUsedInoculum}</td>
+                                <td>${countUsedSpawn}</td>
+                                <td>${countUsedPropagation}</td>
+                                <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                            </tr>`
+                
+                }
+                await $('#substrate_Tbl').DataTable().clear().rows.add($(html)).draw();
+            }
+    });
+    $("#newSubstrate_Btn").show();
+}
+// Show child Function
+ function drawTableChild(data,table,fields,topic,title) {
+    let html=""
+    if (data.length>0){
+      for (let i = 0; i < data.length; i++) {
+        const elem = data[i];
+        html+=`<tr>
+        <td>
+          <button type="button" name="" id="showChildBtn_${elem.id}" 
+                  class="btn btn-primary btn-xs showChild_btn" style="width:25px"
+                  topic="${topic}">
+                    <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                </button>
+        </td>`
+        for (let y = 0; y < fields.length; y++) {
+          const fld = fields[y];
+          html+=`<td>${elem[fld]}</td>`
+        }
+        html+=`</tr>`
+      }
+      
+    } else {
+      html+=`<tr >
+        <td colspan="3" style="text-align:center"> Il substrato non è utilizzato in nessuno ${title}</td>
+      </tr>`
+    }
+    $("#"+table).html(html)
+  }
+// Draw substrate GUI
+function drawShowSubstrate(id) {
+   $.ajax({
+        type: "GET",
+        url: "/substrate/getOneSubstrate?id="+id,
+        success: async function (response) {
+          console.log(response)
+        $("#saveRecipe_Btn").hide()
+          let data=response.substrate
+          if ((response.substrate.spawns>0)||(response.substrate.propagation>0)||(response.substrate.inoculum>0)){//
+              $("#saveRecipe_Btn").hide()
+              $("#rowSubstrate").show()
+              $("#addElement_Btn").prop("disabled","true")
+              $(".delElement_Btn").prop("disabled","true")
+            } else {
+              $("#rowSubstrate").show()
+              $("#addElement_Btn").removeAttr("disabled")
+              $(".delElement_Btn").removeAttr("disabled")
+            }
+            // Populate GUI
+            for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+              }
+              
+              switch (key) {
+                case "forPurchased":
+                    $("#forPurchased_Show").html(data.forPurchased? "Sì" : "No")
+                    $("#forPurchased_Fld").attr("checked",data.forPurchased? true : false)
+                  break;
+              case "recipeId":
+                     $("#"+key+"_Show").html(response.substrate.recipe.recipe_name)
+                  break;
+              case "uom":
+                  uomTxt=udmDD.find(e=>{ return e.val==data.uom})
+                  $("#"+key+"_Show").html(uomTxt.txt)
+                break;
+              default:
+                $("#"+key+"_Show").html(value?value:"-")
+                break;
+              }
+            }
+            let html=""
+            let totDry=0
+            let totHum=0
+            data.substrateElements.forEach(el => {
+              totDry=totDry+el.qt_dry
+              totHum=totHum+el.qt_hum
+              html+=`<tr>
+                <td>${el.materialCategory.category_name}</td>
+                <td >${el.rawMaterial.material_name}</td>
+                <td>${el.rawMaterial.supplier.supplier_name}</td>
+                <td>${el.qt_hum} ${uomTxt.txt}</td>
+                <td>${el.qt_dry} ${uomTxt.txt}</td>
+              </tr>`  
+            });
+            html+=`<tr>
+                <td></td>
+                <td ></td>
+                <td></td>
+                <td>${parseFloat(totHum.toFixed(2))} ${uomTxt.txt}</td>
+                <td>${parseFloat(totDry.toFixed(2))} ${uomTxt.txt}</td>
+              </tr>`
+            $("#substrateElem_Tblb").html(html)
+            if (data.spawns.length>0){
+              drawTableChild(data.spawns,"usedInSpawn_Tblb",["code_spawn","spawn_name"],"spawn","Spawn")
+              $("#rowSpawn").show();             
+            }
+            if (data.propagations.length>0){
+              drawTableChild(data.propagations,"usedInProp_Tblb",["code_propagation","propagation_name"],"propagation","Lotto di propagazione")
+              $("#rowPropagation").show();             
+            }
+            if (data.inoculums.length>0){
+              drawTableChild(data.inoculums,"usedInInoculum_Tblb",["code_inoculum","inoculum_name"],"inoculum","Lotto di inoculo")
+              $("#rowInoculum").show();             
+            }
+            $("#titoloForm").html("Substrato "+data.cod_substrate);
+            //drawTableChild(data.spawns,"usedInSpawn_Tblb",["code_spawn","spawn_name"],"spawn","Spawn")
+          //$("#modSubstrate_Btn").show()
+          $("#substrate_Data").show()
+          $("#tableSubstrate_Crd").hide()
+          $("#newSubstrate_Btn").hide()
+          $("#backToMain_Btn").show()
+          $(".substrateForm").hide()
+          $(".substrateText").show()
+        }
+      });   
+}    
+          
+$(document).ready(async function () {
+  // init
+  tableSubstrate=$('#substrate_Tbl').DataTable({responsive: true,lengthMenu: [50, 100, -1]});
+
+  if (redirectId!=null){
+    drawShowSubstrate(redirectId)
+  }
+  else{
+    await drawTable()
+  }
+  // Show substrate data
+  $(document).on("click",".showSubstrate", async function(e){
+      let id=$(this).attr("idSubstrate")
+      window.location="/substrate?redirectId="+id
+  })
+
+    // $("#modSubstrate_Btn").click(function (e) { 
+    //   e.preventDefault();
+    //   $(".substrateForm").show()
+    //   $(".substrateText").hide()
+    //   $("#cod_substrate_Fld").prop('disabled', true);
+    //   $("#recipeId_Fld").prop('disabled', true);
+    //   $("#uom_Fld").prop('disabled', true);
+    // });
+
+    // New substrate btn
+    $("#newSubstrate_Btn").click(async function (e) { 
+      e.preventDefault();
+      $('#substrates_Form').get(0).reset();
+      $("#substrate_Data").show()
+      $("#tableSubstrate_Crd").hide()
+      $("#rowSubstrate").hide()
+      $("#modSubstrate_Btn").hide()
+      $("#newSubstrate_Btn").hide()
+      $("#backToMain_Btn").show()
+      $("#rowRecipe").show();
+      $(".substrateForm").show()
+      $(".substrateText").hide()
+      $('#cod_substrate_Fld').closest('.col-md-2.col-sm-6').hide();
+    });
+    
+    
+    // Manage change receipe and prepare table for set
+    let selectRecipeFlag=false
+      let objMaterial // This obj hold value of selected material
+    
+    $("#recipeId_Fld").change(async function (e) { 
+      e.preventDefault();
+      objMaterial=[]
+      let idRecipe=$(this).val()
+      recipeId=idRecipe
+      await $.ajax({
+        type: "GET",
+        url: "recipes/getOneRecipes?id="+idRecipe,
+        success: async function (response) {
+          selectRecipeFlag=true
+          let data=response.recipe
+          //console.log(data)
+          $("#recipeSubCode_Fld").val(data.sub_code)
+          $("#cod_recipe").html(data.cod_recipe)
+          $("#recipe_name").html(data.recipe_name)
+          $("#noteRecipe").html(data.noteRecipe)
+          //$("#rowRecipe").show()
+          let lastCategory=false
+          let html=""
+          let totHum=0
+          let totDry=0
+          let uom
+          for (let i = 0; i < data.recipeElements.length; i++) {
+            let el=data.recipeElements[i]
+            let selectList
+            //if (el.materialCategoryId!=lastCategory){
+              await $.get("rawMaterial/getMaterialByCategory?idCategory="+el.materialCategoryId,
+              function (data) { 
+                selectList=data.material
+                })
+              //}
+            //console.log(selectList)
+            let firstFieldHum=0
+            let dropDownMaterial=`<div class="form-group m-0">
+              <select class="form-control materialDD" name="" id="subElemFld_${i}">`
+                let catName=""
+            for (let y = 0; y < selectList.length; y++) {
+              const ele = selectList[y];
+              catName=ele.materialCategory.category_name
+              dropDownMaterial+=`<option value="${ele.id}|${ele.hum_factor}|${i}" >${ele.material_name}</option>`  
+              if (y==0){
+                firstFieldHum=ele.hum_factor
+                objMaterial.push({pos:i,hum_factor:ele.hum_factor})
+              }
+              
+            }
+            dropDownMaterial+=`</select></div>`
+            let qtRequest=$("#qt_Fld").val()
+            let defaultHum=el.materialCategory.hum_factor
+            // Qt mat dry
+            let qtPerc=qtRequest*(el.percentage/100)
+            let matDry=qtPerc/firstFieldHum
+            uom=$( "#uom_Fld option:selected" ).text()      
+            //totali
+            totHum=totHum+parseFloat(qtPerc.toFixed(2))
+            totDry=totDry+parseFloat(matDry.toFixed(2))
+            html+=`<tr id="subElement_${i}">
+                <td>${catName}<input type="hidden" id="materialCategoryId_${i}" value="${el.materialCategoryId}"></td>
+                <td id="percent_${i}">${el.percentage}%</td>
+                <td>${dropDownMaterial}</td>
+                <td id="qtPerc_${i}">${qtPerc.toFixed(2)} ${uom}</td>
+                <td id="materialDry_${i}">${matDry.toFixed(2)} ${uom}</td>
+              </tr>`
+          }
+          let htmlFoot=`
+                <th></th>
+                <th ></th>
+                <th></th>
+                <th ><span id="totHum_tblf">${totHum}</span> ${uom}</th>
+                <th ><span id="totDry_tblf">${totDry}</span> ${uom}</th>`
+          $("#recipeElement_Tblb").html(html)
+          $("#recipeElement_Tblf").html(htmlFoot)
+        }
+        
+      });
+      
+    });
+    // Change hum_factor if specify in material
+    $(document).on("change",".materialDD",function (e) { 
+      e.preventDefault();
+      let v=$(this).val().split("|")
+      let id=v[0]
+      let hum_factor=v[1]
+      let rowTblId=v[2]
+      let qtRequest=$("#qt_Fld").val()
+      let percent=parseInt($("#percent_"+rowTblId).html().slice(0, -1))
+      //percent=parseInt(percent)
+      let hum_qt=qtRequest*(percent/100)
+      let dry_qt=hum_qt/hum_factor
+      objMaterial[rowTblId].hum_factor=parseFloat(hum_factor)
+      $("#qtPerc_"+rowTblId).html(hum_qt.toFixed(2))
+      $("#materialDry_"+rowTblId).html(dry_qt.toFixed(2))
+      console.log(objMaterial)
+    });
+
+    // Manage change qt
+    $("#qt_Fld").change(function (e) { 
+      e.preventDefault();
+      let qtVal=$(this).val()
+      if ((qtVal!="")&&(qtVal>0)){
+        $("#recipeId_Fld").prop("disabled",false)
+        if(selectRecipeFlag==true){
+          let count=0
+          let totH=0
+          let totD=0
+          let uom=$( "#uom_Fld option:selected" ).text() 
+
+          $('#recipeElement_Tbl tbody tr').each(function () {
+            const cells = $(this).find('td');
+            let perc=cells[1].innerHTML.slice(0,-1)
+            let qtHum=qtVal*(perc/100)
+            let qtDry=qtHum/objMaterial[count].hum_factor
+            $("#qtPerc_"+count).html(qtHum.toFixed(2)+" "+uom)
+            $("#materialDry_"+count).html(qtDry.toFixed(2)+" "+uom)
+            totH=qtHum+totH
+            totD=qtDry+totD
+            count++
+          });
+          $("#totHum_tblf").html(parseFloat(totH.toFixed(2)))
+          $("#totDry_tblf").html(parseFloat(totD.toFixed(2)))
+        }
+      }
+      else{
+        if(selectRecipeFlag==true){
+          alert("Attenzione il peso del substrato richiesto non può essere minore di 0")
+        }
+        $("#recipeId_Fld").prop("disabled",true)
+      }
+    });
+
+    // Save new Substrate
+    $("#saveNewSubstarte_Btn").click(async function (e) { 
+      e.preventDefault();
+      // let rname=$("#recipe_name").html()
+      // $("<input />").attr("type", "hidden")
+      //     .attr("name", "recipe_name")
+      //     .attr("value", rname)
+      //     .appendTo("#substrates_Form");
+      let f=checkForm("substrates_Form")
+      
+      if (f==true){
+      let c=confirm("Inserire il nuovo substrato?")
+        
+        if(c==true){
+           await $.ajax({
+              type: "POST",
+              url: "/substrate/newSubstrate",
+              data: $("#substrates_Form").serialize(),
+              success: async function (response) {
+                console.log(response)
+                let newId=response.data.id
+                let subElementLen= $('#recipeElement_Tbl tr').length;
+                //console.log(subElementLen)
+                for (let i = 0; i <subElementLen; i++) {
+                  // console.log(">> "+i)
+                  let substrateId=1
+                  let materialCategoryId =$("#materialCategoryId_"+i).val()
+                  let rawMaterialId=$("#subElemFld_"+i).val()
+                  // console.log(rawMaterialId)
+                  rawMaterialId=rawMaterialId.split("|")[0]
+                  // console.log(rawMaterialId)
+                  let qt_hum=parseFloat($("#qtPerc_"+i).html())
+                  let qt_dry=parseFloat($("#materialDry_"+i).html())
+                  let data={
+                    substrateId:newId,
+                    recipeId:recipeId,
+                    materialCategoryId:materialCategoryId,
+                    rawMaterialId:rawMaterialId,
+                    qt_dry:qt_dry,
+                    qt_hum:qt_hum,
+                  }
+                  console.log(data)
+                  await $.ajax({
+                    type: "POST",
+                    url: "/substrateElement/newSubstrateElement",
+                    data: data,
+                    success: async function (response) {
+                      window.location="/substrate?redirectId="+newId
+                    },
+                    error: function(err){
+                      alert(err)
+                    }
+                  });
+                }
+              }
+            });
+   
+        }
+      }
+      });
+  
+    // delete Substrate
+    $(document).on("click",".deleteSubstrate_Btn", async function(e){
+      e.preventDefault();
+      let id=$(this).attr("idSubstrate")
+      let substrateNeame=$(this).attr("substrateNeame")
+      let c=confirm(`Stai eliminando il  ${substrateNeame}, vuoi continuare? `)
+      if (c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/substrate/deleteSubstrate?id="+id,
+        success: async function (response) {
+          if (response.checkUse==true){
+            alert(response.message)
+          }else{
+            await drawTable()
+          }
+          
+        }
+      });
+      }
+    })
+
+    
+
+    //showChild_btn
+    $(document).on("click",".showChild_btn", function (e) {
+      e.preventDefault()
+      let topic=$(this).attr("topic")
+      let id=$(this).attr("id").split("_")[1]
+      switch (topic) {
+        case "spawn":
+          window.open('/spawn?redirectId='+id, '_blank');
+          break;
+        case "propagation":
+          window.open('/propagation?redirectId='+id, '_blank');
+          break;
+      }
+    })
+
+    // Back to main
+    $("#backToMain_Btn").click(function (e) { 
+          e.preventDefault();
+          window.location='/substrate'
+        });
+})
+</script>
+<%- include ('../closeTag') %>

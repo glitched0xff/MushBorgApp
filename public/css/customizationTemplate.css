@@ -1,0 +1,22 @@
+/* Css for customize and overite AdminLte template */
+
+table.dataTable.compact thead th,
+  table.dataTable.compact thead td,
+  table.dataTable.compact tfoot th,
+  table.dataTable.compact tfoot td,
+  table.dataTable.compact tbody th,
+  table.dataTable.compact tbody td {
+    padding: 4px;
+  }
+  .elementForm{
+    display: none;
+  }
+  .form-control-minimal{
+    margin-top:1px;
+     margin-bottom:  1px;
+  }
+  .dd{
+    padding: 1px;
+    margin-top: 1px;
+    height: 32px;
+  }

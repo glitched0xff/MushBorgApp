@@ -1,0 +1,992 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Inoculi
+              <button class="btn btn-xs btn-primary" id="modInoculi_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca inoculo</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newInoculi_Btn"><i class="fas fa-plus"></i> Nuovo inoculo</button>
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco inoculi</button>
+            </h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Inoculi</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Table inoculi -->
+        <div class="row" style="width: 100%;" id="inoculi_Table" style="display: none;">
+          <div class="card w-100" id="tableInoculi_Crd">
+            <div class="card-body">
+              <table class="display table table-striped table-bordered compact" id="inoculi_Tbl" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 45px; "></th>
+                        <th style="max-width:100px">Codice</th>
+                        <th style="max-width:100px">Nome</th>
+                        <th style="max-width:250px">Qt</th>
+                        <th style="max-width:100px">Strain</th>
+                        <th style="max-width:50px">Creato il</th>
+                    </tr>
+                </thead>
+                <tbody id="inoculi_Tblb">  
+                </tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+        <!-- Data inoculi -->
+        <div class="card w-100" id="inoculi_Data" style="display: none;">
+            <div class="card-body">
+              <h4 id="titoloForm">Nuovo inoculo</h4>
+              <div class="row">
+                <div class="col">
+              <form id="inoculi_FRM" class="p-3">
+                <div class="row w-100">
+                    <div class="col">
+
+                <!-- <div class="row border-bottom mb-2 pb-2 font-weight-bold w-100">
+                  Elemento <span id="inoculiCode" class="mx-1"></span> 
+                  <button class="btn btn-xs btn-primary mx-1" id="backToMain_Btn"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco inoculii</button>
+                  <button class="btn btn-xs btn-primary mx-1" id="modInoculo_Btn"> <i class="fas fa-pen"></i> Modifica inoculio</button>
+                </div> -->
+                <%- include('../include/ejsForm',
+                  { classTxt: "inoculiText",
+                    classField: "inoculiForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idInoculo"
+                    },
+                    { type:"startRow"},
+// purchased
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"inoculum_name",
+                      label:"Nome inoculo",
+                      required:'', 
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"strainId",
+                      label:"Strain",
+                      firstField:"Seleziona la strain",
+                      required:'', 
+                      option:strainDD
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"containerId",
+                      label:"Contenitore",
+                      firstField:"Seleziona il contenitore",
+                      required:'', 
+                      option:containerDD
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-1 col-sm-6",
+                      fieldName:"n_container",
+                      label:"Quantità",
+                      required:'', 
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-1 col-sm-6",
+                      fieldName:"purchased",
+                      label:"Acquistato",
+                    },
+                     { type:"endRow"},
+                     {type:"startRow"},
+                    //  {
+                    //   type:"text",
+                    //   classBox:"col-md-3 col-sm-6",
+                    //   fieldName:"cultivation_media",
+                    //   label:"Media di cultura",
+                    //   required:'', 
+                    // },
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"substrateId",
+                      label:"substrateId",
+                      firstField:"Seleziona substrato",
+                      required:'', 
+                      option:substrateDD
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"storageId",
+                      label:"Magazzino",
+                      firstField:"Seleziona il magazzino",
+                      required:'', 
+                      option:storagesDD
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"exp_date",
+                      label:"Data scadenza",
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"expected_maturation_date",
+                      label:"Data prevista maturazione",
+                    },
+                    
+                    { type:"endRow"}
+                    ]  
+                }) %>
+                <div class="row w-100 mt-2" id="setInoculo_Row" >
+                  
+                    <div class="col-12 h5">Elementi di inoculo
+                      <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" 
+                            data-target="#inoculiModal" id="selInoculo_BtnMdl" style="display: none;">
+                            Seleziona inoculo
+                          </button>
+                    </div>
+                    <table class="table table-sm mb-0" id="setInoculo_Tbl" style="display: none;width: 50%;">
+                      <thead>
+                        <tr>
+                          <th>Codice inoculo</th>
+                          <th></th>
+                          
+                        </tr>
+                      </thead>
+                      <tbody id="setInoculo_Tblb">
+                        
+                      </tbody>
+                    </table>
+                </div>
+                </div>
+                </div>
+                </form>
+                
+                <div class="row w-100">
+                  <button class="btn btn-xs btn-primary mx-1" id="saveNewInoculo_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva inoculo </button>
+                  <button class="btn btn-xs btn-primary mx-1" id="saveInoculo_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva modifica </button>
+                  <button class="btn btn-xs btn-secondary mx-1" id="abortInoculo_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Annulla modifica </button>
+                </div>
+                </div>
+               </div>
+              </div>
+              <div class="row m-3" id="mushElement_Div">
+              <div class="col">
+                 <div class="row" >
+                    <div class="col-12 h5">
+                        Elementi lotto
+                        <button type="button"  data-toggle="modal" 
+                data-target="#movimentazioni_Mdl" 
+                class="btn btn-primary btn-xs mx-2 movimentazioneBtn" type="all"><i class="fas fa-truck-moving"></i> Movimenta elementi</button>
+                <button type="button" class="btn btn-primary btn-xs mx-2" id="exportCsv_Btn"><i class="fas fa-file-csv"></i> Esporta csv</button>
+                      </div>
+                  <table class="table table-sm " id="mushElement_Tbl">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Codice elemento</th>
+                          <th>Stato elemento</th>
+                          <th>Magazzino</th>
+                          <th>Note</th>
+                          <th>Data prelievo</th>
+                        </tr>
+                      </thead>
+                      <tbody id="mushElement_Tblb">
+                        
+                      </tbody>
+                    </table>
+                 </div>
+              </div>
+            </div>
+            </div>
+        </div>
+</section>
+<!-- Modal moviemntazione -->
+ <div class="modal fade" id="movimentazioni_Mdl" tabindex="-1" role="dialog" aria-labelledby="#movimentazioni_MdlTitleId" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="movimentazioni_MdlTitleId">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body">
+          <form id="movimentazioni_Frm">
+            <input type="hidden" name="movimentaIdElement" id="movimentaIdElement">
+            <input type="hidden" name="movimentaTypeElement" id="movimentaTypeElement">
+
+            <div class="row">
+              <div class="col-4">
+                <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="movimentaAll_Ckb" id="movimentaAll_Ckb" value="moveAll"> Movimentare tutto il lotto? 
+                </label>
+              </div>
+              </div>
+              <div class="col-4 movimentaAll_Div" style="display: none;">
+                <div class="form-group">
+                  <label for="">Provenienza intero lotto</label>
+                  <select class="form-control" name="movimentaFrom_Sel" id="movimentaFrom_Sel" disabled>
+                    
+                  </select>
+                </div>
+              </div>
+              <div class="col-4 movimentaAll_Div" style="display: none;" >
+                <div class="form-group">
+                  <label for="">Destinazione intero lotto</label>
+                  <select class="form-control" name="movimentaAll_Sel" id="movimentaAll_Sel" disabled>
+                    
+                  </select>
+                </div>
+              </div>
+              
+            </div>
+            <div class="row w-100">
+              <table class="table" id="movimenti_Tbl">
+                <thead>
+                  <tr>
+                    <th>Elemento</th>
+                    <th>Mag. atttuale</th>
+                    <th>Mag. destinazione</th>
+                  </tr>
+                </thead>
+                <tbody id="movimenti_Tblb">
+                  
+                </tbody>
+              </table>
+              <div>
+            <div class="row">
+              <button type="button" class="btn btn-primary btn-xs" id="saveMovimentation">Movimenta gli elementi</button>
+            </div>
+          </div>
+            </div>
+          </form>
+        </div>
+    </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Modal seleziona Inoculo-->
+<div class="modal fade" id="inoculiModal" tabindex="-1" aria-labelledby="inoculiModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="inoculiModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row w-100">
+          <div class="form-group col-12">
+            <label for="">live</label>
+            <input type="text" class="form-control" name="" id="liveSearch" >
+          </div>
+          <div id="liveResult" style="height:500px; overflow-y: scroll;" class="col-12">
+            
+          </div>
+          <div id="selectedResult">
+            
+          </div>
+          <div class="form-group">
+            <label for=""></label>
+            <select class="form-control" name="" id="elencoInoculi">
+              <option> Seleziona un lotto di inoculo</option>
+              <% for(let i=0;i<inoculumDD.length;i++){ %>
+                <option value="<%= inoculumDD[i].val %>"><%= inoculumDD[i].txt %></option>  
+              <% } %>
+            </select>
+          </div>
+
+        </div>
+        <div class="row w-100">
+          <table class="table table-sm" id="elencoInoculi_Tbl">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Codice inoculo</th>
+                <th>Nome inoculo</th>
+              </tr>
+            </thead>
+            <tbody id="elencoInoculi_Tblb">
+              
+            </tbody>
+          </table>
+        </div>
+       
+        <div class="row w-100"> 
+          <button type="button" class="btn btn-primary" id="selezionaInoculi_Btn">Associa inoculi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>
+  let idInoculi
+    let storagesDD= <%- JSON.stringify( storagesDD) %>
+  let redirectId= <%- JSON.stringify( redirectId) %>
+  let dataElement
+  let filterCategory="INOCULUM"
+  let inoculiList
+  let tempInoculiArray=[]
+  // Reset form
+  function resetForm(formName){
+    $("#"+formName).get(0).reset()
+    $($('#'+formName).prop('elements')).each(function(){
+      $(this).removeClass("border-danger")
+      $(this).removeClass("border-success")
+    })
+}
+  async function  drawTableInoculi (){
+   await $.ajax({
+        type: "GET",
+        url: "/inoculum/getAll",
+        success: async function (response) {
+          console.log(response)
+            let html=""
+            for (let i = 0; i < response.inoculum.length; i++) {
+                let el=response.inoculum[i]
+                let delBtnDisable=""
+                // if (el.used!=0){
+                //   delBtnDisable="disabled"
+                // }
+                html+=`<tr>
+                           <td>
+                            <button type="button" name="" id="showBtn${el.id}" 
+                            class="btn btn-primary btn-xs showInoculi" style="width:25px"
+                            idInoculi="${el.id}" >
+                              <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" name="" id="delete${el.id}" 
+                          class="btn btn-danger btn-xs deleteInoculi_Btn" style="width: 25px" 
+                          idInoculi="${el.id}"  ${delBtnDisable}>
+                            <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                          </button>
+                        </td>
+                                <td>${el.code_inoculum}</td>
+                                <td>${el.inoculum_name}</td>
+                                <td>${el.n_container} - ${el.container.container_name}</td>
+                                <td>${el.strain.strain_name} ${el.strain.species_code} </td>
+                                <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                            </tr>`
+                
+                }
+                await $('#inoculi_Tbl').DataTable().clear().rows.add($(html)).draw();
+            }
+    });
+    $("#inoculi_Table").show();
+    $("#inoculi_Data").hide();
+    $("#newInoculi_Btn").show();
+}
+// Draw table Child element 
+function drawTableChild(data,table,fields,topic,title) {
+    let html=""
+    console.log(data.length)
+    if (data.length>0){
+      for (let i = 0; i < data.length; i++) {
+        const elem = data[i];
+        html+=`<tr>
+        <td>
+          <button type="button" name="" id="showChildBtn_${elem.id}" 
+                  class="btn btn-primary btn-xs showChild_btn" style="width:25px"
+                  topic="${topic}">
+                    <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                </button>
+        </td>`
+        for (let y = 0; y < fields.length; y++) {
+          const fld = fields[y];
+          html+=`<td>${elem[fld]}</td>`
+        }
+        html+=`</tr>`
+      }
+      
+    } else {
+      html+=`<tr >
+        <td colspan="4" style="text-align:center" class="bg-danger"> Il materiale non è utilizzato in nessuno ${title}</td>
+      </tr>`
+    }
+    $("#"+table).html(html)
+  }
+
+  async function drawShowInoculi(id) {
+    $("#inoculi_Data").show();
+    $("#inoculi_Table").hide();
+    await $.ajax({
+        type: "GET",
+        url: "/inoculum/getOneInoculum?id="+id,
+        success: async function (response) {
+          console.log(response)
+          let data=response.inoculum
+          dataElement=data
+          // Populate GUI
+          for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+              }
+              switch (key) {
+                case "containerId":
+                  $("#containerId_Show").html(data.container?data.container.container_name:"-")
+                  break;
+                case "storageId":
+                  $("#storageId_Show").html(data.storage?data.storage.code_storage+" "+data.storage.name_storage:"-")
+                  break;     
+                case "strainId":
+                  $("#strainId_Show").html(data.strain.species_code+" - "+ data.strain.strain_name)
+                  $("#strainId_Fld").val(data.strainId)
+                  break;
+                case "substrateId":
+                  $("#substrateId_Show").html(data.substrate.name_substrate)
+                  $("#substrateId_Fld").val(data.substrateId)
+                  break;
+                  case "exp_date":
+                    $("#exp_date_Show").html(moment(data.exp_date).format("MM-DD-YY"))
+                    break;
+                  case "expected_maturation_date":
+                    $("#expected_maturation_date_Show").html(moment(data.expected_maturation_date).format("MM-DD-YY"))
+                    break;
+                   case "purchased":
+                    $("#purchased_Show").html(data.purchased? "Sì" : "No")
+                    $("#purchased_Fld").attr("checked",data.purchased? true : false) 
+                default:
+                  $("#"+key+"_Show").html(value?value:"-")
+                  break;
+                }
+            }
+          $("#id_Fld").val(data.id)
+          if (response.inoculum.used>0){
+              $("#saveInoculi_Btn").hide()
+              await drawTableInoculi()
+              $("#rowInoculi").show()
+              $("#addElement_Btn").prop("disabled","true")
+              $(".delElement_Btn").prop("disabled","true")
+            } else {
+              $("#rowInoculi").hide()
+              $("#addElement_Btn").removeAttr("disabled")
+              $(".delElement_Btn").removeAttr("disabled")
+            }
+            await drawTableMushElement(response.inoculum.mushElements,"INOCULUM")
+          
+           $("#saveInoculo_Btn").hide()
+          $("#abortInoculo_Btn").hide()
+          $("#modInoculo_Btn").show();
+          $("#titoloForm").html("Inoculo "+response.inoculum.inoculum_name)
+          $("#backToMain_Btn").show();
+          $("#newInoculi_Btn").hide();
+          $(".inoculiForm").hide()
+          $(".inoculiText").show()
+        }
+      });   
+
+  }
+ function drawTableMushElement(data,topic) {
+    let html=""
+    console.log(data)
+    
+    if (data.length>0){
+      for (let i = 0; i < data.length; i++) {
+        const elem = data[i];
+        let delBtnDisable=""
+        let classTr=""
+        let classDD="destinationDD"
+        let enableDD=""
+        if(elem.active==0){
+          classTr="text-danger"
+          enableDD="disabled"
+        }
+        html+=`<tr class="${classTr}">
+        <td>
+          <button type="button" name="" id="showChildBtn_${elem.id}" 
+                  class="btn btn-primary btn-xs showChild_btn" style="width:25px"
+                  topic="mushElement">
+                    <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                </button>
+        </td>
+        <td>${elem.element_code}</td>
+        <td>${elem.stato}</td>
+        <td>${elem.storage.name_storage}</td>
+        <td>${elem.mushElementNotes.length}</td>
+        <td>${elem.pick_date?moment(elem.pick_date).format("DD-MM-YYYY"):"-"}</td>
+        
+        `
+        
+        html+=`</tr>`
+      }
+      
+    } else {
+      html+=`<tr >
+        <td colspan="4" style="text-align:center" class="bg-danger"> Il materiale non è utilizzato in nessuno ${title}</td>
+      </tr>`
+    }
+    $("#mushElement_Tblb").html(html).parent().show()
+  }
+ 
+  $(document).ready(async function () {
+    
+    $('#exp_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#expected_maturation_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+   
+     if (redirectId!=null){
+      await drawShowInoculi(redirectId)
+    }
+    else{
+      tableInoculi=$('#inoculi_Tbl').DataTable({responsive: true,pageLength: 50})
+      await drawTableInoculi()
+    }
+
+    $(document).on("click",".showInoculi",async function(){
+      let idinoculi=$(this).attr("idinoculi")
+      window.location="/inoculum?redirectId="+idinoculi
+    })
+
+    $("#newInoculi_Btn").click(function (e) { 
+      e.preventDefault();
+      resetForm("inoculi_FRM")
+      $("#inoculi_Data").show();
+      $("#inoculi_Table").hide();
+      $("#saveNewInoculo_Btn").show();
+      $("#selInoculo_BtnMdl").show();
+      $(this).hide()
+    });
+
+    $("#saveNewInoculo_Btn").click(function (e) { 
+      e.preventDefault();
+      $.ajax({
+        type: "POST",
+        url: "/inoculum/newInoculum",
+        data: $("#inoculi_FRM").serialize(),
+        success: function (response) {
+          console.log(response)
+          drawTableInoculi()
+        }
+      });
+    });
+
+    $("#modInoculo_Btn").click(function (e) { 
+      e.preventDefault();
+      
+    });
+//showChild_btn
+    $(document).on("click",".showChild_btn", function (e) {
+      e.preventDefault()
+      let topic=$(this).attr("topic")
+      let id=$(this).attr("id").split("_")[1]
+      console.log(topic)
+      switch (topic) {
+        case "mushElement":
+          window.open('/mushElement/singleMushElement?id='+id+'&filterCategory=INOCULUM', '_blank');
+          break;
+      }
+
+    })
+
+    
+    $(document).on("click",".deleteInoculi_Btn",async function(){
+      let idInoculi=$(this).attr("idinoculi")
+       if(confirm("Sei siscuro di voler cancellare il lotto di inoculo? Facendo così eliminerai tutti gli elementi associati.")){
+        $.ajax({
+        type: "delete",
+        url: "/inoculum/deleteInoculum?id="+idInoculi,
+        success: function (response) {
+          console.log("res")
+           window.location="/inoculum"
+        },
+        error:function(err){
+          console.log(err)
+        }
+      });
+      }
+      
+    })
+
+//showChild_btn
+    $(document).on("click",".showChild_btn", function (e) {
+      e.preventDefault()
+      let topic=$(this).attr("topic")
+      let id=$(this).attr("id").split("_")[1]
+      console.log(topic)
+      switch (topic) {
+        case "mushElement":
+          window.open('/mushElement/singleMushElement?id='+id+'&filterCategory=SPAWN', '_blank');
+          break;
+        case "seedElement":
+          window.open('/mushElement/singleMushElement?id='+id+'&filterCategory=SPAWN', '_blank');
+        break;
+      }
+
+    })
+    //Live search
+    $("#liveSearch").keyup(function (e) { 
+      e.preventDefault();
+      let str=$(this).val()
+      console.log(str)
+      if(str!=""){
+         $.ajax({
+        type: "GET",
+        url: "/inoculum/liveSearch?str="+str,
+        success: function (response) {
+          let element=response.list
+          inoculiList=element
+            console.log(inoculiList)
+            console.log(tempInoculiArray)
+
+          let html=`<div class="col-12">
+                  <table class=" w-100 table table-sm">`
+                    
+          if (element.length>0){
+            
+            html+=`<thead >
+                        <tr>
+                          <th></th>  
+                          <th>Codice</th>  
+                          <th>Disponiblità</th>  
+                          <th>Prelievo</th> 
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>`
+          element.forEach(elem=>{
+            elem.requestQt=0
+            let disableBtn=""
+            let inList=[]
+            for (let i = 0; i < tempInoculiArray.length; i++) {
+              const e = tempInoculiArray[i];
+              if(e.element.element_code==elem.element_code){
+                        inList.push(e) 
+                      }
+            }
+
+            console.log(inList)
+
+            if (inList.length>0){
+              elem.perc=inList[0].tempQt
+              elem.requestQt=inList[0].requestQt
+              disableBtn="disabled"
+            }
+
+            html+=`
+                    <tr>
+                      <td class="text-xs"><span class="badge badge-secondary">${elem.type}</span></td>
+                      <td class="">${elem.element_code}</td>
+                      <td>${elem.perc}%</td>
+                      <td>
+                        <div class="form-group m-0 p-0">
+                        <input type="number"
+                          class="form-control py-1 "
+                          style="height: 30px;"
+                          id="inoculo_${elem.element_code}" type="${elem.type}" element_code="${elem.element_code}" 
+                          max="${elem.perc}"
+                          min="0"
+                          value="${elem.requestQt}"
+                          ${disableBtn}
+                          >
+                        </div>
+                      </td>
+                      <td><button  type="${elem.type}" element_code="${elem.element_code}" class="btn btn-primary btn-xs addInoculo" ${disableBtn}> Aggiungi </button></td>
+                    </tr>
+                 `
+          })
+          html +=`<tbody>`
+          } else {
+            html+=`<tr>
+                      <td > Non sono presenti elementi </td>
+                  </tr>`
+          }
+          html +=`</table>
+            </div>`
+          $("#liveResult").html(html)
+        }
+      });
+    
+      }
+     });
+     // Add Inoculo
+    $(document).on("click",".addInoculo", function (e) {
+       e.preventDefault();
+
+      let elementCode=$(this).attr("element_code")
+      let requestQt=$("#inoculo_"+elementCode).val()
+      var element = inoculiList.filter(a => {
+        if(a.element_code==elementCode){
+          return a
+        }
+      });
+      console.log(element)
+     tempInoculiArray.push({element:element[0],requestQt:requestQt,tempQt:element[0].perc-requestQt})
+     console.log(tempInoculiArray)
+     let html=`<div class="col-12">
+                  <table class=" w-100 table table-sm">
+                      <thead >
+                        <tr>
+                            
+                          <th>Codice</th>  
+                          <th>Prelievo %</th>  
+                          <th>Qt avanzo %</th> 
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>`
+     tempInoculiArray.forEach((elem,i)=>{
+        html+=`<tr id="rowInoculo_${i}">
+
+                <td scope="row"> <input type="hidden" name="inoculumElementId" value="${JSON.stringify({element_code:elem.element.element_code,
+                                                                                          requestQt:elem.requestQt,
+                                                                                          newElementPerc:elem.tempQt})}">${elem.element.element_code}</td>
+                <td>${elem.requestQt}%</td>
+                <td>${elem.tempQt}%</td>
+                <td>
+                  <button class="btn btn-danger btn-xs deleteInoculo" 
+                          id="deleteInoculo_${i}" style="width: 25px"> 
+                          <i class="fa fa-trash fa-sm " aria-hidden="true"></i> 
+                  </button>
+                  </td>
+              </tr>`
+     })
+     html+="</tbody></table>"
+      $("#setInoculo_Tblb").html(html);
+      $("#setInoculo_Tbl").show();
+      $("#saveNewSpawn_Btn").prop("disabled",false);
+      $('#inoculiModal').modal('hide')
+      $("#liveResult").html("")
+      $("#liveSearch").val("")
+
+    });
+    // Delete inoculo
+    $(document).on("click",".deleteInoculo", function (e) {
+       e.preventDefault();
+       let idArrayInoculi=$(this).attr("id").split("_")[1]
+       $("#rowInoculo_"+idArrayInoculi).remove()
+       tempInoculiArray.splice(idArrayInoculi,1)
+
+    });
+    // risolve l'elemento inoculi
+    $("#elencoInoculi").change(function (e) { 
+      e.preventDefault();
+      let relatedId=$(this).val()
+      $.ajax({
+        type: "GET",
+        url: "/spawn/getInoculumElementRelId?relatedId="+relatedId,
+        success: function (response) {
+          console.log(response)
+          let html
+          response.data.forEach(elem => {
+            let disableBtn=''
+            let css
+            console.log("active")
+            console.log(elem.active)
+            if (elem.active==0){
+              disableBtn='disabled'
+              css=`text-decoration: line-through; color:red`
+            }
+             html+=`<tr>
+                <td>
+                  <div class="form-check">
+                      <input type="checkbox" class="form-check-input checkInoculi" name="" 
+                          id="checkInoculi_${elem.id}" 
+                          codeElement="${elem.element_code}"
+                          value="1"
+                          ${disableBtn}>
+                  </div>  
+                </td>
+                <td style="${css}">${elem.element_code}</td>
+                <td> 
+                  <div class="form-group m-0">
+                          <input type="number" min="0" max="100"
+                              class="form-control" name="percInoculi_${elem.id}" id=""  placeholder="" value="100">
+                      </div>
+                    </td>
+                <td>${elem.stato}</td>
+              </tr>`
+          });
+          $("#elencoInoculi_Tblb").html(html);
+        }
+      });
+    });
+    $("#selezionaInoculi_Btn").click(function (e) { 
+      e.preventDefault();
+      let checkedValues = [];
+      let html
+      // seleziona solo i checkbox spuntati dentro la tabella
+      $("#elencoInoculi_Tbl input[type=checkbox]:checked").each(function () {
+        let codeElement=$(this).attr("codeElement")
+        let idElement=$(this).attr("id").split("_")[1]
+        // Prender valore perchentuale dell'inoculo e creare l'array nel form
+        let percInoculi=$("percInoculi_"+idElement).attr("id").split("_")[1]
+        html+=`<tr>
+
+                <td scope="row"> <input type="hidden" name="inoculumElementId" value="${idElement}">${codeElement}</td>
+                <td>${idElement}</td>
+              </tr>`
+      });
+      $("#setInoculo_Tblb").html(html);
+      $("#setInoculo_Tbl").show();
+      $("#saveNewSpawn_Btn").prop("disabled",false);
+      $('#inoculiModal').modal('hide')
+    });
+
+    $(document).on("click",".deleteSpawn_Btn",async function(){
+      let idSpawn=$(this).attr("idSpawn")
+      //let c=confirm("Sei siscuro di voler cancellare l'elemento spawn? Facendo così eliminerai tutti gli elementi associati.")
+      if(confirm("Sei siscuro di voler cancellare l'elemento spawn? Facendo così eliminerai tutti gli elementi associati.")){
+        $.ajax({
+        type: "delete",
+        url: "/spawn/deleteSpawn?id="+idSpawn,
+        success: function (response) {
+          console.log("res")
+           window.location="/spawn"
+        },
+        error:function(err){
+          console.log(err)
+        }
+      });
+      }
+      
+    })
+
+    $("#purchased_Fld").change(function (e) { 
+      e.preventDefault();
+      let val=$(this).prop("checked")
+      console.log(val)
+      if (val){
+        $("#selInoculo_BtnMdl").prop("disabled",true)
+        $("#saveNewSpawn_Btn").prop("disabled",false)
+        $('#substrateId_Fld option').each(function() {
+                          let forPurchased = $(this).val()
+                          console.log(forPurchased)
+                          if (forPurchased.split("|")[2]==0){
+                            $(this).css('display', 'none');
+                          }
+                      });
+        $("#setInoculo_Row").hide();
+      }else{
+        $("#selInoculo_BtnMdl").prop("disabled",false)
+        $("#saveNewSpawn_Btn").prop("disabled",true)
+        $('#substrateId_Fld option').each(function() {$(this).css('display', 'contents');})
+        $("#setInoculo_Row").show();
+      }
+    });
+
+/// Area movimentazione elementi
+    $(document).on("click",".movimentazioneBtn",function(){
+      $("#movimentaIdElement").val(dataElement.id)
+      $("#movimentaTypeElement").val(dataElement.mushElements[0].type)
+      $("#movimentazioni_MdlTitleId").html("Lotto Spawn:"+dataElement.code_inoculum)
+      let storageSelectOption
+      storagesDD.forEach(elem => {
+        storageSelectOption+= `
+        <option value="${elem.val}">${elem.txt}</option>
+        `   
+      });
+      $("#movimentaAll_Sel").html(storageSelectOption)
+      $("#movimentaFrom_Sel").html(storageSelectOption).val(dataElement.storageId)
+      let html
+      for (let i = 0; i < dataElement.mushElements.length; i++) {
+        const elem = dataElement.mushElements[i];
+        console.log(elem)
+        let classTr=""
+        let classDD="destinationDD"
+        let enableDD=""
+        if(elem.active==0){
+          classTr="text-danger"
+          enableDD="disabled"
+          classDD=""
+        }
+        storageSelectOption=""
+        for (let y = 0; y < storagesDD.length; y++) {
+          const e = storagesDD[y];
+          storageSelectOption+= `<option value="${e.val}|${elem.id}|${elem.storageId}">${e.txt}</option>`   
+          
+        }
+        html+=`<tr class="${classTr}">
+        <td>
+          ${elem.element_code}
+        </td>
+        <td>
+          ${elem.storage.code_storage} - ${elem.storage.name_storage}
+        </td>
+        <td>
+                    <div class="form-group m-0 p-0">
+                        <select tp="selectField" class="form-control form-control-sm form-control-minimal ${classDD}" name="destinationDD" ${enableDD}>
+                             <option value="${elem.storage.id}|${elem.id}|${elem.storageId}">${elem.storage.code_storage} - ${elem.storage.name_storage}</option>
+                             <option disabled="disabled">----</option>
+                            ${storageSelectOption}
+                        </select>
+                    </div>
+        </td>
+        `
+      }
+      $("#movimenti_Tblb").html(html)
+      $("#movimentazioni_Mdl").modal("show")
+    })
+    $("#movimentaAll_Ckb").change(function (e) { 
+      e.preventDefault();
+      let val=$(this).prop("checked")
+      console.log(val)
+      if (val){
+        $(".destinationDD").prop('disabled',true); 
+        $(".movimentaAll_Div").show();
+        $("#movimentaAll_Sel").prop('disabled', false);
+        $("#movimentaFrom_Sel").prop('disabled', false);
+      }else{
+        $(".destinationDD").prop('disabled', false); 
+        $(".movimentaAll_Div").hide()
+        $("#movimentaAll_Sel").prop('disabled', true);
+        $("#movimentaFrom_Sel").prop('disabled', true);
+
+      }
+      
+    });
+    $("#saveMovimentation").click(function (e) { 
+      e.preventDefault();
+      $.ajax({
+        type: "PUT",
+        url: "/mushElement/movimentazioneElement",
+        data: $("#movimentazioni_Frm").serialize(),
+        success: function (response) {
+         window.location='inoculum?redirectId='+dataElement.id
+        }
+      });
+    });
+    
+    $("#exportCsv_Btn").click(function (e) { 
+      e.preventDefault();
+      let url="/mushElement/csvLotto?relatedId="+dataElement.id+"&filterCategory="+filterCategory
+      window.open(url, '_blank').focus();
+    });
+
+    $("#backToMain_Btn").click(function (e) { 
+        e.preventDefault();
+         window.location='/inoculum'
+      });
+  });
+ 
+
+</script>
+<%- include ('../closeTag') %>

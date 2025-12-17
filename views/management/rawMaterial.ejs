@@ -1,0 +1,624 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione materiali 
+              <button type="button" class="btn btn-xs btn-primary" id="newRawMaterial_Btn" style="display: none;"><i class="fas fa-plus"></i> Nuovo materiale</button>
+              <button type="button" class="btn btn-xs btn-primary" id="modRawMaterial_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifica materiale</button>
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna ai materiali</button>
+              <button type="button" class="btn btn-xs btn-primary" id="materialCategory_Btn" style="display: none;"><i class="fas fa-folder-open"></i> Gestione categorie</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newCategory_Btn" style="display: none;"> <i class="fas fa-folder-plus    "></i> Nuova categoria</button>
+
+            </h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Materiali</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid" >
+        <div class="row" style="width: 100%;">
+          <!-- Category material card -->
+          <div class="card w-100" id="materialCategory_Crd" style="display: none;">
+            <div class="card-body">
+              <h4>Gestione categorie materiali</h4>
+              <div class="row">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Nome categoria</th>
+                      <th scope="col">Usato in N materiali</th>
+                      <th scope="col">Fattore umidità</th>
+                      <th scope="col">Note</th>
+                    </tr>
+                  </thead>
+                    <tbody id="materialCategory_Tblb">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!-- Table rawMaterial -->
+          <div class="card w-100" id="tableRawMaterial_Crd">
+            <div class="card-body">
+              <table class="display table table-striped table-bordered compact" id="rawMaterials_Tbl" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 45px; "></th>
+                        <th style="width: 180px;">Nome materiale</th>
+                        <th style="width: 100px;">Categoria</th>
+                        <th style="width: 50px;">Quantità</th>
+                        <th style="width: 60px;">N. substrati</th>
+                        <th style="width: 150px;">Magazzino</th>
+                        <th style="width: 150px;">Creato il</th>
+                    </tr>
+                </thead>
+                <tbody id="rawMaterials_Tblb">
+                    
+                </tbody>
+            </table>
+            </div>
+          </div>
+          <!-- Data rawMaterial -->
+          <div class="card w-100" id="rawMaterial_Data" style="display: none;">
+            <div class="card-body">
+              <h4 id="titoloForm">Nuovo materiale</h4>
+              <div class="row">
+                <div class="col">
+                  <form id="rawMaterial_Frm" class="p-3">
+                    <div class="row w-100">
+                <%- include('../include/ejsForm',
+                  { classTxt: "rawMaterialText",
+                    classField: "rawMaterialForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idRawMaterial"
+                    },
+                    { type:"startRow"},
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"material_name",
+                      label:"Nome materiale",
+                      required:true, 
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"materialCategoryId",
+                      label:"Categoria",
+                      firstField:"Seleziona",
+                      required:true, 
+                      option:materialCategoryDD 
+                    },
+                    
+                     {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"hum_factor",
+                      label:"Coefficiente umidità",
+                      required:true, 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"quantity",
+                      label:"Quantità",
+                      required:true, 
+                    },
+                  
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"uom",
+                      label:"Udm",
+                      required:true,
+                      firstField:"Seleziona UDM",
+                      option:udmDD
+                    },,
+                     { type:"endRow"},
+                     {type:"startRow"},
+                     {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"destination",
+                      label:"Destinazione",
+                      firstField:"Seleziona destinazione",
+                      required:true, 
+                      option:destinationDD
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"supplierId",
+                      label:"Fornitore",
+                      firstField:"Seleziona fornitore",
+                      option:supplierDD,
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"storageId",
+                      label:"Magazzino",
+                      firstField:"Seleziona magazzino",
+                      required:true, 
+                      option:storageDD,
+                    },
+                    { type:"endRow"},
+                    { type:"startRow"}, 
+                    {
+                      type:"textarea",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"note",
+                      label:"Note",
+                    },
+                    
+                    { type:"endRow"}
+                    ]  
+                }) %>
+              </div>
+                      <input type="hidden" class="form-control" name="id" id="id_Ins">
+                  </form>
+                  <div class="row text-center m-2">
+                      <button type="button" id="saveModBtn" class="btn btn-danger btn-sm">Salva modifiche</button>
+                      <button type="button" id="abortModmodBtn" class="btn btn-secondary btn-sm">Annulla modifiche</button>
+                      <button type="button" id="saveNewBtn" class="btn btn-xs btn-primary">Inserisci materiale</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row m-3" id="rawMaterialSubData_Div">
+              <div class="col">
+                 <div class="row" >
+                    <div class="col-12 h5">
+                      Substrati
+                    </div>
+                  <table class="table table-sm " id="usedInSubstrates_Tbl">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Codice substrato</th>
+                        <th>Nome substrato</th>
+                        
+                      </tr>
+                    </thead>
+                    <tbody id="usedInSubstrates_Tblb">
+                      
+                    </tbody>
+                  </table>
+                 </div>
+              </div>
+            </div>
+          </div>
+</section>
+</div>
+<!-- new category modal -->
+ <div class="modal fade" id="newCategory_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nuova categoria</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <form id="newCategory_Frm">
+          <dl>
+            <dt>Nome categoria</dt>
+            <dd>
+              <div class="form-group">
+                <input type="text" class="form-control form-control-sm " name="category_name" id="category_nameCat_Inp">
+              </div>
+            </dd>
+            <dt>Coefficiente di umidità</dt>
+            <dd>
+              <div class="form-group">
+                <input type="text" class="form-control form-control-sm " name="hum_factor" id="hum_factorCat_Inp">
+              </div>
+            </dd>
+            <dt>Colore icona</dt>
+            <dd>
+              <div class="form-group">
+                <input type="text" class="form-control form-control-sm " name="color" id="colorCat_Inp" value="9de0af">
+              </div>
+            </dd>
+            <dt>Note</dt>
+            <dd>
+              <div class="form-group">
+                <input type="text" class="form-control form-control-sm " name="note" id="noteCat_Inp" value="9de0af">
+              </div>
+            </dd>
+          </dl>
+          <button id="saveCategory_Btn" class="btn btn-xs btn-danger">Salva nuova categoria</button>
+        </form>
+      </div>
+      
+    </div>
+  </div>
+ </div>
+
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>
+ let materialCategory = '<%- JSON.stringify(materialCategory) %>'
+ materialCategory=JSON.parse(materialCategory)
+let tableRawMaterial
+let redirectId= <%- JSON.stringify( redirectId) %>
+let rawMaterialId
+
+
+  
+// Draw able substrate
+function drawMaterialCategoryTable(materialCategory){
+  let html=""
+    materialCategory.forEach(el => {
+      let delBtnDisable=""
+      if (el.delRow==true){
+        delBtnDisable="disabled"
+      }
+      html+=`<tr>
+                      <td scope="row">
+                        <button type="button" name="" id="delete3" 
+                            class="btn btn-danger btn-xs deleteCategoryBtn" 
+                            style="width: 25px" idCategory="${el.id}" categoryName="${el.category_name}" 
+                            ${delBtnDisable}>
+                            <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                          </button>
+                        </td>
+                      <td>${el.category_name}</td>
+                      <td>${el.rawMaterials.length}</td>
+                      <td >${el.hum_factor}</td>
+                      <td>${el.note}</td>
+                    </tr>`
+    });
+    $("#materialCategory_Tblb").html(html)
+}
+// Draw and update table
+async function  drawTable (){    
+   await $.ajax({
+        type: "GET",
+        url: "/rawMaterial/getAll",
+        success: async function (response) {
+            let html=""
+            console.log(response)
+            for (let i = 0; i < response.rawMaterials.length; i++) {
+                let el=response.rawMaterials[i]
+                let delBtnDisable=""
+                if (el.usedElement>0){
+                  delBtnDisable="disabled"
+                }
+                html+=`<tr>
+                           <td>
+                            <button type="button" name="" id="showBtn${el.id}" 
+                            class="btn btn-primary btn-xs showMaterialBtn" style="width:25px"
+                            idMaterial="${el.id}" >
+                              <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" name="" id="delete${el.id}" 
+                          class="btn btn-danger btn-xs deleteMaterialBtn" style="width: 25px" ${delBtnDisable}
+                          idMaterial="${el.id}" >
+                            <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                          </button>
+                        </td>
+                                <td>${el.material_name}</td>
+                                <td>${el.materialCategory.category_name}</td>
+                                <td>${el.quantity} ${el.uom}</td>
+                                <td>${el.usedElement} </td>
+                                <td>${el.storage.code_storage} ${el.storage.name_storage} </td>
+                                <td>${moment(el.createdAt).format("DD-MM-YY HH:SS")}</td>
+                            </tr>`
+                }
+                await $('#rawMaterials_Tbl').DataTable().clear().rows.add($(html)).draw();
+            }
+    });
+    $("#newRawMaterial_Btn").show()
+    $("#materialCategory_Btn").show()
+}
+// Draw table Child element 
+function drawTableChild(data,table,fields,topic,title) {
+    let html=""
+    console.log(data.length)
+    if (data.length>0){
+      for (let i = 0; i < data.length; i++) {
+        const elem = data[i];
+        html+=`<tr>
+        <td>
+          <button type="button" name="" id="showChildBtn_${elem.id}" 
+                  class="btn btn-primary btn-xs showChild_btn" style="width:25px"
+                  topic="${topic}">
+                    <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                </button>
+        </td>`
+        for (let y = 0; y < fields.length; y++) {
+          const fld = fields[y];
+          html+=`<td>${elem[fld]}</td>`
+        }
+        html+=`</tr>`
+      }
+      
+    } else {
+      html+=`<tr >
+        <td colspan="3" style="text-align:center" class="bg-danger"> Il materiale non è utilizzato in nessuno ${title}</td>
+      </tr>`
+    }
+    $("#"+table).html(html)
+  }
+// Draw material GUI
+async function drawShowRawMaterial(id) {
+      await $.ajax({
+        type: "GET",
+        url: "/rawMaterial/getOneRawMaterial?id="+id,
+        success: async function (response) {
+          let data=response.material
+          console.log(data)
+          for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+              }
+              if(key=="storageId"){
+                $("#storageId_Show").html(data.storageName?data.storageName:"-")
+              }else{
+                 $("#"+key+"_Show").html(value?value:"-")
+              }
+            }
+            $("#idRawMaterial_Fld").val(data.id)
+            rawMaterialId=data.id
+            $("#rawMaterialSubData_Div").show();
+          if (data.usedElement>0){
+              $("#modRawMaterial_Btn").attr('disabled',true)
+            } else {
+              //$('#rowSubstrate').hide()
+              $("#modRawMaterial_Btn").attr('disabled',false)  
+            }
+             drawTableChild(data.substrates,"usedInSubstrates_Tblb",["cod_substrate","name_substrate"],"substrates","Substrato")
+            $("#titoloForm").html("Materiale: "+ data.material_name)
+          $("#saveNewBtn").hide();
+          $("#saveModBtn").hide() 
+          $("#abortModmodBtn").hide()
+          // $("#showMaterial_Mdl").modal('show')
+          $("#rawMaterial_Data").show()
+          $("#materialCategory_Crd").hide()
+          $("#newRawMaterial_Crd").hide()
+          $("#tableRawMaterial_Crd").hide()
+          $("#newRawMaterial_Btn").hide()
+          $("#backToMain_Btn").show()
+          $("#materialCategory_Btn").hide()
+          $("#newCategory_Btn").hide()
+          $(".rawMaterialText").show();
+          $(".rawMaterialForm").hide();
+          $("#modRawMaterial_Btn").show();
+        }
+      });   
+}
+
+$(document).ready(async function () {
+ 
+  tableRawMaterial=$('#rawMaterials_Tbl').DataTable({responsive: true});
+  if (redirectId!=null){
+    await drawShowRawMaterial(redirectId)
+  }
+  else{
+    tableInoculi=$('#inoculi_Tbl').DataTable({responsive: true,pageLength: 50})
+    await drawTable()
+  } 
+  await drawMaterialCategoryTable(materialCategory)
+    
+
+    // Card
+    // New rawMAterial
+  $("#newRawMaterial_Btn").click(function (e) { 
+    e.preventDefault();
+    $(".rawMaterialForm").show()
+    $(".rawMaterialText").hide()
+    $("#rawMaterial_Frm").trigger("reset")
+    $("#newRawMaterial_Btn").hide()
+    $("#backToMain_Btn").show()
+    $("#materialCategory_Btn").hide()
+    $("#newCategory_Btn").hide()
+    $("#materialCategory_Crd").hide()
+      $("#rawMaterial_Data").show()
+      $("#tableRawMaterial_Crd").hide()
+      $("#rawMaterialSubData_Div").hide()
+      $("#saveModBtn").hide();
+      $("#abortModmodBtn").hide();
+      $("#saveNewBtn").show();
+  });
+  // --> New raw Material
+  $("#saveNewBtn").click(function (e) { 
+    e.preventDefault();
+    console.log(checkForm("rawMaterial_Frm"))
+    if (checkForm("rawMaterial_Frm")){
+      $.ajax({
+        type: "POST",
+        url: "/rawMaterial/newRawMaterial",
+        data: $("#rawMaterial_Frm").serialize(),   
+        success: async function (response) {
+          $("#rawMaterial_Data").hide()
+          $("#materialCategory_Crd").hide()
+          $("#newRawMaterial_Crd").hide()
+          $("#tableRawMaterial_Crd").show()
+          $("#newRawMaterial_Btn").show()
+          $("#backToMain_Btn").hide()
+          $("#materialCategory_Btn").show()
+          $("#newCategory_Btn").hide()
+          $("#modBtn_Wrp").show()
+          $("#saveBtn_Wrp").hide()
+        }
+      });
+    } else{
+      alert("assicurati di aver compilato i campi richiesti")
+    }
+  });
+  // Category
+  $("#materialCategory_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#newRawMaterial_Btn").hide()
+    $("#backToMain_Btn").show()
+    $("#materialCategory_Btn").hide()
+    $("#newCategory_Btn").show()
+    $("#materialCategory_Crd").show()
+      $("#newRawMaterial_Crd").hide()
+      $("#tableRawMaterial_Crd").hide()
+      $("#rawMaterial_Data").hide()
+  });
+  // --> New Category
+  $("#newCategory_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#newCategory_Mdl").modal('show')
+  });
+  $("#saveCategory_Btn").click(function (e) { 
+    e.preventDefault();
+    $.ajax({
+        type: "POST",
+        url: "/materialCategory/newMaterialCategory",
+        data: $("#newCategory_Frm").serialize(),   
+        success: async function (response) {
+          window.location="/rawMaterial"
+          // console.log(response)
+          // await drawTable()
+          // await $.get("/materialCategory/",
+          //   function (data, textStatus, jqXHR) {
+          //     console.log(data)
+          //     materialCategory=data.materialCategories
+          //   },
+          // );
+          // drawMaterialCategoryTable(materialCategory)
+
+          // $("#rawMaterial_Data").hide()
+          // $("#materialCategory_Crd").show()
+          // $("#newRawMaterial_Crd").hide()
+          // $("#tableRawMaterial_Crd").hide()
+          // $("#newRawMaterial_Btn").hide()
+          // $("#backToMain_Btn").show()
+          // $("#materialCategory_Btn").hide()
+          // $("#newCategory_Btn").show()
+          // $("#modBtn_Wrp").hide()
+          // $("#saveBtn_Wrp").hide()
+          // $("#newCategory_Mdl").modal('hide')
+        }
+      });
+  });
+  // --> Delete Category
+  $(document).on("click",".deleteCategoryBtn", async function (e) {
+    e.preventDefault();
+      let id=$(this).attr("idCategory")
+      let categoryName=$(this).attr("categoryName")
+      let c=confirm(`Stai eliminando il materialem ${categoryName}, vuoi continuare? `)
+      if (c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/materialCategory/deleteMaterialCategory?id="+id,
+        success: async function (response) {
+            await $.ajax({
+              type: "GET",
+              url: "/materialCategory/getListCanDelete",
+              success: function (response) {
+                console.log(response)
+                materialCategory=response.materialCategories
+                drawMaterialCategoryTable(materialCategory)
+              }
+          })
+        }});
+      }
+
+  });
+  // Show/mod Raw material
+    $(document).on("click",".showMaterialBtn", async function(e){
+      let id=$(this).attr("idMaterial")
+      window.location='/rawMaterial?redirectId='+id
+      
+    })
+    $('#showMaterial_Mdl').on('hidden.bs.modal', function (e) {
+      $(".elementForm").hide()
+      $(".elementText").show()
+      $("#modBtn").show()
+        
+    })
+    $("#modRawMaterial_Btn").click(function (e) { 
+      e.preventDefault();
+      $(".rawMaterialForm").show()
+      $(".rawMaterialText").hide()
+      $("#saveModBtn").show() 
+      $("#abortModmodBtn").show()
+    });
+
+    $("#abortModmodBtn").click(function (e) { 
+      e.preventDefault();
+      $(".rawMaterialForm").hide()
+        $(".rawMaterialText").show()
+      $("#saveModBtn").hide() 
+      $("#abortModmodBtn").hide()
+    });
+    $("#saveModBtn").click(function (e) { 
+      e.preventDefault();
+      $.ajax({
+        type: "PUT",
+        url: "/rawMaterial/updateRawMaterial",
+        data: $("#rawMaterial_Frm").serialize(),   
+        success: async function (response) {
+          window.location='/rawMaterial?redirectId='+rawMaterialId
+        }
+      });
+    });  
+    // delete Raw MAterial
+    $(document).on("click",".deleteMaterialBtn", async function(e){
+      e.preventDefault();
+      let id=$(this).attr("idMaterial")
+      let materialName=$(this).attr("materialName")
+      let c=confirm(`Stai eliminando il materialem ${materialName}, vuoi continuare? `)
+      if (c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/rawMaterial/deleteRawMaterial?id="+id,
+        success: async function (response) {
+          if (response.checkUse==true){
+            alert(response.message)
+          }else{
+            await drawTable()
+          }
+          
+        }
+      });
+      }
+    })
+    //showChild_btn
+    $(document).on("click",".showChild_btn", function (e) {
+      e.preventDefault()
+      let topic=$(this).attr("topic")
+      let id=$(this).attr("id").split("_")[1]
+      switch (topic) {
+        case "substrates":
+          window.open('/substrate?redirectId='+id, '_blank');
+          break;
+      }
+
+    })
+    // Back to main
+    $("#backToMain_Btn").click(function (e) { 
+          e.preventDefault();
+          window.location='/rawMaterial'
+        });
+    
+});
+    
+
+</script>
+<%- include ('../closeTag') %>

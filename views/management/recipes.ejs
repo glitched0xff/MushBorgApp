@@ -1,0 +1,512 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione ricette 
+              <button type="button" class="btn btn-xs btn-primary" id="newRecipes_Btn"><i class="fas fa-plus"></i> Nuova ricetta</button>
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna alle ricette</button>
+            </h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Ricette</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid" >
+        <div class="row" style="width: 100%;">
+          <!-- Recipe card -->
+          <div class="card w-100" id="tableRecipes_Crd">
+            <div class="card-body">
+              <table class="display table table-striped table-bordered compact" id="recipes_Tbl" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 45px; "></th>
+                        <th>Codice ricetta</th>
+                        <th>Nome ricetta</th>
+                        <th>Usata in N substrati</th>
+                        <th>Creata il</th>
+                    </tr>
+                </thead>
+                <tbody id="recipes_Tblb">
+                    
+                    
+                    
+                </tbody>
+            </table>
+            </div>
+          </div>
+          <!-- Show/mod recipes Card -->
+          <dvi class="card w-100" id="showRecipes_Crd" style="display: none;">
+            <form id="recipes_Form" class="p-3">
+              <%- include('../include/ejsForm',
+                  { classTxt: "recipeText",
+                    classField: "recipeForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idInoculo"
+                    },
+                    { type:"startRow"},
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"cod_recipe",
+                      label:"Codice ricetta",
+                      required:true, 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"recipe_name",
+                      label:"Nome ricetta",
+                      required:true, 
+                    },
+                     {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"sub_code",
+                      label:"Sub codice",
+                      maxlength:2,
+                      required:true, 
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"destination",
+                      label:"Destinazione",
+                      firstField:"Seleziona",
+                      required:true, 
+                      option:destinationDD
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"forPurchased",
+                      label:"Ricetta per acquisto",
+                    },
+                  
+                     { type:"endRow"},
+                     {type:"startRow"},
+                    {
+                      type:"textarea",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"note",
+                      label:"Note",
+                    },
+                    
+                    { type:"endRow"}
+                    ]  
+                }) %>
+                <input type="hidden" class="form-control" name="id" id="id_Fld">
+                <button class="btn btn-primary btn-xs" id="saveRecipe_Btn">Salva ricetta</button>
+            </form>
+            <hr>
+            <div class="row m-3">
+              
+              <div class="col">
+                <div class="row m-1">
+                  <div class="col-6 h5">
+                    Elenco componenti 
+                  </div>
+                  <div class="col-6 text-right">
+                   <button type="button" class="btn btn-primary btn-xs" id="addElement_Btn"> <i class="fa fa-plus fa-xs" aria-hidden="true"></i>Aggiungi elemento alla ricetta</button>
+                  </div> 
+                 </div>
+                 <div class="row" id="element_Row">
+                   <table class="table table-sm " id="element_Tbl">
+                     <thead>
+                       <tr>
+                         <th>Materiale</th>
+                         <th>Percentuale</th>
+                         <th style="width:40px"></th>
+                       </tr>
+                     </thead>
+                     <tbody id="element_Tblb">
+     
+                     </tbody>
+                     <tfoot id="element_Tblf">
+                      
+                     </tfoot>
+                   </table>
+     
+                 </div>
+                 <hr>
+                 <div class="row" id="rowSubstrate">
+                    <div class="col-12 h5">
+                      Elenco substrati
+                    </div>
+                  <table class="table table-sm " id="substrate_Tbl">
+                    <thead>
+                      <tr>
+                        <th>Codice substrato</th>
+                        <th>Nome substrato</th>
+                        <th style="width:40px">Trattamento</th>
+                      </tr>
+                    </thead>
+                    <tbody id="substrate_Tblb">
+                      
+                    </tbody>
+                  </table>
+                 </div>
+              </div>
+            </div>
+            <hr>
+            
+          </div>
+      </div>
+</section>
+</div>
+
+
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>
+
+ let materialCategory = '<%- JSON.stringify(materialCategory) %>'
+ materialCategory=JSON.parse(materialCategory)
+let tableRecipes
+let idRecipe
+// Draw Category Drop down
+function drawCategoryDD(){
+  let html=""
+  materialCategory.forEach(el => {
+    html+=`<option value="${el.id}">${el.category_name}</option>`
+  });
+   $('#categoryDD_Fld').html(html)
+  
+}
+//Draw table elements
+function drawTableElements(id){
+  html=""
+  let totalPercentage=0
+  $.ajax({
+    type: "GET",
+    url: "/recipeElement/getElementsOfRecipe?idRecipe="+id,
+    success: function (response) {
+      response.recipesElements.forEach(el =>{
+      html+=`
+      <tr>
+        <td>${el.categoryName?el.categoryName:"--"}</td>
+        <td>${el.percentage}</td>
+        <td>
+          <button type="button" class="btn btn-xs btn-danger delElement_Btn" style="width:25px" idElement="${el.id}"><i class="fa fa-trash fa-xs" aria-hidden="true"></i></button>
+        </td>
+      </tr>
+      `
+    totalPercentage+=el.percentage
+      })
+      $("#element_Tblb").empty().html(html)
+      let cl="bg-secondary"
+  let msg="Totale:"
+  if (totalPercentage>100){
+    cl="bg-danger"
+    msg=`<span class="text-danger">Attenzione hai superato il limite del 100%</span>`
+  }   
+  if (totalPercentage==100){
+    cl="bg-success"
+    msg=`<span class="text-success">Percentuale totale raggiunta</span>`
+  }
+  if (totalPercentage>0)
+    {html=`
+      <tr>              
+        <td class="text-right">${msg}</td>
+        <td class="${cl}">${totalPercentage}</td>
+        <td></td>
+        </tr>
+      `}
+  $("#element_Tblf").html(html)
+
+    }
+  });
+}
+// Draw table substrate
+async function drawTableSubstrate(substrates){
+      substrates.forEach(el => {
+        let tableSubstrateHtml=""
+            substrates.forEach(el => {
+              tableSubstrateHtml+=` <tr>
+                <td scope="row">${el.cod_substrate}</td>
+                <td scope="row">${el.name_substrate}</td>
+                <td>${el.pretreatment}</td>
+              </tr>`
+          });           
+      $('#substrate_Tblb').html(tableSubstrateHtml).show()
+  });
+}
+// Draw and update table
+async function  drawTable (){
+   await $.ajax({
+        type: "GET",
+        url: "/recipes/getAll",
+        success: async function (response) {
+          console.log(response)
+            let html=""
+            for (let i = 0; i < response.recipes.length; i++) {
+                let el=response.recipes[i]
+                let delBtnDisable=""
+                let countSubstrate=0
+                if(el.substrates.length>0){
+                  delBtnDisable="disabled"
+                  countSubstrate=el.substrates.length
+                }
+                html+=`<tr>
+                           <td>
+                            <button type="button" name="" id="showBtn${el.id}" 
+                            class="btn btn-primary btn-xs showRecipes" style="width:25px"
+                            idRecipes="${el.id}" recipesName="${el.cod_recipe}">
+                              <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                          </button>`
+                
+                html+=`
+                          <button type="button" name="" id="delete${el.id}" 
+                          class="btn btn-danger btn-xs deleteRecipes_Btn" style="width: 25px" 
+                          idRecipes="${el.id}" recipesName="${el.recipe_name}" ${delBtnDisable}>
+                            <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                          </button>
+                        `
+                  html+=`</td>
+                                <td>${el.cod_recipe}</td>
+                                <td>${el.recipe_name}</td>
+                                <td>${countSubstrate}</td>
+                                <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                            </tr>`
+                
+                }
+                await $('#recipes_Tbl').DataTable().clear().rows.add($(html)).draw();
+            }
+    });
+
+}
+
+$(document).ready(async function () {
+  // init
+    
+    tableRecipes=$('#recipes_Tbl').DataTable({responsive: true});
+    await drawTable()
+    
+    // Card
+    // New rawMAterial
+  $("#newRecipes_Btn").click(async function (e) { 
+    e.preventDefault();
+    $("#recipes_Form").trigger("reset")
+    
+    $("#newRecipes_Btn").hide()
+    $("#backToMain_Btn").show()
+      $("#tableRecipes_Crd").hide()
+      $("#showRecipes_Crd").show()
+      $("#element_Row").hide()
+      $("#saveRecipe_Btn").show()
+       $('#cod_recipe_Fld').closest('.col-md-2.col-sm-6').hide();
+  });
+  // --> New recipes
+  $("#saveRecipe_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#cod_recipe_Fld").removeAttr("disabled")
+    $.ajax({
+        type: "POST",
+        url: "/recipes/newRecipe",
+        data: $("#recipes_Form").serialize(),   
+        success: async function (response) {
+          $("#recipe_name_Show").html(response.data.recipe_name)
+          $("#cod_recipe_Show").html(response.data.cod_recipe )
+          $("#note_Show").html(response.data.note)
+          idRecipe=response.data.id
+          $("#cod_recipe_Fld").prop("disabled","true")
+          $("#addElement_Btn").removeAttr("disabled")
+          $(".recipeForm").hide()
+          $(".recipeText").show()
+          $("#saveRecipe_Btn").hide()
+          $("#element_Row").show()
+          $("#element_Tblb").empty()
+        }
+      });
+   
+    });
+  // Back to main
+  $("#backToMain_Btn").click(async function (e) { 
+    e.preventDefault();
+    window.location="/recipes"
+    // await drawTable()
+    // $("#newRecipes_Btn").show()
+    // $("#backToMain_Btn").hide()
+    // $("#newRecipes_Crd").hide()
+    // $("#showRecipes_Crd").hide()
+    // $("#tableRecipes_Crd").show()
+  });  
+  // Show/mod Raw material
+  $(document).on("click",".showRecipes", async function(e){
+      $("#saveRecipe_Btn").hide()
+
+      let id=$(this).attr("idRecipes")
+      idRecipe=id
+      let recipesName=$(this).attr("recipesName")
+      await $.ajax({
+        type: "GET",
+        url: "/recipes/getOneRecipes?id="+id,
+        success: async function (response) {
+          console.log(response)
+          let data=response.recipe
+          drawTableElements(id)
+          if (response.recipe.substrates.length>0){
+              $("#saveRecipe_Btn").hide()
+              await drawTableSubstrate(response.recipe.substrates)
+              $("#rowSubstrate").show()
+              $("#addElement_Btn").prop("disabled","true")
+              $(".delElement_Btn").prop("disabled","true")
+            } else {
+              $("#rowSubstrate").hide()
+              $("#addElement_Btn").removeAttr("disabled")
+              $(".delElement_Btn").removeAttr("disabled")
+
+            }
+            for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+              }
+              switch (key) {
+                case "destination":
+                  $("#"+key+"_Show").html(value=="INOCULUM"?"Inoculo":value=="SPAWN"?"Spawn":value=="CULTIVATION"?"Coltivazione":"-")
+                  break;
+                case "forPurchased":
+                    $("#forPurchased_Show").html(data.forPurchased? "Sì" : "No")
+                    $("#forPurchased_Fld").attr("checked",data.forPurchased? true : false)
+                  break;
+                default:
+                  $("#"+key+"_Show").html(value?value:"-")
+                  break;
+                }
+            }
+          // $("#recipe_name_Show").html(data.recipe_name)
+          // $("#cod_recipe_Show").html(data.cod_recipe )
+          // $("#note_Show").html(data.note)
+          // $("#recipe_name_Fld").val(data.recipe_name)
+          // $("#cod_recipe_Fld").val(data.cod_recipe)
+          // $("#note_Fld").val(data.note)
+          // $("#id_Fld").val(data.id)
+          $("#showRecipes_Crd").show()
+          $("#newRecipes_Crd").hide()
+          $("#tableRecipes_Crd").hide()
+          $("#newRecipes_Btn").hide()
+          $("#backToMain_Btn").show()
+          $(".recipeForm").hide()
+          $(".recipeText").show()
+
+        }
+      });   
+    })
+  $("#modBtn").click(function (e) { 
+      e.preventDefault();
+      $(".recipeForm").show()
+      $(".recipeText").hide()
+      $("#modBtn_Wrp").hide()
+      $("#saveBtn_Wrp").show()
+    });
+    // Add element
+    $("#addElement_Btn").click(function (e) { 
+      e.preventDefault();
+      html=`
+      <tr>
+        <td>
+          <div class="form-group m-0 p-0">
+              <select class="form-control" id="categoryDD_Fld">
+                
+              </select>
+            </div>
+      </td>
+        <td>
+          <div class="form-group m-0 p-0">
+            <input type="number" min="0" max="100" step="0.01" class="form-control" id="percentageElement_Fld" placeholder="%">
+          </div>
+        </td>
+        <td>
+          <button type="button" class="btn btn-xs btn-primary" style="width:25px" id="saveElement_Btn">
+            <i class="fas fa-save fa-xs   "></i>
+          </button>
+        </td>
+      </tr>
+      `
+
+      $("#element_Tblb").prepend(html)
+      drawCategoryDD()
+      $("#addElement_Btn").prop("disabled","true")
+    });
+
+    $(document).on("click","#saveElement_Btn", function (e) {
+      e.preventDefault()
+      let categoryId=$("#categoryDD_Fld").val()
+      let categoryName=$("#categoryDD_Fld option:selected").text();
+      let percentageElement=$("#percentageElement_Fld").val()
+      if (percentageElement>100){
+        alert("Attenzione il valore inserito non puo essere magiore di 100")
+      }else{
+      let data={
+        recipesId:idRecipe,
+        materialCategoryId:categoryId,
+        categoryName:categoryName,
+        percentage:percentageElement,
+        position:0,
+      }
+      $.ajax({
+        type: "POST",
+        url: "/recipeElement/newRecipeElement",
+        data: data,
+        success: function (response) {
+
+
+          $("#addElement_Btn").removeAttr('disabled')
+          drawTableElements(idRecipe)
+        }
+      });
+      }
+    });
+    // delete Raw MAterial
+    $(document).on("click",".delElement_Btn", async function(e){
+      e.preventDefault();
+      let id=$(this).attr("idElement")
+      let c=confirm(`Stai eliminando il un elemento dalla ricetta, vuoi continuare? `)
+      if (c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/recipeElement/deleteRecipeElement?id="+id,
+        success: async function (response) {
+          drawTableElements(idRecipe)  
+        }
+      });
+      }
+    })
+
+
+    // Delete recipes
+    $(document).on("click",".deleteRecipes_Btn", async function(e){
+      e.preventDefault();
+      let id=$(this).attr("idRecipes")
+      let c=confirm(`Stai eliminando una ricetta, vuoi continuare? `)
+      if (c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/recipes/deleteRecipe?id="+id,
+        success: async function (response) {
+          await drawTable()
+        }
+      });
+      }
+    })
+});
+    
+
+</script>
+<%- include ('../closeTag') %>

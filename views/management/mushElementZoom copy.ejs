@@ -1,0 +1,909 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="mushElement-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione <span id="titoloFiltro"> </span>   
+            <!-- <button class="btn btn-xs btn-primary" id="modMushElement_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca lotto</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newMushElement_Btn"><i class="fas fa-plus"></i> Nuova lotto</button> -->
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna all'elenco</button>
+            </h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Lotti coltivazione</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.mushElement-fluid -->
+    </div>
+    <section class="content">
+  <div class="mushElement-fluid">
+    <div class="card w-100" id="showMushElement_Crd">
+      <div class="row m-3">
+        <div class="col-12">
+          <!-- Visual -->
+           <div id="showElement_Div">
+            <h2>  <%= mushElement.element_code %>
+              <% if(mushElement.active!=0) { %>
+            <button type="button" name="" id="modElement_Btn" class="btn btn-primary btn-xs mx-2">Modifica elemento</button>
+            <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-xs mx-2">Elimina elemento</button>
+            <% } else {%>
+              <i class="fa fa-times-circle text-danger" aria-hidden="true"></i> <span class="small"> <%= mushElement.pickReasonDesc %> <%= mushElement.pick_date %> </span>
+            <% }%>
+          </h2>
+            <div class="row w-100">
+            <div class="col">
+              <div class="row w-100">
+                <div class="col-md-2 col-sm-6">
+                  <dl>
+                    <dt>Codice </dt>
+                    <dd id="element_code_Show" class="elementText"> <%= mushElement.element_code %></dd>
+                  </dl>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                  <dl>
+                    <dt>Desc. coltivazione</dt>
+                    <dd id="cultivation_info_Show" class="elementText"><%= mushElement.cultivation_info%></dd>
+                  </dl>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <dl>
+                    <dt>Substrato</dt>
+                    <dd id="substrate_info_Show" class="elementText"><%=mushElement.substrate_info%></dd>
+                  </dl>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                  <dl>
+                    <dt>Stage </dt>
+                    <dd id="stage_Show" class="elementText"> <%= mushElement.stageDesc %></dd>
+                  </dl>
+                </div>
+              </div>
+              <div class="row w-100">
+                <div class="col-md-2 col-sm-6">
+                  <dl>
+                    <dt>Data inizio</dt>
+                    <dd id="load_date_Show" class="elementText"><%= mushElement.load_date %></dd>
+                  </dl>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                  <dl>
+                    <dt>Maturazione prevista:
+                    </dt>
+                    <dd id="expected_maturation_date_Show" class="elementText"><%= mushElement.expected_maturation_date %></dd>
+                  </dl>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                  <dl>
+                    <dt>Maturazione effettiva:</dt>
+                    <dd id="real_maturation_date_Show" class="elementText"><%= mushElement.real_maturation_date %></dd>
+                  </dl>
+                </div>
+                <% if(filterCategory=="CULTIVATION"){ %>
+                  <div class="col-md-2 col-sm-6">
+                    <dl>
+                      <dt>Fruttificazione prevista:</dt>
+                      <dd id="expeted_fructification_date_Show" class="elementText"><%= mushElement.expected_fructification_date %></dd>
+                    </dl>
+                  </div>
+                  <div class="col-md-2 col-sm-6">
+                    <dl>
+                      <dt>Fruttificazione effettiva:</dt>
+                      <dd id="real_fructification_date_Show" class="elementText"><%= mushElement.real_fructification_date %></dd>
+                    </dl>
+                  </div>
+                <% } %>
+              </div>
+              <div class="row w-100">
+                <div class="col-md-2 col-sm-6">
+                  <dl>
+                    <dt>Quantità</dt>
+                    <dd id="qt_Show" class="elementText"><%= mushElement.qt %></dd>
+                  </dl>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                  <dl>
+                    <dt>Contenitore</dt>
+                    <dd id="contenitore_Show" class="elementText"><%= mushElement.contenitore_info %></dd>
+                  </dl>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                  <dl>
+                    <dt>Stato</dt>
+                    <dd id="stato_Show" class="elementText"><%= mushElement.stato %></dd>
+                  </dl>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                      <dl>
+                        <dt>Acquistato</dt>
+                        <dd id="purchased" class="elementText"><%= mushElement.purchased %></dd>
+                      </dl>
+                    </div>
+              </div>
+              <% if(mushElement.active==0) { %>
+              <div class="row w-100">
+                <div class="col-md-2 col-sm-6">
+                  <dl>
+                    <dt>Data prelievo</dt>
+                    <dd id="pick_date_Show" class="elementText"><%=mushElement.pick_date %></dd>
+                  </dl>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                  <dl>
+                    <dt>Motivo prelievo</dt>
+                    <dd id="pick_reason_Show" class="elementText"><%=mushElement.pickReasonDesc %></dd>
+                  </dl>
+                </div>
+              </div>
+              <% }%>
+              <div class="row w-100">
+                <div class="col-md-2 col-sm-6">
+                  <dl>
+                    <dt>Note</dt>
+                    <dd id="note_Show" class="elementText"><%=mushElement.note %></dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+           </div>
+          <!-- Modify -->
+           <div id="modelement_Div" style="display: none;">
+            <h2>Modifica <%= mushElement.element_code %></h2>
+            <div class="row w-100">
+              <form id="updateMushElement_Frm" style="width: 100%;">
+                <input type="hidden" name="idMushElement" value="<%= mushElement.id %>">
+                <div class="col">
+                  <div class="row w-100">
+                    <div class="col-md-2 col-sm-6">
+                      <dl>
+                        <dt>Codice </dt>
+                        <dd id="element_code_Show" class="elementText"> <%= mushElement.element_code %></dd>
+                      </dl>
+                    </div>
+                    <div class="col-md-2 col-sm-6">
+                      <dl>
+                        <dt>Desc. coltivazione</dt>
+                        <dd id="cultivation_info_Show" class="elementText"><%= mushElement.cultivation_info%></dd>
+                      </dl>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                      <dl>
+                        <dt>Substrato</dt>
+                        <dd id="substrate_info_Show" class="elementText"><%=mushElement.substrate_info%></dd>
+                      </dl>
+                    </div>
+                    <div class="col-md-2 col-sm-6">
+                      <dl>
+                        <dt>Stage </dt>
+                        <dd id="stage_Edit" class="elementText"> 
+                          <div class="form-group">
+                            <select  class="form-control form-control-sm form-control-minimal" id="stageDD" name="stage">
+                              <option value="">--</option>
+                            <% for (let i = 0; i < stageDD.length; i++) {%>
+                              <option value="<%=stageDD[i].val %>"><%= stageDD[i].txt%></option>
+                            <%} %>
+                            </select>
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                  <div class="row w-100">
+                    <div class="col-md-2 col-sm-6">
+                      <dl>
+                        <dt>Data inizio</dt>
+                        <dd id="load_date_Edit" class="elementText"><%= mushElement.load_date %></dd>
+                      </dl>
+                    </div>
+                    <div class="col-md-2 col-sm-6">
+                      <dl>
+                        <dt>Maturazione prevista:</dt>
+                        <dd>
+                          <div class="col" id="setExpectedMatDate_Fld" >
+                            <div class="form-group">
+                              <div class="input-group date" id="setExpectedMatDate_DT" data-target-input="nearest">
+                                <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" 
+                                      data-target="#setExpectedMatDate_DT " name="expectedMatDate" id="expectedMatDate" 
+                                      value=<%= mushElement.expected_maturation_date %>/>
+                                <div class="input-group-append" data-target="#setExpectedMatDate_DT " data-toggle="datetimepicker">
+                                  <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
+                                </div>
+                              </div>
+                            </div>
+                        </dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-2 col-sm-6">
+                      <dl>
+                        <dt>Maturazione effettiva:</dt>
+                        <dd id="real_maturation_date_Edit" class="elementText">
+                          <div class="col" id="setRealMatDate_Fld" >
+                            <div class="form-group">
+                              <div class="input-group date" id="setRealMatDate_DT" data-target-input="nearest">
+                                <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" data-target="#setRealMatDate_DT " 
+                                      name="realMatDate" id="realMatDate" value=<%= mushElement.real_maturation_date %>/>
+                                <div class="input-group-append" data-target="#setRealMatDate_DT " data-toggle="datetimepicker">
+                                  <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
+                                </div>
+                              </div>
+                          </div>
+                          </dd>
+                      </dl>
+                    </div>
+                    <% if(filterCategory=="CULTIVATION"){ %>
+                    <div class="col-md-2 col-sm-6">
+                      <dl>
+                        <dt>Fruttificazione prevista:
+                        </dt>
+                        <dd id="expeted_fructification_date_Edit" class="elementText">
+                          <div class="col" id="setExpectedFructDate_Fld" >
+                            <div class="form-group">
+                              <div class="input-group date" id="setExpectedFructDate_DT" data-target-input="nearest">
+                                <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" data-target="#setExpectedFructDate_DT " 
+                                      name="expectedFructDate" id="expectedFructDate" value="<%= mushElement.expected_fructification_date %>"/>
+                                <div class="input-group-append" data-target="#setExpectedFructDate_DT " data-toggle="datetimepicker">
+                                  <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
+                                </div>
+                              </div>
+                            </div>
+                            </dd>
+                      </dl>
+                    </div>
+                    <div class="col-md-2 col-sm-6">
+                      <dl>
+                        <dt>Fruttificazione effettiva: </dt>
+
+                        <dd id="real_fructification_date_Show" class="elementText">
+                          <div class="col" id="setRealFructDate_Fld" >
+                            <div class="form-group">
+                              <div class="input-group date" id="setRealFructDate_DT" data-target-input="nearest">
+                                <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" data-target="#setRealFructDate_DT " 
+                                        name="realFructDate" id="realFructDate" value="<%= mushElement.real_fructification_date %>"/>
+                                <div class="input-group-append" data-target="#setRealFructDate_DT " data-toggle="datetimepicker">
+                                  <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
+                                </div>
+                              </div>
+                            </div>
+                          </dd>
+                      </dl>
+                    </div>
+                    <% } %>
+                  </div>
+                  <div class="row w-100">
+                    <div class="col-md-3 col-sm-6">
+                      <dl>
+                        <dt>Quantità</dt>
+                        <dd id="qt_Show" class="elementText"><%= mushElement.qt %></dd>
+                      </dl>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                      <dl>
+                        <dt>Contenitore</dt>
+                        <dd id="contenitore_Show" class="elementText"><%= mushElement.contenitore_info %></dd>
+                      </dl>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                      <dl>
+                        <dt>Stato</dt>
+                        <dd id="stato_Show" class="elementText"><%= mushElement.stato %></dd>
+                      </dl>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                      <dl>
+                        <dt>Acquistato</dt>
+                        <dd id="purchased" class="elementText"><%= mushElement.purchased %></dd>
+                      </dl>
+                    </div>
+                  </div>
+                  
+                  <div class="row w-100">
+                    <div class="col-md-4 col-sm-6">
+                      <dl>
+                        <dt>Note</dt>
+                        <dd id="note_Edit" class="elementText">
+                          <div class="form-group">
+                            <textarea name="note" id="note_Fld" rows="2" cols="20"
+                                  class="form-control form-control-sm form-control-minimal"></textarea>
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                  <div class="row w-100">
+                    <div class="col-12 text-center">
+                  <button type="button" class="btn btn-xs btn-primary" id="saveElement_Btn">Salva le modifiche</button>
+
+                    </div>
+                  </div>
+                </div>
+            </form>
+          </div>
+           </div>
+        </div>
+        <!--  Spacer -->
+        <div class="w-100 border mt-3"></div>
+        
+        <!-- Element note -->
+        <div class="row w-100 m-2">
+          <div class="col-12 px-0 my-2 font-weight-bold ">
+            Note elemento
+            <button class="btn btn-xs btn-primary mx-1"
+              <% if(mushElement.active==0) { %>
+              disabled
+                <% }%>
+            id="addMushElementNote_Btn"> <i class="fas fa-plus"></i> Aggiungi una nota</button>
+          </div>
+          <!-- Form inserimento nota -->
+          <form class="form w-100" enctype="multipart/form-data" id="mushElementNote_Form" style="display: none;">
+            <input type="hidden" class="form-control" name="idMushElementNote" id="idMushElementNote_Fld" tp="hidden" value="239">
+            <input type="hidden" class="form-control" name="filterCategoryNote" id="filterCategoryNote_Fld" tp="hidden" value="239">
+            <div class="row w-100">
+              <div class="col-md-2 col-sm-2">
+                <dl>
+                  <dt>Data controllo</dt>
+                  <dd class="mushElementNoteForm">
+                    <div class="form-group">
+                      <div class="input-group date" id="check_date_DT" data-target-input="nearest">
+                        <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" data-target="#check_date_DT " name="check_date">
+                        <div class="input-group-append" data-target="#check_date_DT " data-toggle="datetimepicker">
+                          <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
+                        </div>
+                      </div>
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+              <div class="col-md-3 col-sm-4">
+                <dl>
+                  <dt>Stato elemento</dt>
+                  <dd class="mushElementNoteForm">
+                    <div class="form-group">
+                      <select tp="selectField" class="form-control form-control-sm form-control-minimal" name="statoMushElementNote" id="statoMushElementNote_Fld" required="">
+                        <option value="">Seleziona lo stato</option>
+                        <option value="Buono">Buono</option>
+                        <option value="Cattivo">Cattivo</option>
+                        <option value="Contaminato">Contaminato</option>
+                        <option value="In osservazione">In osservazione</option>
+                      </select>
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <dl>
+                  <dt>Note</dt>
+                  <dd class="mushElementNoteForm">
+                    <div class="form-group">
+                      <textarea class="form-control" name="noteMushElementNote" id="noteMushElementNote_Fld"></textarea>
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <dl>
+                  <dt>Picture</dt>
+                  <dd class="mushElementNoteForm">
+                    <div class="form-group">
+                      <div class="form-group">
+                        <input type="file" class="form-control-file" name="imgMushElementNote" id="imgMushElementNote">
+                      </div>
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+            <button class="btn btn-xs btn-primary mx-1" id="saveMushElementNote_Btn"> <i class="fas fa-plus"></i> Salva nota</button>
+            <button class="btn btn-xs btn-secondary mx-1" id="abortMushElementNote_Btn"> <i class="fas fa-plus"></i> Annulla inserimento</button>
+          </form>
+
+          <!-- Table gestione note -->
+          <div class="table-responsive">
+            <table class=" table table-striped table-bordered table-sm " id="mushElementNote_Tbl" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th style="width: 45px; "></th>
+                  <th>check_date</th>
+                  <th>stato</th>
+                  <th>pict</th>
+                  <th>note</th>
+                </tr>
+              </thead>
+              <tbody id="mushElementNote_Tblb">
+
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+        <div class="row m-3" id="mushElement_Row" style="display: none;">
+        <div class="row w-100 h5 m-3 ">Elementi lotto</div>
+        <div class="row w-100 m-3" id="mushElement_Data">
+          <div class="row border-bottom mb-2 pb-2 font-weight-bold w-100">
+            Elemento <span id="mushElementCode" class="mx-1"></span>
+            <button class="btn btn-xs btn-primary mx-1" id="backMushElementList_Btn"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco elementi</button>
+            <button class="btn btn-xs btn-primary mx-1" id="modMushElementList_Btn"> <i class="fas fa-pen"></i> Modifica elemento</button>
+          </div>
+          <form id="mushElement_FRM" class="p-3 w-100">
+            <%- include('../include/ejsForm',
+                  { classTxt: "mushElementText",
+                    classField: "mushElementForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idMushElement"
+                    },
+                    { type:"startRow"},
+                    // {
+                    //   type:"text",
+                    //   classBox:"col-md-4 col-sm-6",
+                    //   fieldName:"type",
+                    //   label:"Tipo",
+                    //   readonly:'', 
+                    // },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"load_date",
+                      label:"Data creazione",
+                      readonly:'', 
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-1 col-sm-6",
+                      fieldName:"qtElem",
+                      label:"Qt",
+                      required:'', 
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"stato",
+                      label:"Stato elemento",
+                      firstField:"Seleziona lo stato",
+                      // required:'', 
+                      disabled:"true",
+                      option:[{txt:"Buono",val:"Buono"},
+                              {txt:"Cattivo",val:"Cattivo"},
+                              {txt:"Contaminato",val:"Contaminato"},
+                              {txt:"In osservazione",val:"In osservazione"}]
+                    },
+                    // { type:"endRow"},
+                    // {type:"startRow"},
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"pick_reason",
+                      label:"Ragione prelievo",
+                      firstField:"Seleziona la motivazione",
+                      required:'', 
+                      option:[{txt:"Pronto per inoculo",val:"Pronto"},{txt:"Contaminazione",val:"Contaminazione"},{txt:"Altro",val:"Altro"}]
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"pick_date",
+                      label:"Data prelievo",
+                    },
+                    
+                    { type:"endRow"}
+                    ]  
+                }) %>
+          </form>
+          <div class="row w-100">
+            <button class="btn btn-xs btn-primary mx-1" id="saveMushElementList_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva modifica </button>
+            <button class="btn btn-xs btn-secondary mx-1" id="abortMushElementList_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Annulla modifica </button>
+          </div>
+
+        </div>
+        <div class="row w-100 m-3" id="mushElement_Table">
+          <div class="table-responsive">
+            <table class=" table table-striped table-bordered table-sm" id="element_Tbl" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th style="width: 45px; "></th>
+                  <th style="width: 45px; ">Nt</th>
+                  <th>Codice elemento</th>
+                  <th>Quantità</th>
+                  <th>Stato</th>
+                  <th>Dt carico</th>
+                  <th>Dt prelievo</th>
+                </tr>
+              </thead>
+              <tbody id="element_Tblb">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
+</section>
+</div>
+<!-- Pick modal -->
+<!-- Modal -->
+<div class="modal fade" id="pick_Mdl" tabindex="-1" aria-labelledby="pick_MdlLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pick_MdlLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="pick_Frm">
+          <input type="hidden" name="idMushElement" value="<%= mushElement.id %>">
+          <div class="row w-100">
+                    <div class="col-6">
+                      <dl>
+                        <dt>Data prelievo*</dt>
+                        <dd id="pick_date_Edit" class="elementText">
+                          <div class="col" id="pickDate_Fld" >
+                            <div class="form-group">
+                              <div class="input-group date" id="pickDate_DT" data-target-input="nearest">
+                                <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" data-target="#pickDate_DT " 
+                                        name="pickDate" id="pickDate" value="" required>
+                                <div class="input-group-append" data-target="#pickDate_DT " data-toggle="datetimepicker">
+                                  <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
+                                </div>
+                              </div>
+                            </div>
+                          </dd>
+                      </dl>
+                    </div>
+                    <div class="col-6">
+                      <dl>
+                        <dt>Motivo prelievo*</dt>
+                        <dd id="pick_reason_Edit" class="elementText"> 
+                          <div class="form-group">
+                            <select  class="form-control form-control-sm form-control-minimal" id="ppickReason" name="pickReason" required>
+                              <option value="">--</option>
+                            <% for (let i = 0; i < pickReasonDD.length; i++) {%>
+                              <option value="<%=pickReasonDD[i].val %>"><%= pickReasonDD[i].txt%></option>
+                            <%} %>
+                            </select>
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                  <div class="row w-100">
+                    <div class="col">
+                      <div class="form-group">
+                      <label for="">Note prelievo</label>
+                      <textarea class="form-control" name="pickNote" id="pickNote" rows="3"></textarea>
+                    </div>
+                    </div>
+                    
+                </div>
+                <div class="row w-100">
+                  <div class="col">
+                    <div class="form-check form-check-inline text-danger">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="deleteElem" id="deleteElem" value="1"> Vuoi eliminare definitivamente l'elemento?
+                    </label>
+                  </div>
+                  </div>
+                </div>
+                <div class="row w-100 mt-2">
+                  <div class="alert alert-danger w-100" role="alert">
+                    Dopo il prelievo l'elemento non sarà più modificabile.
+                  </div>
+                  <button type="button" class="btn btn-primary btn-xs" id="pickDelete_Btn">Salva prelievo</button>
+                </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>  
+
+ let mushElement =<%- JSON.stringify(mushElement) %> 
+ let stageDD =<%- JSON.stringify(stageDD) %> 
+ let parentElement = <%- JSON.stringify( parentElement) %>
+let filterCategory="<%= filterCategory %>"
+console.log(filterCategory)
+console.log(parentElement)
+let tableMushElement
+let idMushElement=mushElement.id
+let tableSpawn
+let idSpawn
+let spawnElementTempId=0
+
+//Check required field
+function checkForm(formName){
+    let check=true
+    $($('#'+formName).prop('elements')).each(function(){
+        if (($(this).prop("required"))&&($(this).val()=="")){
+          check=false
+          $(this).addClass("border-danger")
+        }
+        else if (($(this).prop("required"))&&($(this).val()!="")){
+          $(this).removeClass("border-danger").addClass("border-success")
+        }
+        else{
+          $(this).removeClass("border-danger")
+        }
+    });
+    return check
+  }
+// Reset form
+function resetForm(formName){
+  $("#"+formName).get(0).reset()
+  $($('#'+formName).prop('elements')).each(function(){
+    $(this).removeClass("border-danger")
+    $(this).removeClass("border-success")
+  })
+}
+
+//Draw Element table
+async function drawElementNote(idMushElement){
+  console.log(idMushElement)
+  $.ajax({
+    type: "GET",
+    url: "/mushElement/getMushElementNote?idElement="+mushElement.id,
+    success: function (response) {
+      console.log("response")
+      console.log(response)
+      let html=""
+      if(response.mushElementNotes.length>0){
+        for (let i = 0; i < response.mushElementNotes.length; i++) {
+          const el = response.mushElementNotes[i];
+          html+=`<tr>
+              <td>
+                <button type="button" name="" id="${el.id}" 
+              class="btn btn-danger btn-xs delMushElementNote" style="width:25px"
+              idMushElementNote="${el.id}" idMushElement="${el.mushElementId}">
+                <i class="fa fa-trash fa-sm delMushElementNote" aria-hidden="true"></i>
+            </button></td>`
+          html+=` <td scope="row">${moment(el.check_date).format("DD-MM-YYYY HH:mm")}</td>
+                        <td>${el.stato}</td>
+                        <td>`
+          if(el.pict){
+            html+=`
+            <a href="../imgMushEleNote/${el.mushElementId}/${el.pict}" data-toggle="lightbox" data-title="sample 6 - white">
+                        <img src="../imgMushEleNote/${el.mushElementId}/${el.pict}" class="img-fluid "  style="height:100px" alt="">
+                      </a>
+            `
+          }
+          html+= ` </td>
+                        <td>${el.note?el.note:"-"}</td>
+                      </tr>`
+        }
+      } else {
+        html=`<tr >
+                <td class="bg-danger text-center" colspan="5"> Non sono presenti note per questo elemento</td>
+              </tr>`
+      }
+      $("#idMushElementNote_Fld").val(idMushElement)
+      $("#mushElementNote_Tblb").html(html)
+      $("#mushElementNote_Tbl").show()
+      if(mushElement.active==0){
+      $(".delMushElementNote").attr('disabled','true');
+
+      }
+    }})
+}
+
+
+$(document).ready(async function () {
+
+  $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+                event.preventDefault();
+                $(this).ekkoLightbox();
+            });
+  // init   
+    switch (filterCategory) {
+      case "INOCULUM":
+        $("#titoloFiltro").html("elemento inoculo")
+        $("#cultivation_info_Show").html(parentElement.inoculum_name)
+        break;
+      case "SPAWN":
+        $("#titoloFiltro").html("elemento spawn")
+        $("#cultivation_info_Show").html(parentElement.spawn_name)
+
+       // $("#storageId_Show").parent().parent().hide()
+        break;
+      case "CULTIVATION":
+        $("#titoloFiltro").html("elemento coltivazione")
+        $("#cultivation_info_Show").html(parentElement.propagation_name)
+
+
+        
+
+        break;
+      
+    }
+    tableMushElement=$('#mushElement_Tbl').DataTable({responsive: true,order: [[5, 'desc']]})
+    $('#dt_start_DT').datetimepicker({locale: 'it', format:"DD-MM-YYYY"})
+    $('#dt_end_DT').datetimepicker({locale: 'it', format:"DD-MM-YYYY"})
+    $('#pick_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#check_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY",autoclose:true})
+    $('#setExpectedMatDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#setRealMatDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#setExpectedFructDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#setRealFructDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#pickDate_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+
+     $("#dt_start_Fl").on("dp.change", function (e) {
+           let data=$('#dt_start_Fl').val()
+           $('#dt_stop_DT').val(data)
+       });
+  drawElementNote(mushElement.id)
+  $("#dt_start_DT").on("change.datetimepicker", function (e) {
+            $('#dt_end_DT').datetimepicker('date', moment(e.date).add(15, 'd'));
+        });
+  // --> New mushElement
+  
+  // Delete mushElement
+    $(document).on("click",".deleteMushElement_Btn", async function(e){
+      e.preventDefault();
+      let id=$(this).attr("idMushElement")
+      let name=$(this).attr("mushElementName")
+      let spawnId=$(this).attr("spawnId")
+      let c=confirm(`Stai eliminando lotto di coltivazione ${name}, vuoi continuare? `)
+      if (c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/mushElement/deleteMushElement?id="+id+"&spawnId="+spawnId,
+        success: async function (response) {
+          await drawTable()
+        }
+      });
+      }
+    })
+
+    // Element
+    $(document).on("click",".genQrCodeElement_Btn", function () {
+      let idElement=$(this).attr("idElement")
+      $.ajax({
+        type: "GET",
+        url: "/mushElement/getQrElement?id="+idElement,
+        success: function (response) {
+          console.log(response)
+          let img=`<img src="${response.qrCode}"  />`
+          $("#qrcode").html(img)
+          $("#qrCode_Mdl").modal("show")
+        }
+      });
+      
+    });
+
+    $("#modElement_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#stageDD").val(mushElement.stage);
+      $("#showElement_Div").hide()
+      $("#modelement_Div").show()
+    });
+
+    $("#saveElement_Btn").click(function (e) { 
+      e.preventDefault();
+      $.ajax({
+        type: "PUT",
+        url: "/mushElement/modMushElement",
+        data: $("#updateMushElement_Frm").serialize(),
+        success: function (response) {
+          window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
+        }
+      });
+    });
+
+    $("#delElement_Btn").click(function (e) { 
+      e.preventDefault();
+      $('#pick_Mdl').modal('show')
+    });
+    $("#pickDelete_Btn").click(function (e) { 
+      e.preventDefault();
+
+      if (checkForm("pick_Frm")){
+        let deleteFlag=$("#deleteElem").is(":checked");
+        console.log(deleteFlag)
+        console.log("--")
+        if (confirm("Vuoi continuare?")){
+          $.ajax({
+            type: "PUT",
+            url: "/mushElement/pickElement",
+            data: $("#pick_Frm").serialize(),
+            success: function (response) {
+              if (deleteFlag==true){
+                window.location.replace("/mushElement/"); 
+              }else{
+                window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
+              }
+            }
+          });
+        } else {
+          $('#pick_Mdl').modal('hide')
+        }
+      }else{
+        alert("Compila i dati obbligatori")
+      }
+    });
+
+
+       // Element Note
+    $("#addMushElementNote_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#mushElementNote_Form").show()
+      $("#mushElementNote_Tbl").hide()
+      $("#addMushElementNote_Btn").hide()
+      $('#check_date_DT').datetimepicker('date', new Date()); 
+      $("#filterCategoryNote_Fld").val(filterCategory)
+    });
+  
+    $("#saveMushElementNote_Btn").click(function (e) { 
+      e.preventDefault();
+      let idMushElement=$("#idMushElementNote_Fld").val()
+      //console.log(idMushElement)
+      let el=document.getElementById("mushElementNote_Form")
+      console.log(el)
+      let formdata = new FormData(document.getElementById("mushElementNote_Form"));
+      for (var [key, value] of formdata.entries()) { 
+          console.log(key, value);
+        }
+      $.ajax({
+        type: "POST",
+        url: "/mushElement/newMushElementNote",
+        data: formdata,
+        processData: false,
+        contentType: false,
+        success: async function (response) {
+          console.log(response)
+            if (response.error==true){
+              alert(response.data)
+            }else{
+          window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
+
+              //  await drawElementNote(idMushElement)
+              //   resetForm("mushElementNote_Form")
+              //   $("#mushElementNote_Form").hide()
+              //   $("#mushElementNote_Tbl").show()
+              //   $("#addMushElementNote_Btn").show()
+            }
+        },
+        error: function(err){
+          console.log(err)
+        }
+      });
+    });
+
+    $("#abortMushElementNote_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#mushElementNote_Form").hide()
+      $("#mushElementNote_Tbl").show()
+      $("#addMushElementNote_Btn").show()
+    });
+    
+    $(document).on("click",".delMushElementNote", function (e) {
+      e.preventDefault()
+        let idMushElementNote=$(this).attr("idmushelementnote")
+        let idMushElement=$(this).attr("idmushelement")
+        console.log(idMushElementNote,idMushElement)
+        let c=confirm(`Stai eliminando una nota, vuoi continuare? `)
+        if (c==true){
+          $.ajax({
+            type: "DELETE",
+            url: "/mushElement/deleteMushElementNote?id="+idMushElementNote,
+            success: async function (response) {
+               await drawElementNote(idMushElement)
+            }
+          });
+        }
+    });
+
+    
+
+});
+    
+
+</script>
+<%- include ('../closeTag') %>

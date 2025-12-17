@@ -1,0 +1,944 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="spawn-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione lotti spawn 
+            <button class="btn btn-xs btn-primary" id="modSpawn_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca spawn</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newSpawn_Btn"><i class="fas fa-plus"></i> Nuova spawn</button>
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco spawn</button>
+            </h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Lotti spawn</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main content -->
+    <section class="content">
+      <div class="spawn-fluid" >
+        <div class="row" style="width: 100%;">
+          
+          <!-- Raw material card -->
+          <div class="card w-100" id="tableSpawn_Crd">
+            <div class="card-body">
+              <table class="display table table-striped table-bordered compact" id="spawn_Tbl" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 45px; "></th>
+                        <th>Codice</th>
+                        <th>Qt</th>
+                        <th>Spawn</th>
+                        <th>Substrato</th>
+                        <th>Contenitori</th>
+                        <th>Creato il</th>
+                    </tr>
+                </thead>
+                <tbody id="spawn_Tblb">  
+                </tbody>
+            </table>
+            </div>
+          </div>
+          <!-- Show/mod Raw MAterial Card -->
+          <div class="card w-100" id="showSpawn_Crd" style="display: none;">
+            <div class="row m-3">
+              <div class="col-12">
+              <form id="Spawn_Form" class="p-3">
+                <div class="row w-100">
+                    <div class="col">
+                  <%- include('../include/ejsForm',
+                  { 
+                    classTxt: "elementText",
+                    classField: "elementForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idElem"
+                    },
+                    { type:"startRow"},
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6 border",
+                      fieldName:"code_spawn",
+                      label:"Codice ",
+                      readonly:'', 
+                      required:'', 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6 border",
+                      fieldName:"spawn_name",
+                      label:"Nome spawn",
+                      required:'', 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6 border",
+                      fieldName:"qt",
+                      label:"Quantità (in kg)",
+                      required:'', 
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-2 col-sm-6 border",
+                      fieldName:"dt_start",
+                      label:"Data inizio",
+                      required:'', 
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-2 col-sm-6 border",
+                      fieldName:"dt_end",
+                      label:"Data prevista mat",
+                      required:'', 
+                    },
+                    { type:"endRow"},
+                    { type:"startRow"},
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6 border",
+                      fieldName:"strainId",
+                      label:"Strain",
+                      firstField:"Seleziona strain",
+                      required:'', 
+                      option:strainDD
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-1 col-sm-6 border",
+                      fieldName:"strainWeight",
+                      label:"Qt str",
+                      required:'', 
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-1 col-sm-6 border",
+                      fieldName:"strainPerc",
+                      label:"% str",
+                      required:'', 
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6 border",
+                      fieldName:"substrateId",
+                      label:"Substrato",
+                      firstField:"Seleziona substrato",
+                      required:'', 
+                      option:substrateDD
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6 border",
+                      fieldName:"containerId",
+                      label:"Contenitore",
+                      firstField:"Seleziona contenitore",
+                      required:'', 
+                      option:containerDD
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-2 col-sm-6 border",
+                      fieldName:"nr_container",
+                      label:"N contenitori",
+                      required:'', 
+                    },
+                    { type:"endRow"},
+                    { type:"startRow"},
+                    {
+                      type:"textarea",
+                      classBox:"col-md-2 col-sm-6 border",
+                      fieldName:"note",
+                      label:"Note",
+                    },
+                    { type:"endRow"}
+                    ]  }) %>
+  
+                    </div>
+                  </div>
+                  
+              </form>
+              <div class="col-12">
+                <button type="button" class="btn btn-xs btn-primary" id="saveNewSpawn_Btn"><i class="fas fa-plus"></i> Salva spawn</button>
+                <button type="button" class="btn btn-xs btn-primary" id="saveModSpawn_Btn"><i class="fas fa-plus"></i> Salva modifica spawn</button>
+              </div>
+              </div>
+            </div>
+            <div class="row m-3"  id="spawnElement_Row" style="display: none;">
+              <div class="row w-100 h5 m-3 ">Elementi lotto</div>
+              <div class="row w-100 m-3" id="spawnElement_Data">
+                <div class="row border-bottom mb-2 pb-2 font-weight-bold w-100">
+                  Elemento <span id="spawnElementCode" class="mx-1"></span> 
+                  <button class="btn btn-xs btn-primary mx-1" id="backSpawnElementList_Btn"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco elementi</button>
+                  <button class="btn btn-xs btn-primary mx-1" id="modSpawnElementList_Btn"> <i class="fas fa-pen"></i> Modifica elemento</button>
+                </div>
+                <form id="spawnElement_FRM" class="p-3 w-100">
+                <%- include('../include/ejsForm',
+                  { classTxt: "spawnElementText",
+                    classField: "spawnElementForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idSpawnElement"
+                    },
+                    { type:"startRow"},
+                    {
+                      type:"text",
+                      classBox:"col-md-4 col-sm-6",
+                      fieldName:"type",
+                      label:"Tipo",
+                      readonly:'', 
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-4 col-sm-6",
+                      fieldName:"qtElem",
+                      label:"Qt",
+                      required:'', 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-4 col-sm-6",
+                      fieldName:"load_date",
+                      label:"Data creazione",
+                      readonly:'', 
+                    },
+                    { type:"endRow"},
+                    {type:"startRow"},
+                    {
+                      type:"select",
+                      classBox:"col-md-4 col-sm-6",
+                      fieldName:"pick_reason",
+                      label:"Ragione prelievo",
+                      firstField:"Seleziona la motivazione",
+                      required:'', 
+                      option:[{txt:"Pronto per inoculo",val:"Pronto"},{txt:"Contaminazione",val:"Contaminazione"},{txt:"Altro",val:"Altro"}]
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-4 col-sm-6",
+                      fieldName:"pick_date",
+                      label:"Data prelievo",
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-4 col-sm-6",
+                      fieldName:"stato",
+                      label:"Stato elemento",
+                      firstField:"Seleziona lo stato",
+                      required:'', 
+                      option:[{txt:"Buono",val:"Buono"},
+                              {txt:"Cattivo",val:"Cattivo"},
+                              {txt:"Contaminato",val:"Contaminato"},
+                              {txt:"In osservazione",val:"In osservazione"}]
+                    },
+                    { type:"endRow"}
+                    ]  
+                }) %>
+                </form>
+                <div class="row w-100">
+                  <button class="btn btn-xs btn-primary mx-1" id="saveSpawnElementList_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva modifica </button>
+                </div>
+                <div class="row w-100 my-2">
+                  <div class="col-12 py-1 my-1 font-weight-bold">
+                    Note elemento 
+                    <button class="btn btn-xs btn-primary mx-1" id="addSpawnElementNote_Btn"> <i class="fas fa-plus"></i> Aggiungi una nota</button>
+                  </div>
+                  <form class="form w-100"  enctype="multipart/form-data" id="spawnElementNote_Form" style="display: none;">
+                    <%- include('../include/ejsForm',
+                  { classTxt: "spawnElementNoteText",
+                    classField: "spawnElementNoteForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idSpawnElementNote"
+                    },
+                    { type:"startRow"},
+                    {
+                      type:"date",
+                      classBox:"col-md-4 col-sm-6",
+                      fieldName:"check_date",
+                      label:"Data controllo",
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-4 col-sm-6",
+                      fieldName:"statoSpawnElementNote",
+                      label:"Stato elemento",
+                      firstField:"Seleziona lo stato",
+                      required:'', 
+                      option:[{txt:"Buono",val:"Buono"},
+                              {txt:"Cattivo",val:"Cattivo"},
+                              {txt:"Contaminato",val:"Contaminato"},
+                              {txt:"In osservazione",val:"In osservazione"}]
+                    },
+                    
+                    {
+                      type:"textarea",
+                      classBox:"col-md-4 col-sm-6",
+                      fieldName:"noteSpawnElementNote",
+                      label:"Note",
+                    },
+                    { type:"endRow"}
+                    ]  
+                  }) %>
+                    <button class="btn btn-xs btn-primary mx-1" id="saveSpawnElementNote_Btn" > <i class="fas fa-plus"></i> Salva nota</button>
+                  </form>
+                  
+                  
+                  <table class=" table table-striped table-bordered table-sm table-responsive" id="spawnElementNote_Tbl" style="width: 100%;">
+                    <thead>
+                      <tr>
+                        <th style="width: 45px; "></th>
+                        <th>check_date</th>
+                        <th>stato</th>
+                        <th>pict</th>
+                        <th>note</th>
+                      </tr>
+                    </thead>
+                    <tbody id="spawnElementNote_Tblb">
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="row w-100 m-3" id="spawnElement_Table" >
+                <div class="table-responsive">
+                <table class=" table table-striped table-bordered table-sm" id="element_Tbl" style="width: 100%;">
+                  <thead>
+                      <tr>
+                          <th style="width: 45px; "></th>
+                          <th style="width: 45px; ">Nt</th>
+                          <th>Codice elemento</th>
+                          <th>Quantità</th>
+                          <th>Stato</th>
+                          <th>Prelevato il</th>
+                          <th>load_date</th>
+                      </tr>
+                  </thead>
+                  <tbody id="element_Tblb">  
+                  </tbody>
+              </table>
+            </div>
+              </div>
+              
+            </div>
+          </div>
+
+      </section>
+</div>
+
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>
+
+let tableSpawn
+let idSpawn
+let spawnElementTempId=0
+let redirectId= <%- JSON.stringify( redirectId) %>
+
+//Check required field
+function checkForm(formName){
+    let check=true
+    $($('#'+formName).prop('elements')).each(function(){
+        if (($(this).prop("required"))&&($(this).val()=="")){
+          check=false
+          $(this).addClass("border-danger")
+        }
+        else if (($(this).prop("required"))&&($(this).val()!="")){
+          $(this).removeClass("border-danger").addClass("border-success")
+        }
+        else{
+          $(this).removeClass("border-danger")
+        }
+    });
+    return check
+  }
+// Reset form
+function resetForm(formName){
+  $("#"+formName).get(0).reset()
+  $($('#'+formName).prop('elements')).each(function(){
+    $(this).removeClass("border-danger")
+    $(this).removeClass("border-success")
+  })
+}
+// check weight container
+function checkWeightCont(nContainer,cContainer,qt){
+  let attendQt=nContainer*cContainer
+  // console.log($("#containerId_Fld").val())
+  // console.log(nContainer,cContainer,qt)
+  // console.log(qt,attendQt)
+  // console.log(qt+"/"+cContainer)
+  // console.log(qt+"%"+cContainer)
+  // console.log(qt/cContainer)
+  // console.log(qt%cContainer)
+  let modContainerFlag=false
+  if (qt<=attendQt){
+    if (qt/cContainer<=nContainer-1){
+      return {res:false,
+              msg:"Numero contenitori e peso non sono congruenti. \n Sono richiesti "+ Math.round(qt/cContainer)+ " contenitori per il peso inserito."}
+    }
+    else if (qt%cContainer!=0){
+      return {res:true,
+              modContainerFlag:true,
+              msg:"Dal peso e dai contenitori inseriti risulta che un contenitore non sarà completo. \n Aggiorna il peso del contenitore non completo."}
+    }
+    else {
+      return {res:true,
+              msg:"Il peso e i contenitori sono corretti"}
+    }
+  } else{
+    if (qt/cContainer>nContainer){
+        return {res:false,
+                msg:"Numero contenitori e peso non sono congruenti. \n Sono richiesti "+Math.round(qt/cContainer)+" contenitori per il peso inserito."}
+    }
+  }
+
+}
+// Draw and update table
+async function  drawTable (){
+   await $.ajax({
+        type: "GET",
+        url: "/Spawn/getAll",
+        success: async function (response) {
+          console.log(response)
+            let html=""
+            for (let i = 0; i < response.spawns.length; i++) {
+                let el=response.spawns[i]
+                let delBtnDisable=""
+                if (el.used!=0){
+                  delBtnDisable="disabled"
+                }
+                html+=`<tr>
+                           <td>
+                            <button type="button" name="" id="showBtn${el.id}" 
+                            class="btn btn-primary btn-xs showSpawn" style="width:25px"
+                            idSpawn="${el.id}" SpawnName="${el.spawn_name}">
+                              <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" name="" id="delete${el.id}" 
+                          class="btn btn-danger btn-xs deleteSpawn_Btn" style="width: 25px" 
+                          idSpawn="${el.id}" spawnName="${el.spawn_name }" ${delBtnDisable}>
+                            <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                          </button>
+                        </td>
+                                <td>${el.code_spawn}</td>
+                                <td>${el.qt} </td>
+                                <td>${el.substrate.name_substrate}</td>
+                                <td>${el.strain.strain_name} ${el.strain.species_code} - ${el.strainPerc}%</td>
+                                <td>${el.nr_container} - ${el.container.container_name}</td>
+                                <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                            </tr>`
+                
+                }
+                await $('#spawn_Tbl').DataTable().clear().rows.add($(html)).draw();
+            }
+    });
+
+}
+
+//Draw Element table
+async function drawElementTbl(idRelated) {
+  $.ajax({
+    type: "GET",
+    url: "/spawn/getSpawnElementByRelated?relatedId="+idRelated+"&type=SPAWN",
+    success: function (response) {
+      console.log(response)
+      let html=""
+      if(response.spawnElement.length>0){
+        for (let i = 0; i < response.spawnElement.length; i++) {
+          const el = response.spawnElement[i];
+          let bgRow
+          switch (el.stato) {
+            case "Buono":
+            bgRow="bg-success"
+              break;
+              case "Cattivo":
+              bgRow="bg-warning"
+              break;
+              case "Contaminato":
+              bgRow="bg-danger"
+              break;
+              case "In osservazione":
+              bgRow="bg-secondary"
+              break;
+            default :
+            bgRow=null
+              break;
+          }
+          if(el.pick_reason){
+            bgRow="bg-secondary text-withe"
+          }
+          html+=`<tr class="${bgRow}">
+              <td>
+                <button type="button" name="" id="showElementBtn${el.id}" 
+                class="btn btn-primary btn-xs showElement" style="width:25px"
+                idElement="${el.id}" >
+                  <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                  </button>
+              </td>
+              <td>${el.spawnElementNotes.length} </td>
+              <td>${el.element_code}</td>
+              <td>${el.qt} </td>
+              <td>${el.stato}</td>
+              <td>${el.pick_reason?el.pick_reason:"-"} ${el.pick_date?moment(el.pick_date).format("DD-MM-YY"):""}</td>
+              <td>${moment(el.load_date).format("DD-MM-YY HH:mm")}</td>
+            </tr>`
+        }
+      } else {
+        html=`<tr >
+                <td class="bg-danger text-center" colspan="5"> Non sono presenti elementi per questo spawn</td>
+              </tr>`
+      }
+      $("#element_Tblb").html(html)
+      $("#spawnElement_Table").show()
+      $("#spawnElement_Row").show()
+
+  }
+  });
+}
+
+async function drawElementNote(idSpawnElement){
+  console.log(idSpawnElement)
+  $.ajax({
+    type: "GET",
+    url: "/spawn/getSpawnElementNote?idElement="+idSpawnElement+"&type=SPAWN",
+    success: function (response) {
+      console.log(response)
+      let html=""
+      if(response.spawnElementNotes.length>0){
+        for (let i = 0; i < response.spawnElementNotes.length; i++) {
+          const el = response.spawnElementNotes[i];
+          html+=`<tr>
+              <td>
+                <button type="button" name="" id="${el.id}" 
+              class="btn btn-danger btn-xs delSpawnElementNote" style="width:25px"
+              idSpawnElementNote="${el.id}" idSpawnElement="${el.spawnElementId}">
+                <i class="fa fa-trash fa-sm delSpawnElementNote" aria-hidden="true"></i>
+            </button></td>`
+          html+=` <td scope="row">${moment(el.check_date).format("DD-MM-YYYY HH:mm")}</td>
+                        <td>${el.stato}</td>
+                        <td>${el.pict?el.pict:"-"}</td>
+                        <td>${el.note?el.note:"-"}</td>
+                      </tr>`
+        }
+      } else {
+        html=`<tr >
+                <td class="bg-danger text-center" colspan="5"> Non sono presenti note per questo elemento</td>
+              </tr>`
+      }
+      $("#spawnElementNote_Tblb").html(html)
+    }})
+}
+async function drawGUISpawnElement(idElement){
+  $.ajax({
+        type: "GET",
+        url: "/spawn/getSingleSpawnElement?id="+idElement,
+        success: function (response) {
+          console.log(response)
+          let data=response.spawnElement
+          $("#spawnElementCode").html(data.element_code)
+
+          for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+              }
+              switch (key) {
+                case "id":
+                  $("#idSpawnElement_Fld").val(value)
+                  $("#saveSpawnElementList_Btn").attr("idElement",value)
+                  break;
+                case "qt":
+                  $("#qtElem_Fld").val(value)
+                  $("#qtElem_Show").html(value)
+                  break;
+                case "load_date":
+                  $("#load_date_Show").html(moment(value).format("DD-MM-YY HH:mm"))
+                  $("#load_date_Fld").val(moment(value).format("DD-MM-YY HH:mm"))
+                  break;
+                case "pick_date":
+                  $("#pick_date_DT").val(value)
+                  $("#pick_date_Show").html(value?moment(value).format("DD-MM-YY HH:mm"):"-")
+                  break; 
+                default:
+                  $("#"+key+"_Show").html(value?value:"-")
+                  break;
+                }
+            }
+            drawElementNote(idElement)
+            $(".spawnElementText").show()
+            $(".spawnElementForm").hide()
+            $("#spawnElement_Row").show()
+            $("#spawnElement_Table").hide()
+            $("#spawnElement_Data").show()
+        },
+        error:function(err){
+          console.log(err)
+        }  
+      });
+}
+async function drawShowSpawn(id) {
+  await $.ajax({
+        type: "GET",
+        url: "/spawn/getOneSpawn?id="+id,
+        success: async function (response) {
+          console.log(response)
+          let data=response.spawn
+          await drawElementTbl(idSpawn)
+          $("#spawnElement_Row").hide()
+            
+          // Populate GUI
+          for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+              }
+              switch (key) {
+                case "substrateId":
+                  $("#substrateId_Show").html(data.substrate.name_substrate)
+                  break;
+                case "containerId":
+                  $("#containerId_Show").html(data.container.container_name)
+                  break;     
+                case "spawnId":
+                  $("#spawnId_Show").html(data.spawn.code_spawn+" - "+ data.spawn.strain.strain_name)
+                  break;
+                default:
+                  $("#"+key+"_Show").html(value?value:"-")
+                  break;
+                }
+            }
+            $("#id_Fld").val(data.id)
+          if (response.spawn.used>0){
+              $("#saveSpawn_Btn").hide()
+             // await drawTableSpawn()
+              $("#rowSpawn").show()
+              $("#addElement_Btn").prop("disabled","true")
+              $(".delElement_Btn").prop("disabled","true")
+            } else {
+              $("#rowSpawn").hide()
+              $("#addElement_Btn").removeAttr("disabled")
+              $(".delElement_Btn").removeAttr("disabled")
+            }
+            $("#saveSpawn_Btn").hide()
+          $("#showSpawn_Crd").show()
+          $("#tableSpawn_Crd").hide()
+          $("#newSpawn_Btn").hide()
+          $("#saveModSpawn_Btn").hide()
+          $("#saveNewSpawn_Btn").hide()
+          $("#modSpawn_Btn").show()
+          $("#backToMain_Btn").show()
+          $("#spawnElement_Row").show()
+          $("#spawnElement_Data").hide()
+          $("#spawnElement_Table").show()
+
+          $(".elementForm").hide()
+          $(".elementText").show()
+        }
+      });   
+    
+}
+
+
+$(document).ready(async function () {
+  // init   
+  $("#spawnElement_Row").hide()
+  $("#spawnElement_Data").hide()
+  $("#spawnElement_Table").hide()
+  tableSpawn=$('#spawn_Tbl').DataTable({responsive: true,pageLength: 50})
+  $('#dt_start_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+  $('#dt_end_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+  $('#pick_date_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+  $('#check_date_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+  
+  $("#dt_start_Fl").on("dp.change", function (e) {
+          let data=$('#dt_start_Fl').val()
+
+          $('#dt_stop_DT').val(data)
+          console.log(data)
+      });
+  
+   if (redirectId!=null){
+    drawShowSpawn(redirectId)
+  }
+  else{
+    await drawTable()
+  }   
+  // New rawMAterial
+  $("#newSpawn_Btn").click(async function (e) { 
+    e.preventDefault();
+    resetForm("Spawn_Form")   
+    $(".elementForm").show()
+    $(".elementText").hide()
+    $("#rowSpawn").hide() 
+    $("#newSpawn_Btn").hide()
+    $("#saveModSpawn_Btn").hide()
+    $("#backToMain_Btn").show()
+    $("#tableSpawn_Crd").hide()
+    $("#showSpawn_Crd").show()
+    $("#spawnElement_Row").hide()
+    $("#saveNewSpawn_Btn").show()
+    $('#dt_start_DT').datetimepicker('date', moment().format("DD-MM-YYYY"))
+  });
+  
+  $("#dt_start_DT").on("change.datetimepicker", function (e) {
+            $('#dt_end_DT').datetimepicker('date', moment(e.date).add(15, 'd'));
+        });
+
+  $("#strainId_Fld").change(async function (e) { 
+    e.preventDefault();
+    if ($(this).val()!=null){
+    let species_code=$(this).val().split("|")[1]
+    let subCode=$(this).val().split("|")[2]
+    await $.ajax({
+      type: "GET",
+      url: "/spawn/getSpawnCode?species_code="+species_code+"&subCode="+subCode,
+      success: function (response) {
+       // console.log(response)
+        $("#code_spawn_Fld").val(response.spawnCode)
+      }});
+      }
+  });
+
+  $("#saveNewSpawn_Btn").click(function (e) { 
+    e.preventDefault();
+    console.log()
+    let cContainer=$("#containerId_Fld").val().split("|")[1]
+    let nContainer=$("#nr_container_Fld").val()
+    let qt=$("#qt_Fld").val()
+    let chekcContainer=checkWeightCont(nContainer,parseFloat(cContainer),qt)
+    if (chekcContainer.res==true){
+      alert(chekcContainer.msg)
+      if (checkForm("Spawn_Form")){
+        $.ajax({
+          type: "POST",
+          url: "/spawn/newSpawn",
+          data: $("#Spawn_Form").serialize(),   
+          success: async function (response) {
+            if (chekcContainer.modContainerFlag==true){
+              idSpawn=response.data.id
+              await drawElementTbl(idSpawn)
+              $("#saveNewSpawn_Btn").hide()
+            }
+            else{
+               await drawTable()
+               $("#showSpawn_Crd").hide()
+               $("#tableSpawn_Crd").show()
+               $("#newSpawn_Btn").show()
+               $("#modSpawn_Btn").hide()
+               $("#backToMain_Btn").hide()
+               $(".elementForm").hide()
+               $(".elementText").show()
+               $("#spawnElement_Row").hide()
+               resetForm("Spawn_Form")
+            }
+
+            
+          }, 
+          error:function(err){
+            console.log(err)
+          }
+        });
+      } else{
+        alert("assicurati di aver compilato i campi richiesti")
+      }
+    }
+    else{
+      alert(chekcContainer.msg)
+    }
+});
+    // Back to main
+  $("#backToMain_Btn").click(async function (e) { 
+    e.preventDefault();
+    window.location="/spawn"
+    // await drawTable()
+    // resetForm("Spawn_Form")
+    // $("#newSpawn_Btn").show()
+    // $("#backToMain_Btn").hide()
+    // $("#newSpawn_Crd").hide()
+    // $("#showSpawn_Crd").hide()
+    // $("#tableSpawn_Crd").show()
+    // $("#modSpawn_Btn").hide()
+    // $("#saveNewSpawn_Btn").hide()
+    // $("#saveModSpawn_Btn").hide()
+  });  
+  // Show/mod Raw material
+  $(document).on("click",".showSpawn", async function(e){
+      
+      let id=$(this).attr("idSpawn")
+      drawShowSpawn(id)
+    })
+    $("#modSpawn_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#saveModSpawn_Btn").show()
+      $(".elementForm").show()
+      $(".elementText").hide()
+    }); 
+     // --> Mod spawn
+   //YYYY-MM-DD hh:mm:ss
+   $("#saveModSpawn_Btn").click(function (e) { 
+    e.preventDefault();
+    if (checkForm("Spawn_Form")){
+    $.ajax({
+        type: "PUT",
+        url: "/spawn/updateSpawn",
+        data: $("#Spawn_Form").serialize(),   
+        success: async function (response) {
+          await drawTable()
+          $("#showSpawn_Crd").hide()
+          $("#tableSpawn_Crd").show()
+          $("#newSpawn_Btn").show()
+          $("#modSpawn_Btn").hide()
+          $("#backToMain_Btn").hide()
+          $("#saveNewSpawn_Btn").hide()
+          $("#saveModSpawn_Btn").hide()
+          $("#saveSpawn_Btn").show()
+          $(".elementForm").hide()
+          $(".elementText").show()
+          resetForm("Spawn_Form")
+        }
+      });
+      } else{
+            alert("Assicurati di aver compilato i campi richiesti")
+          }
+    });
+    // Delete spawn
+    $(document).on("click",".deleteSpawn_Btn", async function(e){
+      e.preventDefault();
+      let id=$(this).attr("idSpawn")
+      let c=confirm(`Stai eliminando una spawn, vuoi continuare? `)
+      if (c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/spawn/deleteSpawn?id="+id,
+        success: async function (response) {
+          await drawTable()
+        }
+      });
+      }
+    })
+    // strain %
+    $("#strainWeight_Fld").change(function (e) { 
+      e.preventDefault();
+      let totW=$("#qt_Fld").val()
+      let strainW=$(this).val()
+      let perc=(strainW/totW)*100
+      console.log(perc,totW,strainW)
+      $("#strainPerc_Fld").val(perc.toFixed(2))
+    });
+    $("#strainPerc_Fld").change(function (e) { 
+      e.preventDefault();
+      let totW=$("#qt_Fld").val()
+      let strainP=$(this).val()
+      let weight=totW*(strainP/100)
+      $("#strainWeight_Fld").val(weight.toFixed(2))
+    });
+    
+    // Element
+    
+    $(document).on("click",".showElement", async function (e) {
+      e.preventDefault()
+      let spawnElementTempId=$(this).attr("idElement")
+      await drawGUISpawnElement(spawnElementTempId)
+      $("#idSpawnElementNote_Fld").val(spawnElementTempId)
+      $("#spawnElementNote_Form").hide()
+      $("#spawnElementNote_Tbl").show()
+    });
+
+    $("#backSpawnElementList_Btn").click(async function (e) { 
+      e.preventDefault();
+      await drawElementTbl(idSpawn)
+      $("#spawnElement_Data").hide()
+      $("#spawnElement_Table").show()
+      $("#saveSpawnElementList_Btn").hide()
+    });
+
+    $("#modSpawnElementList_Btn").click(function (e) { 
+      e.preventDefault();
+      $(".spawnElementText").hide()
+      $(".spawnElementForm").show()
+      $("#saveSpawnElementList_Btn").show()
+
+    });
+    
+    $("#saveSpawnElementList_Btn").click(function (e) { 
+      e.preventDefault();
+      spawnElementTempId=$(this).attr("idElement")
+      $.ajax({
+        type: "PUT",
+        url: "/spawn/updateSpawnElement",
+        data: $("#spawnElement_FRM").serialize(),
+        success: async function (response) {
+          await drawGUISpawnElement(spawnElementTempId)
+          $("#saveSpawnElementList_Btn").hide()
+        },
+        error: function(err){
+          console.log(err)
+        }
+      });
+    });
+  
+    $("#addSpawnElementNote_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#spawnElementNote_Form").show()
+      $("#spawnElementNote_Tbl").hide()
+      $("#addSpawnElementNote_Btn").hide()
+    });
+  
+    $("#saveSpawnElementNote_Btn").click(function (e) { 
+      e.preventDefault();
+      let idSpawnElement=$("#idSpawnElementNote_Fld").val()
+      //console.log(idSpawnElement)
+      $.ajax({
+        type: "POST",
+        url: "/spawn/newSpawnElementNote",
+        data: $("#spawnElementNote_Form").serialize(),
+        success: async function (response) {
+            await drawElementNote(idSpawnElement)
+            resetForm("spawnElementNote_Form")
+            $("#spawnElementNote_Form").hide()
+            $("#spawnElementNote_Tbl").show()
+            $("#addSpawnElementNote_Btn").show()
+
+        },
+        error: function(err){
+          console.log(err)
+        }
+      });
+    });
+
+    $(document).on("click",".delSpawnElementNote", function (e) {
+      e.preventDefault()
+        let idSpawnElementNote=$(this).attr("idSpawnElementNote")
+        let idSpawnElement=$(this).attr("idSpawnElement")
+        let c=confirm(`Stai eliminando una nota, vuoi continuare? `)
+        if (c==true){
+          $.ajax({
+            type: "DELETE",
+            url: "/spawn/deleteSpawnElementNote?id="+idSpawnElementNote,
+            success: async function (response) {
+               await drawElementNote(idSpawnElement)
+            }
+          });
+        }
+    });
+
+  });
+    
+
+</script>
+<%- include ('../closeTag') %>[]

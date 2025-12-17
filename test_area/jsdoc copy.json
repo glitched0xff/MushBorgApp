@@ -1,0 +1,19 @@
+{
+  "source": {
+    "include": ["."],
+    "exclude": ["node_modules","public"],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "opts": {
+    "destination": "./docs",
+    "recurse": true,
+    "verbose": true,
+    "encoding": "utf8"
+  },
+  "plugins": [],
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  }
+}

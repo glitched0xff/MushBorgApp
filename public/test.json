@@ -1,0 +1,29 @@
+{
+  "genere":"Lentinula",
+  "strainName":"Shiitake",
+  "spawnRun": {
+    "temp": "70-80° F. (2 1-27° C.)",
+    "hum": "95-100%",
+    "time": "35-70 days (strain dependent)",
+    "co2": "> 10,000 ppm ",
+    "airExchange": "0-1 Light",
+    "light": "50-100 lux."
+  },
+  "primordiaFormation": {
+    "temp": "10-16°C warm strain",
+    "hum": "95-100%",
+    "time": "5-7 days",
+    "co2": "<1000 ppm",
+    "airExchange": "4-7 per hour ",
+    "light": "500-2000 lux at 370-420 nm. "
+  },
+  "fruitbodyDevelopment": {
+    "temp": "16-18°C cold strain 21-27°C warm strain",
+    "hum": "60-80% ",
+    "time": "5-8 days",
+    "co2": "< 1000 ppm ",
+    "airExchange": "4-8 per hour ",
+    "light": "500-2000 lux at 370-420 nm.*** ",
+    "cropCycle": "Every 2-3 weeks for 8-12(16) weeks."
+  }
+}

@@ -1,0 +1,239 @@
+<%- include ('header') %>
+<%- include ('navbar') %>
+<%- include ('sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="storage-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione magazzini
+            <!-- <button class="btn btn-xs btn-primary" id="modStorage_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca storage</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newStorage_Btn"><i class="fas fa-plus"></i> Nuova storage</button> -->
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco storage</button>
+            </h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Lotti storage</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          
+            <div class="col-12"  id="tableStorage_Crd" style="display: none;">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Responsive Hover Table</h3>
+    
+                    <div class="card-tools">
+                      <input type="text" name="datetimes"  id="daterange" />
+                    
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>ID</th>
+                          <th>Codice</th>
+                          <th>Nom3</th>
+                          <th>Indirizzo</th>
+                        </tr>
+                      </thead>
+                      <tbody id="telemetry_Tbl">
+                       
+                        <% storages.forEach(function(dt){ %>
+                            <tr>
+                              <td style="width: 80px;">
+                                    <button type="button" name="" id="showBtn_<%= dt.id %>" 
+                                      class="btn btn-primary btn-xs showStorage" style="width:25px">
+                                        <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                                <td style="width: 80px;"><%= dt.id %></td>
+                                <td><%= dt.code_storage %></td>
+                                <td><%= dt.name_storage %></td>
+                                <td><%- dt.data_storage %></td>
+                                
+                              </tr>
+                          <% }); %>
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                  
+                </div>
+                <!-- /.card -->
+              </div>
+            <div class="card w-100" id="showStorage_Crd" style="display: none;">
+              <div class="row m-3">
+                <div class="row">
+                  <div class="col mx-auto">
+                    <button type="button" class="btn btn-primary btn-xs" id="rawmaterial_Btn" >rawmaterial_Btn</button>
+                  </div>
+                  <div class="col mx-auto">
+                    <button type="button" class="btn btn-primary btn-xs" id="strain_Btn" >strain_Btn</button>
+                  </div>
+                  <div class="col mx-auto">
+                    <button type="button" class="btn btn-primary btn-xs" id="container_Btn" >container_Btn</button>
+                  </div>
+                  <div class="col mx-auto">
+                    <button type="button" class="btn btn-primary btn-xs" id="spawn_Btn" >spawn_Btn</button>
+                  </div>
+                  <div class="col mx-auto">
+                    <button type="button" class="btn btn-primary btn-xs" id="mushElement_Btn" >mushElement_Btn</button>
+                  </div>
+                  <div class="col mx-auto">
+                    <button type="button" class="btn btn-primary btn-xs" id="propagation_Btn" >propagation_Btn</button>
+                  </div>
+
+                </div>
+                <div class="col-12">
+
+                </div>
+                <div class="col-12" id="itemTable">
+
+                </div>
+              </div>
+            </div>
+        </div>
+        
+      </div>
+    </section>
+    
+  </div>
+  
+  
+  <%- include ('footer') %>
+  <%- include ('jsLoad') %>
+  <script>
+    let storages = '<%- JSON.stringify(storages) %>'
+    storages=JSON.parse(storages)
+    let redirectId= <%- JSON.stringify( redirectId) %>
+    let idStorage=redirectId
+    function drawTable() {
+      $("#tableStorage_Crd").show();
+      $("#showStorage_Crd").hide();
+      $("#backToMain_Btn").hide()
+
+    }
+    async function drawShowStorage(id) {
+      $("#tableStorage_Crd").hide();
+
+      await $.ajax({
+        type: "GET",
+        url: "/storage/getOneStorage?storageId="+id,
+        success: function (response) {
+          console.log(response)
+          let data=response.storage
+          if(data.rawmaterial==1){
+            $("#rawmaterial_Btn").show();
+          }
+          if(data.strain==1){
+            $("#strain_Btn").show();
+          }
+          if(data.container==1){
+            $("#container_Btn").show();
+          }
+          if(data.spawn==1){
+            $("#spawn_Btn").show();
+          }
+          if(data.mushElement==1){
+            $("#mushElement_Btn").show();
+          }
+          if(data.propagation==1){
+            $("#propagation_Btn").show();
+          }
+          
+        }
+      });
+      $("#showStorage_Crd").show();
+      $("#backToMain_Btn").show()
+    }
+    async function drawItemTable(id,endPoint,fields,label,title,topic){
+      let html=`
+      <h3>${title}</h3> 
+      <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>`
+      for (let i = 0; i < label.length; i++) {
+        const elem = label[i];
+        html+=`<th scope="col">${elem}</th>`
+      }
+      html+=`</tr>
+            </thead>
+            <tbody>`
+                  
+       await $.ajax({
+          type: "GET",
+          url: "/storage/"+ endPoint +"?storageId="+id,
+          success: function (response) {
+            console.log(response)
+            let data=response.item
+            for (let i = 0; i < data.length; i++) {
+              const elem = data[i];
+              html+=`<tr>
+              <td scope="row">
+                <button type="button" name="" id="showChildBtn_${elem.id}" 
+                  class="btn btn-primary btn-xs showChild_btn" style="width:25px"
+                  topic="${topic}">
+                    <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                </button></td>`
+                for (let y = 0; y < fields.length; y++) {
+                  const fld = fields[y];
+                  html+=`<td>${elem[fld]}</td>`
+                }
+               html+=`</tr>`
+            }
+            
+          }
+        });
+        html+="</tbody></table>"
+               console.log(html)
+
+        $("#itemTable").html(html)
+      }
+    $(document).ready(async function () {
+    
+      if(redirectId){
+        await drawShowStorage(redirectId)
+      }else{
+        await drawTable()
+      }
+      $(document).on("click",".showStorage", function (e) { 
+        e.preventDefault();
+        let id=$(this).attr("id").split("_")[1]
+         window.location='/storage?redirectId='+id
+      });
+      $("#backToMain_Btn").click(function (e) { 
+        e.preventDefault();
+         window.location='/storage'
+      });
+    
+      // Load item
+      $("#rawmaterial_Btn").click(function (e) { 
+        e.preventDefault();
+        drawItemTable(idStorage,"getRawMaterial",["id"],["id"],"Materiali","rawMaterial")
+      });
+
+      $("#mushElement_Btn").click(function (e) { 
+        e.preventDefault();
+        drawItemTable(idStorage,"getMushElement",["id","element_code"],["id","element_code"],"Mush Element","mushElement")
+      });
+    });
+
+  </script>
+  <%- include ('closeTag') %>
+  

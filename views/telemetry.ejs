@@ -1,0 +1,358 @@
+<%- include ('header') %>
+<%- include ('navbar') %>
+<%- include ('sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Dashboard</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard v1</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title w-100">
+                      <div class="col-4">
+                        <% if(deviceData!=null){ %>
+                        Dati sensore : <%= deviceData.cod_device%>
+                      <%} else{%>
+                        Dati sensori
+                        <%}%>
+                      </div>
+                      
+                    </h3>
+    
+                    <div class="card-tools">
+                      
+                       <form class="form-inline">
+                        <div class="form-group ">
+                              <label for="selectSensor" class="mx-2">Seleziona sensore</label>
+                              <select class="form-control" id="selectSensor">
+                                <option>--</option> 
+                                <% ddDevice.forEach(elem=>{%>
+                            <option value="<%= elem.val%>"><%= elem.txt%></option>    
+                          <%})%>
+                                <option value="ALL">Tutti</option> 
+
+                              </select>
+                            </div>
+
+                        <div class="form-group mx-3">
+                          <label for=""class="mx-2">Filtro data</label>
+                           <input type="text" name="datetimes"  id="daterange" />
+                        </div>
+                       
+                            
+                          </form>
+                       <!--<div class="input-group input-group-sm" style="width: 150px;">
+                        
+                        <input type="text" name="table_search" class="form-control float-right" placeholder="Search"> 
+    
+                        <div class="input-group-append">
+                          <button type="submit" class="btn btn-default">
+                            <i class="fas fa-search"></i>
+                          </button>
+                        </div>
+                      </div>-->
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body table-responsive p-0" style="height: 600px;overflow-y: scroll;">
+                    <table class="table table-hover text-nowrap">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Data</th>
+                          <th>Device</th>
+                          <th>Temp</th>
+                          <th>Hum</th>
+                          <th>Co2</th>
+                        </tr>
+                      </thead>
+                      <tbody id="telemetry_Tbl">
+                        <% sensorData.forEach(function(dt){ %>
+                            <tr
+                              <% if(!dt.status){%> class="text-danger" <%}%>
+                            >
+                                <td><%= dt.id %></td>
+                                <td><%= dt.createdAtStr %></td>
+                                <td><%= dt.cod_device %></td>
+                                <td><%= dt.temp %> C°</td>
+                                <td><%= dt.hum %> %</td>
+                                <td><%= dt.co2 %></td>
+                                
+                              </tr>
+                          <% }); %>
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                  
+                </div>
+                <!-- /.card -->
+              </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <div class="card ">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="far fa-chart-bar"></i>
+                  Temperatura 
+                  <form class="form-inline">
+                    <div class="form-group">
+                    <label for="">Device: </label>
+                    <select class="form-control" name="" id="selectDevGraphT">
+                      <option>--</option> 
+                                <% ddDevice.forEach(elem=>{%>
+                            <option value="<%= elem.val%>"><%= elem.txt%></option>    
+                          <%})%>
+                    </select>
+                  </div>
+                  </form>
+                  
+                </h3>
+              </div>
+              <div class="card-body">
+                <div id="line-chart" style="padding: 0px; ">
+                <canvas id="tempChart"  width="400" height="200"></canvas>  
+              </div>
+            </div>
+            <!-- /.card-body-->
+          </div>
+          </div>
+        <div class="col-6">
+          <div class="card ">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="far fa-chart-bar"></i>
+                Umidità
+              </h3>
+            </div>
+            <div class="card-body">
+              <div id="line-chart" style="padding: 0px; ">
+                <canvas id="humChart"></canvas>  
+              </div>
+            </div>
+          </div>
+            <!-- /.card-body-->
+        </div>
+        </div>
+          
+      </div>
+      </div>
+    </section>
+    
+  </div>
+  
+  
+  <%- include ('footer') %>
+  <%- include ('jsLoad') %>
+  <script>
+    let sensorData = '<%- JSON.stringify(sensorData) %>'
+    sensorData=JSON.parse(sensorData)
+    let deviceData= '<%- JSON.stringify(deviceData) %>'
+    deviceData=JSON.parse(deviceData)
+    let grpSensorData = groupByDeviceId(sensorData);
+    const tempCtx = document.getElementById('tempChart');
+    const humCtx = document.getElementById('humChart');
+
+    
+
+    function groupByDeviceId(arr) {
+  const grouped = {};
+
+  arr.forEach(item => {
+    if (!grouped[item.deviceId]) {
+      grouped[item.deviceId] = [];
+    }
+    grouped[item.deviceId].push(item);
+  });
+
+  return {
+    sensori: Object.entries(grouped).map(([deviceId, items]) => ({
+      cod_device: items[0].cod_device,
+      deviceId: Number(deviceId),
+      dati: items
+    }))
+  };
+}
+
+    //datepicker
+    $(function() {
+    $('input[name="datetimes"]').daterangepicker({
+      timePicker: true,
+      timePicker24Hour:true,
+      startDate: moment().startOf('hour'),
+      endDate: moment().startOf('hour'),
+      locale: {
+        format: 'M/DD hh:mm A'
+      }
+    });
+  });
+  
+    function drawGraph(data) {
+      console.log(data)
+    let graphDataT={}
+    graphDataT.datasets=[]
+    let arrayColorGraph=['#36A2EB','#9BE0F0','#F0C39C','#D0F09C','#8D9B9E','#587A20']
+    // for (let i = 0; i < data.sensori.length; i++) {
+     
+      graphDataT.labels= []
+      graphDataT.datasets={ 
+            label: data.cod_device,
+            data: [],
+            borderColor: arrayColorGraph[2],
+          }
+      for (let z = 0; z < data.dati.length; z++) {
+        const elem = data.dati[z];
+
+          graphDataT.datasets.data.push(elem.temp)
+       // graphDataT.labels.push(moment.utc(elem.createdAt,"YYYY-MM-DD HH:mm:ss").local().format("HH:mm"))//elem.createdAt
+        graphDataT.labels.push(moment.utc(elem.createdAt,"YYYY-MM-DD HH:mm:ss").local().format("HH:mm"))//elem.createdAt
+      
+      // for (let y = 0; y < elem.dati.length; y++) {
+      //   const e = data[y];
+      //   graphDataT.datasets[z].data.push(e.temp)
+      //   graphDataT.labels.push(moment.utc(e.createdAt,"YYYY-MM-DD HH:mm:ss").local().format("HH:mm"))//elem.createdAt
+      // }
+      
+      }
+      graphDataT.datasets.data.reverse()
+      graphDataT.labels.reverse()
+      console.log(graphDataT)
+    //}
+    
+    let tempChart = new Chart(tempCtx, {
+        type: 'line',
+        data: [graphDataT.datasets],
+        options: {
+          scales: {
+                x: { // For Chart.js v3 and later, use 'y' instead of 'yAxes'
+                    reverse: true
+                }
+            },
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: true,
+              text: 'Chart.js Line Chart'
+            }
+          }
+      },
+      });
+      tempChart.update()
+    //   let graphDataH={}
+    //   graphDataH.labels= []
+    //   graphDataH.datasets=[{ 
+    //       label: 'Umidità%',
+    //       data: [],
+    //       borderColor: '#36A2EB',
+    //     },]
+    // for (let i = 0; i < data.length; i++) {
+    //   const elem = data[i];
+    //   graphDataH.datasets[0].data.push(elem.hum)
+    //   graphDataH.labels.push(moment.utc(elem.createdAt,"YYYY-MM-DD HH:mm:ss").local().format("HH:mm"))//elem.createdAt
+    // }
+
+    // graphDataH.datasets[0].data.reverse()
+    // graphDataH.labels.reverse()
+    // let humChart = new Chart(humCtx, {
+    //     type: 'line',
+    //     data: graphDataH,
+    //     options: {
+    //     plugins: {
+    //       legend: {
+    //         position: 'top',
+    //       },
+    //       title: {
+    //         display: true,
+    //         text: 'Chart.js Line Chart'
+    //       }
+    //     }
+    //   },
+    //   });
+    //   humChart.update()
+  }
+
+    $(document).ready(function () {
+      // Filtro per data
+      $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+        ev.preventDefault();
+        let url
+        if(deviceData!=null){
+          url= "/telemetry/getAllData?dtFrom="+picker.startDate.format("YYYY-MM-DD HH:mm:ss")+"&dtTo="+picker.endDate.format("YYYY-MM-DD HH:mm:ss")+"&idDevice="+deviceData.id
+        }else{
+          url= "/telemetry/getAllData?dtFrom="+picker.startDate.format("YYYY-MM-DD HH:mm:ss")+"&dtTo="+picker.endDate.format("YYYY-MM-DD HH:mm:ss")
+        }
+        $.ajax({
+        type: "GET",
+        url:url,
+       success: function (response) {
+            console.log(response)
+            let html=""
+            for (let i = 0; i < response.length; i++) {
+              const elem = response[i];
+              html+= `
+              <tr>
+                  <td>${elem.id}</td>
+                  <td>${elem.createdAtStr}</td>
+                  <td>${elem.cod_device}</td>
+                  <td>${elem.temp} C°</td>
+                  <td>${elem.hum} %</td>
+                  <td>${elem.co2}</td>
+                </tr>
+              `
+            }  
+            $('#telemetry_Tbl').html(html)
+            drawGraph(response)     
+        }
+      });
+      
+      });
+    
+      $("#selectSensor").change(function (e) { 
+        e.preventDefault();
+        let idDevice=$(this).val()
+        if ((idDevice=="ALL")||(idDevice==null)){
+          window.location="/telemetry"
+        }else{
+          window.location="/telemetry?idDevice="+idDevice
+        }
+      });
+    });
+
+    $("#selectDevGraphT").change(function (e) { 
+      e.preventDefault();
+      let idDeviceReq=$(this).val()
+      console.log(grpSensorData)
+      let dataGraph
+      grpSensorData.sensori.forEach(el => {
+        if (el.deviceId==idDeviceReq){
+          dataGraph=el
+        }
+      });
+      console.log(dataGraph)
+      drawGraph(dataGraph)
+      
+    });
+  </script>
+  <%- include ('closeTag') %>
+  

@@ -1,0 +1,18 @@
+{
+    "telemetry":true,
+    "search":true,
+    "todo":true,
+    "diaryNote":true,
+    "calendar":true,
+    "substrate":true,
+    "device":true,
+    "strain":true,
+    "inoculum":true,
+    "spawn":true,
+    "cultivation":true,
+    "mushElement":true,
+    "propagation":true,
+    "statistic":true,
+    "env":"SVILUPPO",
+    "titlePage":"Mushborg - DEV"
+}

@@ -1,0 +1,139 @@
+<%- include ('header') %>
+<%- include ('navbar') %>
+<%- include ('sidebar') %>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Todo</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active">Todo</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Visualizzazione dati -->
+        <div class="row" id="todo_RowTbl">
+          
+            <div class="col-12">
+                <div class="card">
+            <div class="card-header ui-sortable-handle" style="cursor: move;">
+            <h3 class="card-title">
+                <i class="ion ion-clipboard mr-1"></i>
+                To Do List
+            </h3>
+
+            <div class="card-tools">
+                <button class="btn btn-sm btn-secondary" id="showDone"> Mostra completati</button>
+                <button class="btn btn-sm btn-danger" id="delAllDone" style="display: none;"> Elimina completati</button>
+                <button class="btn btn-sm btn-success" id="showOpen" style="display: none;"> Mostra aperti</button>
+            </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body" >
+                <div id="todo_Tbl">
+
+                </div>
+            
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer clearfix">
+            <button type="button" class="btn btn-primary float-right" id="addElemento_btn"><i class="fas fa-plus"></i> Aggiungi elemento</button>
+            </div>
+                </div>
+            </div>
+        </div>
+        <!-- Form aggiungi/modifica -->
+        <div class="row" id="todo_RowFrm" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header ui-sortable-handle" style="cursor: move;">
+                        <h3 class="card-title" id="cardTitle">
+                            <i class="ion ion-clipboard mr-1"></i>
+                            Agiungi nuovo todo
+                        </h3>
+                        <div class="card-body">
+                            <form id="toDo_Frm">
+                                <div class="card-body">
+                                <div class="form-group">
+                                    <label>Titolo*</label>
+                                    <input type="text" class="form-control" id="titolo_Fld" placeholder="Inserisci il titolo" required maxlength="35" name="titolo">
+                                </div>
+                                <div class="form-group">
+                                    <label>Descrizione</label>
+                                    <input type="text" class="form-control" id="descrizione_Fld" placeholder="Aggiungi qualche dettaglio .." name="descrizione">
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-sm-12 col-md-4 ">
+                                        <label>Durata prevista</label>
+                                        <input type="text" class="form-control" id="durata_Fld" placeholder="" name="durata">
+                                        <span class="info small">es. 2h per indicare 2 ore usa h=ore, m=minuti, g=giorni </span>
+                                    </div>
+                                    <div class="form-group col-sm-12 col-md-4">
+                                        <label for="">Priorità* </label>
+                                        <select class="custom-select form-control-border" id="priority_Fld" required name="priority">
+                                        <option value="0">Urgente</option>
+                                        <option value="1">Da fare</option>
+                                        <option value="2">Può attendere</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-12 col-md-4">
+                                        <label for="">Area* </label>
+                                        <select class="custom-select form-control-border" id="sezione_Fld" required name="sezione">
+                                        <option value="0">Laboratorio</option>
+                                        <option value="1">Spawn</option>
+                                        <option value="2">Substrato</option>
+                                        <option value="3">Inoculo</option>
+                                        <option value="4">Espansione</option>
+                                        <option value="5">Fruttificazione</option>
+                                        <option value="6">Post produzione</option>
+                                        <option value="6">Altro</option>
+                                        </select>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                <button type="submit" class="btn btn-primary" id="addtoDo_FrmBtn">Aggiungi elemento</button>
+                                <button type="submit" class="btn btn-primary" id="modtoDo_FrmBtn" style="display: none;">Modifica elemento</button>
+                                <button type="submit" class="btn btn-danger" id="annulla_FrmBtn">Annulla</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+  </div>
+  <%- include ('footer') %>
+  <%- include ('jsLoad') %>
+  <!-- Mushborg function -->
+    <script src="/dist/toDo_Mushborg.js"></script> 
+  <script>
+    
+    let showDone=false
+
+   
+    // Document Ready
+    $(document).ready(function () {
+        // Disegna tabella
+        drawTodoList(0)
+        // Sortable event
+        $(document).on( "sortupdate",".todo-list", function( event, ui ) {
+            console.log(ui)
+        } );
+        // Bottoni
+        
+    });
+  </script>
+  <%- include ('closeTag') %>

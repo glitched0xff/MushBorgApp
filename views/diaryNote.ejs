@@ -1,0 +1,219 @@
+<%- include ('header') %>
+<%- include ('navbar') %>
+<%- include ('sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Diario di bordo</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard v1</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">DiaryNote
+                      <button type="button" class="btn btn-primary btn-xs"  id="editDiaryNote_Btn"><i class="fa fa-plus" aria-hidden="true"></i> Aggiungi diaryNote</button>
+                    </h3>
+                    <div class="card-tools">
+                       <form class="form-inline">
+                        <div class="form-group mx-1">
+                          <label for=""class="mr-2">Filtro data</label>
+                           <input type="text" name="datetimes"  id="daterange" />
+                        </div>
+                        <button class="btn-xs btn-primary m-0" id="clearFilter"><i class="fas fa-eraser"></i></button>
+                         </form>
+                    </div>
+                  </div>
+                  <div class="card-body p-0" >
+                    <div class="row">
+                      <div class="col-md-12 p-3" id="elencoNote">
+                        
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+      </div>
+      </div>
+    </section>
+  </div>
+ 
+  <!-- Modal insert note -->
+  <div class="modal fade" id="editDiaryNote_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editDiaryNote_Mdl_Ttl"> Aggiungi nota</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+          <form id="editDiaryNote_Frm">
+              <%- include('include/ejsForm',
+            { classTxt: "diaryNoteText",
+              classField: "diaryNoteForm",
+              form:[
+              { 
+                type:"hidden",
+                fieldName:"idDiaryNote"
+              },
+              
+              {
+                type:"textarea",
+                classBox:"col-md-12",
+                fieldName:"nota",
+                label:"Nota",
+                required:'', 
+              },
+              {
+                type:"text",
+                classBox:"col-md-12",
+                fieldName:"tag",
+                label:"Tag",
+                required:'', 
+              },
+              
+]  
+}) %>
+          </form>
+          <div class="row w-100">
+            <button class="btn btn-xs btn-primary mx-1" id="saveNewNota_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva nota </button>
+            <button class="btn btn-xs btn-primary mx-1" id="saveNota_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva modifica </button>
+            <button class="btn btn-xs btn-secondary mx-1" id="abortNota_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Annulla modifica </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <%- include ('footer') %>
+  <%- include ('jsLoad') %>
+  <script>
+    // let diaryNotes = '<%# JSON.stringify(diaryNotes) %>'
+    // diaryNotes=JSON.parse(diaryNotes)
+    // console.log(diaryNotes)
+    function resetForm(formName){
+    $("#"+formName).get(0).reset()
+    $($('#'+formName).prop('elements')).each(function(){
+      $(this).removeClass("border-danger")
+      $(this).removeClass("border-success")
+    })
+}
+
+function getMonthLetter(data){
+  let month=["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"]
+  return month[data-1]
+}
+  
+async function drawTableNote(dtFrom=moment().startOf("day").subtract(7,'days').toISOString(),dtTo=moment().toISOString()){
+  let html=""
+  await $.ajax({
+    type: "GET",
+    url: "/diaryNote/getAll?dtFrom="+dtFrom+"&dtTo="+dtTo,
+    success: function (response) {
+      console.log(response)
+      html+=`<div class="timeline">`
+        for (let i = 0; i < response.notes.length; i++) {
+          const elem = response.notes[i];
+          html+=`<div class="time-label">
+                            <span class="bg-red">${elem.giorno} - ${getMonthLetter(elem.mese)}</span>
+                          </div>
+                          <div>
+                            <i class="fas fa-arrow-right bg-blue"></i>
+                            <div class="timeline-item">
+                              <div class="timeline-body">
+                                <ul>`
+          for (let n = 0; n < elem.note.length; n++) {
+            const nt = elem.note[n];
+            html+=`<li>${moment(nt.createdAt).format("HH:mm")} ${nt.nota}</li>`
+          }
+          html+=`</ul></div></div>
+                          </div>`      
+        }
+      html+=`</div>`     
+      $("#elencoNote").html(html)    
+    }
+    
+  });
+  
+}
+  
+    $(document).ready(function () {
+
+       $(function() {
+        $('input[name="datetimes"]').daterangepicker({
+           opens: 'left',
+           locale: {
+            format: 'DD-MM-YY'
+          }
+        });
+      });
+
+        drawTableNote()
+      // Date range
+      $('#daterange').on('apply.daterangepicker', async function(ev, picker) {
+        ev.preventDefault();
+        let dtFrom=moment(picker.startDate).toISOString()
+        let dtTo=moment(picker.endDate).toISOString()
+        await drawTableNote(dtFrom,dtTo)
+      });
+      // clear filter
+      $("#clearFilter").click(async function (e) { 
+        e.preventDefault();
+        await drawTableNote()
+      });
+    
+        $(document).on("click",".deleteDiaryNote",function (e) { 
+          e.preventDefault();
+          let idDiaryNote=$(this).attr("idDiaryNote")
+          console.log(idDiaryNote)
+        });
+        $("#editDiaryNote_Btn").click(function (e) { 
+          e.preventDefault();
+          $("#editDiaryNote_Mdl").modal("show")
+          $("#saveNewNota_Btn").show()
+          $("#abortNota_Btn").show()
+        });
+        $("#saveNewNota_Btn").click(function (e) { 
+          e.preventDefault();
+          $.ajax({
+            type: "POST",
+            url: "/diaryNote/newNota",
+            data: $("#editDiaryNote_Frm").serialize(),
+            success: function (response) { 
+              console.log(response)      
+            }
+          })
+        });
+
+        $("#saveNota_Btn").click(function (e) { 
+          e.preventDefault();        
+        });
+
+        $("#abortNota_Btn").click(function (e) { 
+          e.preventDefault();
+          $("#editDiaryNote_Mdl").modal("hide")
+          resetForm("#editDiaryNote_Frm")
+        });
+    });
+
+  </script>
+  <%- include ('closeTag') %>
+  

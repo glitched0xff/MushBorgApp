@@ -1,0 +1,338 @@
+<%- include ('header') %>
+<%- include ('navbar') %>
+<%- include ('sidebar') %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.css" />
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Calendario</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard v1</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid">
+            <div class="row">
+                <div class="col">
+                <div class="card card-primary">
+                  <div class="card-body p-0">
+                    <!-- THE CALENDAR -->
+                    <div id="calendar"></div>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    
+    </section>
+
+</div>
+<!-- Modal nuovo evento -->
+<div class="modal fade" id="addEvent_Mdl" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Nuovo evento</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="card-body">
+                <form id="newEvent_Frm">
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Titolo</label>
+                      <input type="text" class="form-control" id="titolo" name="titolo">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Descrizione</label>
+                        <input type="text" class="form-control" id="descrizione" name="descrizione">
+                    </div>
+                    <div class="form-group">
+                      <label for="">Data e ora di inizio</label>
+                        <div class="input-group date" id="startDate" data-target-input="nearest">
+                            <input type="text" class="form-control datetimepicker-input" data-target="#startDate" name="start"/>
+                            <div class="input-group-append" data-target="#startDate" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                        </div>
+                   </div>
+                    <div class="form-group">
+                      <label for="">Data e ora di fine</label>
+                      <div class="input-group date" id="stopDate" data-target-input="nearest">
+                        <input type="text" class="form-control datetimepicker-input" data-target="#stopDate" name="stop"/>
+                        <div class="input-group-append" data-target="#stopDate" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleSelectBorder">Categoria</label>
+                        <select class="custom-select form-control-border" id="category" name="category">
+                          <% for(var i=0; i<calendarCategories.length; i++) {%>
+                          <option value="<%= calendarCategories[i].id %>"><%= calendarCategories[i].nome_categoria %></option>
+
+                         <% } %>
+                        </select>
+                    </div>
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" id="allDay" name="allDay" value="1">
+                      <label class="form-check-label" for="exampleCheck1">Tutto il giorno</label>
+                    </div>
+                </form>
+            </div>  
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="addNewEvent_Btn">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Modal info event -->
+<div class="modal fade" id="infoEvent_Mdl" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Informazioni evento</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <table class="table table-bordered">
+                <tbody id="infoEvent_Tblb">
+                  
+                </tbody>
+              </table>
+              <div class="row">
+                <div class="col-md-4">
+                  <button type="button" class="btn btn-sm btn-primary" id="isCompleted_Btn" idEvent="">Segna come concluso</button>
+                </div>
+                <di class="col-md-4 offset-md-4 text-right">
+                    <button type="button" class="btn btn-sm btn-danger" id="delEvent_Btn" idEvent="">Elimina evento</button>
+                </div>
+              </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+<%- include ('footer') %>
+<%- include ('jsLoad') %>
+<!-- fullCalendar 5.1.5 -->
+<script src="/plugins/fullCalendar/main.js"></script>
+<script>
+    // Calendar
+    let date = new Date()
+    let d    = date.getDate(),
+        m    = date.getMonth(),
+        y    = date.getFullYear()
+
+    let calendarEl = document.getElementById('calendar');
+    let calendarEvent=[]
+    
+    
+    let Calendar = FullCalendar.Calendar;
+    let calendarOption={
+        themeSystem: 'bootstrap',
+        customButtons: {
+        newEvent: {
+            text: 'Nuovo',
+            click: function() {
+                $('#addEvent_Mdl').modal('show')
+            }
+        }
+        },
+      headerToolbar: {
+        left  : 'prev,next today newEvent',
+        center: 'title',
+        right : 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      eventTimeFormat: { // like '14:30:00'
+            hour: '2-digit',
+            minute: '2-digit',
+            meridiem: false
+        },
+      eventClick: function(info) {
+        $('#infoEvent_Mdl').modal('show')
+        let obj
+        for (let i = 0; i < calendarEvent.length; i++) {
+            const el = calendarEvent[i]
+            if (el.id==info.event.id){
+                obj=el
+            }
+        }
+        obj.end=moment(obj.end,true).isValid()?moment(obj.end).format("DD-MM-YY hh:mm"):"-"
+        console.log(obj.end)
+        html=`
+            <tr><td>Titolo:</td><td>${obj.title}</td></tr>
+            <tr><td>Descrizione:</td><td>${obj.description}</td></tr>
+            <tr><td>Inizio:</td><td>${moment(obj.start).format("DD-MM-YY hh:mm")}</td></tr>
+            <tr><td>Fine:</td><td>${obj.end}</td></tr>
+            <tr><td>Area:</td><td>${obj.category}</td></tr>
+            <tr><td>Intero giorno:</td><td>${obj.allDay}</td></tr>
+        `
+        if (obj.completed==1){
+            $("#isCompleted_Btn").hide()
+            html+=`<tr class="text-center" > <td colspan="2">COMPLETATO</td> </tr>`
+        } else{
+            $("#isCompleted_Btn").show()
+        }
+
+        $("#isCompleted_Btn").attr("idEvent",obj.id)
+        $("#delEvent_Btn").attr("idEvent",obj.id)
+        $("#infoEvent_Tblb").html(html)
+        // change the border color just for fun
+        info.el.style.borderColor = 'red';
+    },
+      eventDrop:function(info){
+        console.log(`/calendar/updateDate?idEvent=${info.event.id}&start=${info.event.start.toISOString()}&stop=${info.event.end.toISOString()}`)
+        $.ajax({
+          type: "GET",
+          url: `/calendar/updateDate?idEvent=${info.event.id}&start=${info.event.start.toISOString()}&stop=${info.event.end.toISOString()}`,
+          success: function (response) {
+            console.log(response)
+          }
+        });
+      },
+      eventResize: function(info) {
+        $.ajax({
+          type: "GET",
+          url: `/calendar/updateDate?idEvent=${info.event.id}&start=${info.event.start.toISOString()}&stop=${info.event.end.toISOString()}`,
+          success: function (response) {
+            console.log(response)
+          }
+        });
+      },
+      //Elenco eventi
+      events: calendarEvent,
+      //eventSources: ['/calendar/getAllEvents'],
+      editable  : false,
+      droppable : false, // this allows things to be dropped onto the calendar !!!
+      drop      : function(info) {
+        // is the "remove after drop" checkbox checked?
+        if (checkbox.checked) {
+          // if so, remove the element from the "Draggable Events" list
+          info.draggedEl.parentNode.removeChild(info.draggedEl);
+        }
+      }
+    }
+
+    // Create and refresh calendar
+    async function  createCalendar (){
+      await $.get("/calendar/getAllEvents", function (response) {
+            refreshEvents(response.data)
+          })
+        let calendar = new Calendar(calendarEl, calendarOption);
+        calendar.destroy();
+        calendar.render();
+    }
+    // Refresh events object
+    function refreshEvents (data){
+            //calendarEvent=[]
+            console.log(calendarEvent.length)
+            if(calendarEvent.length>0){
+              calendarEvent.length = 0
+            }
+            for (let i = 0; i < data.length; i++) {
+                const el = data[i];
+                let allDay=el.allDay?true:false
+                let backgroundColor=el.calendarCategory.colore
+                let borderColor=el.calendarCategory.colore
+                if (el.completed==1){
+                    backgroundColor="#e3e3e3"
+                    borderColor="#eeeeee"
+                }
+                event={
+                    id:el.id.toString(),
+                    title: el.title,
+                    description: el.description,
+                    start: moment(el.start).format(),
+                    end: el.end!=null?moment(el.end).format():"",
+                    backgroundColor: backgroundColor, //red
+                    borderColor: borderColor, //red
+                    allDay: el.allDay==0?false:true,
+                    category: el.category,
+                    completed:el.completed
+                }
+                calendarEvent.push(event)
+            }
+            
+            console.log(calendarEvent)
+    }
+    
+    $(document).ready(async function () {
+        
+      await createCalendar ()
+      $('#startDate').datetimepicker({icons: {time: "fa fa-clock"},locale: 'it',sideBySide:true});
+        $('#stopDate').datetimepicker({icons: {time: "fa fa-clock"},locale: 'it',sideBySide:true});
+        // Add event
+        $("#addNewEvent_Btn").click(function(){
+        $.ajax({
+            type: "POST",
+            url: "/calendar/newEvent",
+            data: $("#newEvent_Frm").serialize()    ,
+            success: async function (response) {
+                await createCalendar ()
+                $('#addEvent_Mdl').modal('hide')
+            },
+            error: function(err){
+                console.log(err)
+            }
+        });
+       })
+        // Mark event as complete
+        $("#isCompleted_Btn").click(function (e) { 
+            e.preventDefault();
+            let c=confirm("Segnare l'evento come concluso?")
+            if (c==true){
+              let idEvent=$(this).attr("idEvent")
+              $.ajax({
+                  type: "GET",
+                  url: "/calendar/isCompleted?idEvent="+idEvent,
+                  success: async function (response) {
+                      await createCalendar ()
+                      $('#infoEvent_Mdl').modal('hide')
+                    },
+                  error: function (err){
+                      console.log(err)
+                  }
+              });
+            }
+        });       
+       // Del event
+        $("#delEvent_Btn").click(function (e) { 
+            e.preventDefault();
+            let idEvent=$(this).attr("idEvent")
+            let c=confirm("Sei sicurə di voler eliminare l'evento?")
+            if (c==true){
+              $.ajax({
+                type: "GET",
+                url: "/calendar/deleteEvent?idEvent="+idEvent,
+                success: async function (response) {
+                    await createCalendar ()
+                    $('#infoEvent_Mdl').modal('hide')
+                  },
+                error: function (err){
+                    console.log(err)
+                }
+              });
+            }
+          });
+    });
+    
+
+</script>
+<%- include ('closeTag') %>

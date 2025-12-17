@@ -1,0 +1,207 @@
+<% 
+if (classField==""){
+    classField=="hidden"
+}
+if(classTxt==""){
+    classTxt=="hidden"
+}
+form.forEach(el => { %>    
+    <%# TEXT  TEMPLATE%>  
+    <% if (el.type=="text") {%>
+    <div class="<%= el.classBox %>"
+        <% if (el.hidden){%>
+                style="display:none"
+            <% } %>
+            id="<%= el.fieldName %>_Wrp">    
+        <dl>
+          <dt><%= el.label %></dt>
+          <dd class="<%= classField %>">
+            <div class="form-group">
+              <input type="text" tp="textField"
+                    class="form-control form-control-sm form-control-minimal"
+                    <% if (el.step){ %> step =" <%=el.step %>" <% } %>
+                    <% if (el.required){ %> required <% } %>
+                    <% if (el.readonly){ %> readonly <% } %>
+                    <% if (el.maxlength){ %> maxlength="<%= el.maxlength %>" <% } %>
+                    <% if (el.setValue){ %> value ="<%=el.setValue %>" <% } %>
+                    id="<%= el.fieldName %>_Fld"  
+                    name="<%= el.fieldName %>">
+                <% if (el.help) {%>
+                    <p class="help-block small"><%= help %></p>
+                    <% }%>
+            </div>
+          </dd>
+          <dd id="<%= el.fieldName %>_Show" class="<%= classTxt %>"></dd>
+        </dl>
+      </div>
+    <% } %>
+    <%#  NUMBER TEMPLATE%>  
+    <% if (el.type=="number") {%>
+        <div class="<%= el.classBox %>"
+            <% if (el.hidden){%>
+                style="display:none"
+            <% } %>
+            id="<%= el.fieldName %>_Wrp">    
+            <dl>
+              <dt><%= el.label %></dt>
+              <dd class="<%= classField %>">
+                <div class="form-group">
+                  <input type="number" tp="textField"
+                        class="form-control form-control-sm form-control-minimal"
+                        <% if (el.step){ %> step ="<%=el.step %>" <% } %>
+                        <% if (el.max){ %> max ="<%=el.max %>" <% } %>
+                        <% if (el.min){ %> min ="<%=el.min %>" <% } %>
+                        <% if (el.required){ %> required <% } %>
+                        <% if (el.disabled) {%> disabled <% } %>
+                        <% if (el.readonly){ %> readonly <% } %>
+                        <% if (el.setValue){ %> value ="<%=el.setValue %>" <% } %>
+                        id="<%= el.fieldName %>_Fld"  
+                        name="<%= el.fieldName %>">
+                    <% if (el.help) {%>
+                        <p class="help-block small"><%= help %></p>
+                        <% }%>
+                </div>
+              </dd>
+              <dd id="<%= el.fieldName %>_Show" class="<%= classTxt %>"></dd>
+            </dl>
+          </div>
+        <% } %>
+    <%# SELECT TEMPLATE %>
+    <% if (el.type=="select") {%>    
+        <div class="<%= el.classBox %>" 
+            <% if (el.hidden){%>
+                style="display:none"
+            <% } %>
+            id="<%= el.fieldName %>_Wrp"
+            <dl>
+                <dt ><%= el.label %></dt>
+                <dd class="<%= classField %>">
+                    <div class="form-group">
+                        <select tp="selectField"
+                                class="form-control form-control-sm form-control-minimal"
+                                name="<%= el.fieldName %>"
+                                id="<%= el.fieldName %>_Fld"
+                                <% if (el.size) {%> size="<% el.size %>" <% } %>
+                                <% if (el.disabled) {%> disabled <% } %>
+                                <% if (el.required) {%> required <% } %>
+                                <% if (el.multiple) {%> multiple <% } %>
+                                >
+                            <% if (el.firstField) {%> <option value="<% if (el.firstField) {%><%=el.firstFieldVal%><%} %>"><%= el.firstField%></option> <% } %>
+                            <% if (el.option){ %>
+                            <% el.option.forEach(elem => { %>
+                            <option value="<%= elem.val%>"
+                                <% if (elem.attr){
+                                    for (let i = 0; i < elem.attr.length; i++) {
+                                        const at = elem.attr[i]; %>
+                                        <%= at.attrTxt%>="<%= at.attrVal%>"
+                                 <%   }} %>
+                                 >
+                                 <%= elem.txt%>
+                            </option>
+                            <% }); }%>
+                        </select>
+                        <% if (el.help) {%>
+                            <p class="help-block small"><%= help %></p>
+                            <% }%>
+                    </div>
+                </dd>
+                <dd id="<%= el.fieldName %>_Show" class="<%= classTxt %>"></dd>
+            </dl>
+        </div>
+    <% } %>
+    <% if (el.type=="hidden") {%>
+        <input type="hidden" class="form-control" name="<%= el.fieldName%>" id="<%= el.fieldName %>_Fld" tp="hidden">
+    <% } %>
+    <%# TEXT AREA TEMPLATE %>
+    <% if (el.type=="textarea") {%>
+        <div class="<%= el.classBox %>"
+            <% if (el.hidden){%>
+                style="display:none"
+            <% } %>
+            id="<%= el.fieldName %>_Wrp"
+            >
+            <dl>
+                <dt><%= el.label %></dt>
+                <dd class="<%= classField %>">
+                    <div class="form-group">
+                        <textarea tp="textField"
+                            class="form-control"
+                            name="<%= el.fieldName %>"
+                            id="<%= el.fieldName %>_Fld"
+                            <% if (el.rows) {%> rows="<%= el.rows %>"  <% } %>
+                            <% if (el.cols) {%> cols="<%= cols %>" <% } %>
+                            <% if (el.maxlength) {%> maxlength="<%= maxlength %>" <% } %>
+                            <% if (el.disabled) {%> disabled <% } %>
+                            <% if (el.required) {%> required <% } %>
+                            <% if (el.readonly) {%> readonly <% } %>
+                        ><%= el.val %></textarea>
+                      </div>
+                </dd>
+                <dd id="<%= el.fieldName %>_Show" class="<%= classTxt %>"></dd>
+            </dl>
+        </div>
+    <% } %>
+    <%# BUTTON TEMPLATE %>
+    <% if (el.type=="button") {%>
+        <div class="<%= el.classBox %>">
+            <dl>
+                <dt><%= el.label %></dt>
+                <dd class="<%= classField %>">
+                    <div class="form-group">
+                        <button type="button" name="" id="<%= el.fieldName %>_Fld" class="<%= el.classButton %>"><%= el.labelButton %></button>
+                      </div>
+                </dd>
+                <dd id="<%= el.fieldName %>_Show" class="<%= classTxt %>"></dd>
+            </dl>
+        </div>
+    <% } %>
+    <%# CHECKBOX TEMPLATE %>
+    <% if (el.type=="checkbox") {%>
+    <div class="<%= el.classBox %>">
+            <dl>
+                <dt><%= el.label %></dt>
+                <dd class="<%= classField %>">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="1" name="<%= el.fieldName %>" id="<%= el.fieldName %>_Fld" tp="checkbox">
+                      </div>
+                </dd>
+                <dd id="<%= el.fieldName %>_Show" class="<%= classTxt %>"></dd>
+            </dl>
+        </div>
+    <% } %>
+    <%# DATE TEMPLATE %>
+<% if (el.type=="date") {%>
+    <div class="<%= el.classBox %>">
+            <dl>
+                <dt><%= el.label %></dt>
+                <dd class="<%= classField %>">
+                    <div class="form-group">
+                        <div class="input-group date" id="<%= el.fieldName %>_DT" data-target-input="nearest">
+                            <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" data-target="#<%= el.fieldName %>_DT " name="<%= el.fieldName %>"/>
+                            <div class="input-group-append" data-target="#<%= el.fieldName %>_DT " data-toggle="datetimepicker">
+                                <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                </div>
+                        
+                </dd>
+                <dd id="<%= el.fieldName %>_Show" class="<%= classTxt %>"></dd>
+            </dl>
+        </div>
+        <%#<script>
+            $('#fieldName').datetimepicker({icons: {time: "fa fa-clock"},locale: 'it',sideBySide:true});
+        </script>%>
+    <% } %>
+    <%# TITLE TEMPLATE %>
+    <% if (el.type=="title") {%>
+    <span class="col-12 text-bold border-bottom border-top"> <%= el.title %> </span>
+    <% } %>
+    <%# STARTROW TEMPLATE %>
+    <% if (el.type=="startRow") {%>
+        <div class="row w-100 <% if (el.class) {%> <%= el.class %> <% } %>">
+        <% } %>
+    <%# ENDROW TEMPLATE %>
+    <% if (el.type=="endRow") {%>
+        </div>
+        <% } %>
+<% }); %>  

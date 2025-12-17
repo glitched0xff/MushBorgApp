@@ -1,0 +1,399 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione contenitori 
+            <button class="btn btn-xs btn-primary" id="modContainer_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca substrate</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newContainer_Btn"><i class="fas fa-plus"></i> Nuova fornitore</button>
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco contenitori</button>
+            </h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Contenitori</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid" >
+        <div class="row" style="width: 100%;">
+          
+          <!-- Raw material card -->
+          <div class="card w-100" id="tableContainer_Crd">
+            <div class="card-body">
+              <table class="display table table-striped table-bordered compact" id="container_Tbl" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 45px; "></th>
+                        <th>Codice contenitore</th>
+                        <th>Nome contenitore</th>
+                        <th>Tipo contenitore</th>
+                        <th>Creato il</th>
+                    </tr>
+                </thead>
+                <tbody id="container_Tblb">
+                    
+                    
+                    
+                </tbody>
+            </table>
+            </div>
+          </div>
+          <!-- Show/mod Raw MAterial Card -->
+          <dvi class="card w-100" id="showContainer_Crd" style="display: none;">
+            <div class="row m-3">
+              <div class="col-12">
+              <form id="container_Form" class="p-3">
+                <div class="row w-100">
+                    <div class="col">
+                  <%- include('../include/ejsForm',
+                  {form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"id"
+                    },
+                    { type:"startRow"},
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"code_container",
+                      label:"Codice contenitore",
+                      required:'', 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"container_name",
+                      label:"Nome contenitore",
+                      required:'', 
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"capacity",
+                      label:"Capacità",
+                      required:'', 
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"uom",
+                      label:"Unità di misura",
+                      option:[{val:"Kg",txt:"Kg"},{val:"Gr",txt:"Gr"},{val:"Qt",txt:"Qt"}]
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"type",
+                      label:"Tipo",
+                      option:[{val:"Sacco con filtro",txt:"Sacco con filtro"},
+                              {val:"Secchio",txt:"Secchio"},
+                              {val:"Vaso di vetro",txt:"Vaso di vetro"},
+                              {val:"Tronco",txt:"Tronco"},
+                              {val:"Tube",txt:"Tube"},
+                              {val:"MonoTube",txt:"MonoTube"}
+                            ]
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"material",
+                      label:"Materiale",
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"reusable",
+                      label:"Riutilizzabile",
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"supplierId",
+                      label:"Fornitore",
+                      option:supplierDD
+                    },
+                    { type:"endRow"},
+                    { type:"startRow"},
+                    {
+                      type:"textarea",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"note",
+                      label:"Note",
+                    },
+                    { type:"endRow"}
+                    ]  }) %>
+  
+                    </div>
+                  </div>
+                  
+              </form>
+              <div class="col-12">
+                <button type="button" class="btn btn-xs btn-primary" id="saveNewContainer_Btn"><i class="fas fa-plus"></i> Salva contenitore</button>
+                <button type="button" class="btn btn-xs btn-primary" id="saveModContainer_Btn"><i class="fas fa-plus"></i> Salva modifica contenitore</button>
+              </div>
+              </div>
+            </div>
+            
+          </dvi>
+</section>
+</div>
+
+
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>
+
+let tableContainer
+let idContainer
+
+//Check required field
+function checkForm(formName){
+    let check=true
+    $($('#'+formName).prop('elements')).each(function(){
+        if (($(this).prop("required"))&&($(this).val()=="")){
+          check=false
+          $(this).addClass("border-danger")
+        }
+        else if (($(this).prop("required"))&&($(this).val()!="")){
+          $(this).removeClass("border-danger").addClass("border-success")
+        }
+        else{
+          $(this).removeClass("border-danger")
+        }
+    });
+    return check
+  }
+// Reset form
+function resetForm(formName){
+  $("#"+formName).get(0).reset()
+  $($('#'+formName).prop('elements')).each(function(){
+    $(this).removeClass("border-danger")
+    $(this).removeClass("border-success")
+  })
+}
+// Draw and update table
+async function  drawTable (){
+   await $.ajax({
+        type: "GET",
+        url: "/container/getAll",
+        success: async function (response) {
+          console.log(response)
+            let html=""
+            for (let i = 0; i < response.containers.length; i++) {
+                let el=response.containers[i]
+                let delBtnDisable=""
+                // if (el.used!=0){
+                //   delBtnDisable="disabled"
+                // }
+                html+=`<tr>
+                           <td>
+                            <button type="button" name="" id="showBtn${el.id}" 
+                            class="btn btn-primary btn-xs showContainer" style="width:25px"
+                            idContainer="${el.id}" containerName="${el.container_name}">
+                              <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" name="" id="delete${el.id}" 
+                          class="btn btn-danger btn-xs deleteContainer_Btn" style="width: 25px" 
+                          idContainer="${el.id}" containerName="${el.container_name }" ${delBtnDisable}>
+                            <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                          </button>
+                        </td>
+                                <td>${el.code_container}</td>
+                                <td>${el.container_name}</td>
+                                <td>${el.type}</td>
+                                <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                            </tr>`
+                
+                }
+                await $('#container_Tbl').DataTable().clear().rows.add($(html)).draw();
+            }
+    });
+
+}
+
+$(document).ready(async function () {
+  // init   
+    tableContainer=$('#container_Tbl').DataTable({responsive: true});
+    await drawTable()
+    
+    // New rawMAterial
+  $("#newContainer_Btn").click(async function (e) { 
+    e.preventDefault();
+    resetForm("container_Form")   
+    $(".elementForm").show()
+    $(".elementText").hide()
+    $("#rowContainer").hide() 
+    $("#newContainer_Btn").hide()
+    $("#saveModContainer_Btn").hide()
+    $("#backToMain_Btn").show()
+    $("#tableContainer_Crd").hide()
+    $("#showContainer_Crd").show()
+    $("#element_Row").hide()
+    $("#saveNewContainer_Btn").show()
+  });
+  // --> New container
+  $("#saveNewContainer_Btn").click(function (e) { 
+    e.preventDefault();
+    if (checkForm("container_Form")){
+      $.ajax({
+        type: "POST",
+        url: "/container/newContainer",
+        data: $("#container_Form").serialize(),   
+        success: async function (response) {
+          await drawTable()
+          $("#showContainer_Crd").hide()
+          $("#tableContainer_Crd").show()
+          $("#newContainer_Btn").show()
+          $("#modContainer_Btn").hide()
+          $("#backToMain_Btn").hide()
+          $(".elementForm").hide()
+          $(".elementText").show()
+          resetForm("container_Form")
+        }
+      });
+    } else{
+      alert("assicurati di aver compilato i campi richiesti")
+    }
+});
+
+   // --> Mod container
+   $("#saveModContainer_Btn").click(function (e) { 
+    e.preventDefault();
+    if (checkForm("container_Form")){
+    $.ajax({
+        type: "PUT",
+        url: "/container/updateContainer",
+        data: $("#container_Form").serialize(),   
+        success: async function (response) {
+          await drawTable()
+          $("#showContainer_Crd").hide()
+          $("#tableContainer_Crd").show()
+          $("#newContainer_Btn").show()
+          $("#modContainer_Btn").hide()
+          $("#backToMain_Btn").hide()
+          $("#saveNewContainer_Btn").hide()
+          $("#saveModContainer_Btn").hide()
+          $("#saveContainer_Btn").show()
+          $(".elementForm").hide()
+          $(".elementText").show()
+          resetForm("container_Form")
+        }
+      });
+      } else{
+            alert("assicurati di aver compilato i campi richiesti")
+          }
+    });
+  
+    // Back to main
+  $("#backToMain_Btn").click(async function (e) { 
+    e.preventDefault();
+    await drawTable()
+    resetForm("container_Form")
+    $("#newContainer_Btn").show()
+    $("#backToMain_Btn").hide()
+    $("#newContainer_Crd").hide()
+    $("#showContainer_Crd").hide()
+    $("#tableContainer_Crd").show()
+    $("#modContainer_Btn").hide()
+    $("#saveNewContainer_Btn").hide()
+    $("#saveModContainer_Btn").hide()
+  });  
+  // Show/mod Raw material
+  $(document).on("click",".showContainer", async function(e){
+      $("#saveContainer_Btn").hide()
+
+      let id=$(this).attr("idContainer")
+      idContainer=id
+      let containerName=$(this).attr("containerName")
+      await $.ajax({
+        type: "GET",
+        url: "/container/getOneContainer?id="+id,
+        success: async function (response) {
+          //console.log(response)
+          let data=response.container
+          // Populate GUI
+          for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+              }
+              if(($("#"+key+"_Fld").attr("tp")=="checkbox")&&(key=="reusable")){
+                if (value==1){
+                  $("#reusable_Fld").attr("checked","true").val(1)
+                }else{
+                  $("#reusable_Fld").removeAttr("checked").val(0)
+                }
+              }
+              if(key=="reusable"){
+                $("#"+key+"_Show").html(value?"Si":"No")
+              }
+              else if(key=="supplierId"){
+                $("#"+key+"_Show").html(data.supplier.supplier_name)
+              }
+              else{
+                $("#"+key+"_Show").html(value?value:"-")
+              }
+            }
+            $("#id_Fld").val(data.id)
+          if (response.container.used>0){
+              $("#saveContainer_Btn").hide()
+              await drawTableContainer()
+              $("#rowContainer").show()
+              $("#addElement_Btn").prop("disabled","true")
+              $(".delElement_Btn").prop("disabled","true")
+            } else {
+              $("#rowContainer").hide()
+              $("#addElement_Btn").removeAttr("disabled")
+              $(".delElement_Btn").removeAttr("disabled")
+            }
+          $("#showContainer_Crd").show()
+          $("#tableContainer_Crd").hide()
+          $("#newContainer_Btn").hide()
+          $("#saveModContainer_Btn").hide()
+          $("#saveNewContainer_Btn").hide()
+          $("#modContainer_Btn").show()
+          $("#backToMain_Btn").show()
+          $(".elementForm").hide()
+          $(".elementText").show()
+        }
+      });   
+    })
+    $("#modContainer_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#saveModContainer_Btn").show()
+      $(".elementForm").show()
+      $(".elementText").hide()
+    }); 
+
+    // Delete container
+    $(document).on("click",".deleteContainer_Btn", async function(e){
+      e.preventDefault();
+      let id=$(this).attr("idContainer")
+      let c=confirm(`Stai eliminando una fornitore, vuoi continuare? `)
+      if (c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/container/deleteContainer?id="+id,
+        success: async function (response) {
+          await drawTable()
+        }
+      });
+      }
+    })
+});
+    
+
+</script>
+<%- include ('../closeTag') %>

@@ -1,0 +1,294 @@
+<%- include ('header') %>
+<%- include ('navbar') %>
+<%- include ('sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Dashboard</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard v1</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+          <div class="col-lg-4 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3><%= nInoculum%></h3>
+                <p>Elementi inoculi</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-microscope"></i>
+              </div>
+              <a href="/mushElement?filterCategory=INOCULUM" class="small-box-footer">Elenco <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-4 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3><%= nSpawn%></h3>
+                <p>Elementi spawn</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-share-alt"></i>
+                
+              </div>
+              <a href="/mushElement?filterCategory=SPAWN" class="small-box-footer">Elenco <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-4 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3><%= nCultivation%></h3>
+                <p>Elementi coltivazione</p>
+              </div>
+              <div class="icon">
+                <i class="lni lni-mushroom-1"></i>
+              </div>
+              <a href="/mushElement?filterCategory=CULTIVATION" class="small-box-footer">Elenco <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <div class="col-lg-4 col-6">
+            <div class="small-box bg-light">
+              <div class="inner">
+                <h3>
+                <% if (harvests[0].harvest>1000){%>
+                  <%= (harvests[0].harvest/1000).toFixed(2).toString().replace(".", ",")%> kg
+                <% } else { %>
+                  <%=  harvests[0].harvest.toString().replace(".", ",")%> g
+                <% } %></h3>
+                <p>Raccolto settimanale: <%=  harvests[0].week %></p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-weight"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-6">
+            <div class="small-box bg-light">
+              <div class="inner">
+                <h3>
+                <% if (harvests[1].harvest>1000){%>
+                  <%= (harvests[1].harvest/1000).toFixed(2).toString().replace(".", ",")%> kg
+                <% } else { %>
+                  <%=  harvests[1].harvest.toString().replace(".", ",")%> g
+                <% } %></h3>
+                <p>Raccolto mensile: <%=  harvests[1].month %></p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-weight"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-6">
+            <div class="small-box bg-light">
+              <div class="inner">
+                <h3>
+                <% if (harvests[2].harvest>1000){%>
+                  <%= (harvests[2].harvest/1000).toFixed(2).toString().replace(".", ",")%> kg
+                <% } else { %>
+                  <%=  harvests[2].harvest.toString().replace(".", ",")%> g
+                <% } %></h3>
+                <p>Raccolto annuale <%=  harvests[2].year %></p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-weight"></i>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- Main row -->
+        <div class="row">
+          <!-- Left col -->
+          <section class="col-lg-12 connectedSortable">
+            <!-- TO DO List -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="ion ion-clipboard mr-1"></i>
+                  To Do List
+                </h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-primary float-right btn-xs" id="addElemento_btn" data-toggle="modal" data-target="#addTodo_Mdl">
+                    <i class="fas fa-plus"></i> Aggiungi elemento
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div id="todo_Tbl">
+
+                </div>
+              </div>
+             
+              
+              <!-- Modal todo-->
+              <div class="modal fade" id="addTodo_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Inserisci Todo</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                      <form id="toDo_Frm">
+                                <div class="card-body">
+                                <div class="form-group">
+                                    <label>Titolo*</label>
+                                    <input type="text" class="form-control" id="titolo_Fld" placeholder="Inserisci il titolo" required maxlength="35" name="titolo">
+                                </div>
+                                <div class="form-group">
+                                    <label>Descrizione</label>
+                                    <input type="text" class="form-control" id="descrizione_Fld" placeholder="Aggiungi qualche dettaglio .." name="descrizione">
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-12  ">
+                                        <label>Durata prevista</label>
+                                        <input type="text" class="form-control" id="durata_Fld" placeholder="" name="durata">
+                                        <span class="info small">es. 2h per indicare 2 ore usa h=ore, m=minuti, g=giorni </span>
+                                    </div>
+                                    <div class="form-group col-6  ">
+                                        <label for="">Priorità* </label>
+                                        <select class="custom-select form-control-border" id="priority_Fld" required name="priority">
+                                        <option value="0">Urgente</option>
+                                        <option value="1">Da fare</option>
+                                        <option value="2">Può attendere</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-6  ">
+                                        <label for="">Area* </label>
+                                        <select class="custom-select form-control-border" id="sezione_Fld" required name="sezione">
+                                        <option value="0">Laboratorio</option>
+                                        <option value="1">Spawn</option>
+                                        <option value="2">Substrato</option>
+                                        <option value="3">Inoculo</option>
+                                        <option value="4">Espansione</option>
+                                        <option value="5">Fruttificazione</option>
+                                        <option value="6">Post produzione</option>
+                                        <option value="6">Altro</option>
+                                        </select>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                <button type="submit" class="btn btn-primary" id="saveTodo_Btn">Aggiungi elemento</button>
+                                <button type="submit" class="btn btn-danger" id="abortTodo_Btn">Annulla</button>
+                                </div>
+                            </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- telemetry-->
+             <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-chart-pie mr-1"></i>
+                  Telemetria
+                </h3>
+                <div class="card-tools">
+                  
+                </div>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="row w-100">
+                  <% storage.forEach (elem => {%>
+                    <div class="card col-6">
+                      <div class="card-body">
+                        <h4 class="card-title ">
+                          <span class="text-bold">
+                            <% if  ((elem.devices[0])&&(elem.devices[0].sensorData[0])){
+                                  if(elem.devices[0].sensorData[0].status==true){%>
+                                    <small style="font-size: 10px;">&#128994;</small>
+                                <% }else{%>
+                                    <small style="font-size: 10px;">&#128308;</small>
+                              <%}} else { %>
+                                <small style="font-size: 18px;">&#10754;</small>
+                              
+                            <% } %>
+                            <%= elem.code_storage %> 
+                            <a href="/storage?redirectId=<%= elem.id %>">
+                            <i class="fa fa-link fa-xs" aria-hidden="true"></i>
+                            </a>
+                          </span>
+                          <br>
+                        <span class="small"><%= elem.name_storage %>
+                           <% if  ((elem.devices[0])&&(elem.devices[0].sensorData[0])){ %>
+                            <br>Last update: <%= elem.devices[0].sensorData[0].dataValues.createdAtFormatted %>
+                            <% } %>
+                          </span>
+                      </h4>
+                        <p class="card-text">
+                          <div class="row w-100">
+                          <% let temp
+                            if ((elem.devices[0])&&(elem.devices[0].temp==1)){
+                              if (elem.devices[0].sensorData[0]){
+                                temp=elem.devices[0].sensorData[0].temp%>
+                                <div class="col-4">
+                                  <div class="h1 col-12 text-center"><%= temp%>°</div>
+                                  <div class="mx-auto w-100 small text-center">Temperatura</div>
+                                  </div>
+                            <% }} %>
+                            <% let hum
+                            if ((elem.devices[0])&&(elem.devices[0].hum==1)){
+                              if (elem.devices[0].sensorData[0]){
+                                hum=elem.devices[0].sensorData[0].hum%>
+                                <div class="col-4">
+                                  <div class="h1 col-12 text-center"><%= hum%>%</div>
+                                  <div class="mx-auto w-100 small text-center">Umidità</div>
+                                  </div>
+                            <% }} %>
+                            </div>
+                        </p>
+                      </div>
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- /.Left col -->
+
+          <!-- right col -->
+        </div>
+        <!-- /.row (main row) -->
+      </div>
+    </section>
+    
+  </div>
+  
+  <%- include ('footer') %>
+  <%- include ('jsLoad') %>
+  <!-- Mushborg todo Function function -->
+  <script src="/dist/toDo_Mushborg.js"></script> 
+  <script>
+  let storage=<%- JSON.stringify(storage) %> 
+ console.log(storage)
+    $(document).ready(function () {
+      drawTodoList()
+    });
+  </script>
+ <%- include ('closeTag') %>

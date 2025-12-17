@@ -1,0 +1,1027 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="propagation-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione lotti coltivazione 
+            <button class="btn btn-xs btn-primary" id="modPropagation_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca lotto</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newPropagation_Btn"><i class="fas fa-plus"></i> Nuova lotto</button>
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna all'elenco</button>
+            </h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Lotti coltivazione</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.propagation-fluid -->
+    </div>
+    <section class="content">
+      <div class="propagation-fluid" >
+          <!-- Table card -->
+          <div class="card w-100" id="tablePropagation_Crd">
+            <div class="card-body">
+              <table class="display table table-striped table-bordered compact" id="propagation_Tbl" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 45px; "></th>
+                        <th>Codice</th>
+                        <th>Spawn</th>
+                        <th>Substrato</th>
+                        <th>Contenitori</th>
+                        <th>Creato il</th>
+                    </tr>
+                </thead>
+                <tbody id="propagation_Tblb">
+                    
+                    
+                    
+                </tbody>
+            </table>
+            </div>
+          </div>
+          <!-- Show/mod  Card -->
+          <dvi class="card w-100" id="showPropagation_Crd" style="display: none;">
+            <div class="row m-3">
+              <div class="col-12">
+              <form id="propagation_Form" class="p-3">
+                <div class="row w-100">
+                    <div class="col">
+                      <!-- code_propagation
+                      spawnId
+                      substrateId
+                      container
+                      nr_container
+                      used
+                      note -->
+                  <%- include('../include/ejsForm',
+                  {classTxt: "elementText",
+                  classField: "elementForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"id"
+                    },
+                    { type:"startRow"},
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"code_propagation",
+                      label:"Codice ",
+                      readonly:'', 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"propagation_name",
+                      label:"Nome coltivazione",
+                      required:'', 
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"dt_start",
+                      label:"Data inizio",
+                      required:'', 
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"dt_end",
+                      label:"Data maturazione prevista",
+                      required:'', 
+                    },
+                    { type:"endRow"},
+                    { type:"startRow"},
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"containerId",
+                      label:"Contenitore",
+                      option:containerDD
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"nr_container",
+                      label:"N contenitori",
+                      required:'', 
+                    },
+                    {
+                    type:"select",
+                    classBox:"col-md-3 col-sm-6",
+                    fieldName:"spawnId",
+                    label:"Spawn",
+                    option:spawnDD
+                  },
+                    
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"substrateId",
+                      label:"Substrato",
+                      option:substrateDD
+                    },
+                    { type:"endRow"},
+                    { type:"startRow"},
+                    {
+                      type:"textarea",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"note",
+                      label:"Note",
+                    },
+                    { type:"endRow"}
+                    ]  }) %>
+  
+                    </div>
+                  </div>
+                  <!-- {
+                      type:"button",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"spawnId",
+                      label:"Spawn",
+                      classButton:"btn btn-secondary btn-sm",
+                      labelButton:"Seleziona lo spawn"
+                    },, -->
+              </form>
+              <div class="col-12">
+                <button type="button" class="btn btn-xs btn-primary" id="saveNewPropagation_Btn"><i class="fas fa-plus"></i> Salva lotto</button>
+                <button type="button" class="btn btn-xs btn-primary" id="saveModPropagation_Btn"><i class="fas fa-plus"></i> Salva modifica lotto</button>
+              </div>
+              </div>
+            </div>
+            <div class="row m-3"  id="mushElement_Row" style="display: none;">
+                  
+                  <div class="row w-100 h5 m-3 " >Elementi lotto 
+                    <a id="csvMushElementList_Btn" class="btn btn-xs btn-primary mx-1" href="/cultivation/"  role="button"><i class="fas fa-file-excel"></i> Esporta Csv</a>
+                  </div>
+              <div class="row w-100 m-3" id="mushElement_Data">
+                <div class="row border-bottom mb-2 pb-2 font-weight-bold w-100">
+                  Elemento <span id="mushElementCode" class="mx-1"></span> 
+                  <button class="btn btn-xs btn-primary mx-1" id="backMushElementList_Btn"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco elementi</button>
+                  <button class="btn btn-xs btn-primary mx-1" id="modMushElementList_Btn"> <i class="fas fa-pen"></i> Modifica elemento</button>
+                </div>
+                <form id="mushElement_FRM" class="p-3 w-100">
+                <%- include('../include/ejsForm',
+                  { classTxt: "mushElementText",
+                    classField: "mushElementForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idMushElement"
+                    },
+                    { type:"startRow"},
+                    // {
+                    //   type:"text",
+                    //   classBox:"col-md-4 col-sm-6",
+                    //   fieldName:"type",
+                    //   label:"Tipo",
+                    //   readonly:'', 
+                    // },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"load_date",
+                      label:"Data creazione",
+                      readonly:'', 
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-1 col-sm-6",
+                      fieldName:"qtElem",
+                      label:"Qt",
+                      required:'', 
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"stato",
+                      label:"Stato elemento",
+                      firstField:"Seleziona lo stato",
+                      // required:'', 
+                      disabled:"true",
+                      option:[{txt:"Buono",val:"Buono"},
+                              {txt:"Cattivo",val:"Cattivo"},
+                              {txt:"Contaminato",val:"Contaminato"},
+                              {txt:"In osservazione",val:"In osservazione"}]
+                    },
+                    // { type:"endRow"},
+                    // {type:"startRow"},
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"pick_reason",
+                      label:"Ragione prelievo",
+                      firstField:"Seleziona la motivazione",
+                      required:'', 
+                      option:[{txt:"Pronto per inoculo",val:"Pronto"},{txt:"Contaminazione",val:"Contaminazione"},{txt:"Altro",val:"Altro"}]
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"pick_date",
+                      label:"Data prelievo",
+                    },
+                    
+                    { type:"endRow"}
+                    ]  
+                }) %>
+                </form>
+                <div class="row w-100">
+                  <button class="btn btn-xs btn-primary mx-1" id="saveMushElementList_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva modifica </button>
+                  <button class="btn btn-xs btn-secondary mx-1" id="abortMushElementList_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Annulla modifica </button>
+                </div>
+                <div class="row w-100 my-2">
+                  <div class="col-12 py-1 my-1 font-weight-bold">
+                    Note elemento 
+                    <button class="btn btn-xs btn-primary mx-1" id="addMushElementNote_Btn"> <i class="fas fa-plus"></i> Aggiungi una nota</button>
+                  </div>
+                  <form class="form w-100"  enctype="multipart/form-data" id="mushElementNote_Form" style="display: none;">
+                    <%- include('../include/ejsForm',
+                  { classTxt: "mushElementNoteText",
+                    classField: "mushElementNoteForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idMushElementNote"
+                    },
+                    { type:"startRow"},
+                    {
+                      type:"date",
+                      classBox:"col-md-4 col-sm-6",
+                      fieldName:"check_date",
+                      label:"Data controllo",
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-4 col-sm-6",
+                      fieldName:"statoMushElementNote",
+                      label:"Stato elemento",
+                      firstField:"Seleziona lo stato",
+                      required:'', 
+                      option:[{txt:"Buono",val:"Buono"},
+                              {txt:"Cattivo",val:"Cattivo"},
+                              {txt:"Contaminato",val:"Contaminato"},
+                              {txt:"In osservazione",val:"In osservazione"}]
+                    },
+                    
+                    {
+                      type:"textarea",
+                      classBox:"col-md-4 col-sm-6",
+                      fieldName:"noteMushElementNote",
+                      label:"Note",
+                    },
+                    { type:"endRow"}
+                    ]  
+                  }) %>
+                    <button class="btn btn-xs btn-primary mx-1" id="saveMushElementNote_Btn" > <i class="fas fa-plus"></i> Salva nota</button>
+                    <button class="btn btn-xs btn-secondary mx-1" id="abortMushElementNote_Btn" > <i class="fas fa-plus"></i> Annulla inserimento</button>
+                  </form>
+                  
+                  <div class="table-responsive">
+                    <table class=" table table-striped table-bordered table-sm " id="mushElementNote_Tbl" style="width: 100%;">
+                      <thead>
+                        <tr>
+                          <th style="width: 45px; "></th>
+                          <th>check_date</th>
+                          <th>stato</th>
+                          <th>pict</th>
+                          <th>note</th>
+                        </tr>
+                      </thead>
+                      <tbody id="mushElementNote_Tblb">
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                </div>
+              </div>
+              <div class="row w-100 m-3" id="mushElement_Table" >
+                <div class="table-responsive">
+                <table class=" table table-striped table-bordered table-sm" id="element_Tbl" style="width: 100%;">
+                  <thead>
+                      <tr>
+                          <th style="width: 45px; "></th>
+                          <th style="width: 45px; ">Nt</th>
+                          <th>Codice elemento</th>
+                          <th>Quantità</th>
+                          <th>Stato</th>
+                          <th>Dt carico</th>
+                          <th>Dt prelievo</th>
+                      </tr>
+                  </thead>
+                  <tbody id="element_Tblb">  
+                  </tbody>
+              </table>
+            </div>
+              </div>
+            </div>         
+          </dvi>
+</section>
+
+<!-- Modal Select spawn -->
+<div class="modal fade" id="selectSpawn_Mdl" tabindex="-1" aria-labelledby="selectSpawnLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="selectSpawnLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"><span>
+        <button>
+      </div>
+      <div class="modal-body">
+        <div class="row w-100">
+          <div class="col">
+          <%- include('../include/ejsForm',
+                  {classTxt: "el",
+                  classField: "el",
+                    form:[
+                    {
+                    type:"select",
+                    classBox:"col-md-3 col-sm-6",
+                    fieldName:"spawnSelect",
+                    label:"Select spawn",
+                    option:spawnDD
+                  },
+                  ]}) %>
+                  </div>
+        </div>
+        <div class="row">
+          <div class="table-responsive">
+            <table class="table table-striped table-sm">
+              <thead class="thead-inverse">
+                <tr>
+                  <th></th>
+                  <th>Spawn</th>
+                </tr>
+                </thead>
+                <tbody id="spawnList_Tblb">
+                  
+                </tbody>
+            </table>
+            <button type="button" name="" id="spawnAssoc_Btn" class="btn btn-primary btn-block btn-sm">Associa spawn</button>
+          </div>
+          
+        </div>
+      <div>
+      </div>
+      </div>
+    </div>
+ </div>
+</div>
+
+</div>
+
+
+
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>
+let pickReasonDD='<%- JSON.stringify(pickReasonDD) %>'
+pickReasonDD=JSON.parse(pickReasonDD)
+let pickReasonDDHtml="<option> </option>"
+pickReasonDD.forEach(el => {
+  pickReasonDDHtml+=`<option value="${el.val}"> ${el.txt}</option>`
+});
+let statoPropDD='<%- JSON.stringify(statoPropDD) %>'
+statoPropDD=JSON.parse(statoPropDD)
+let statoPropDDHtml="<option> </option>"
+statoPropDD.forEach(el => {
+  statoPropDDHtml+=`<option value="${el.val}"> ${el.txt}</option>`
+});
+let redirectId= <%- JSON.stringify( redirectId) %>
+
+
+
+let tablePropagation
+let idPropagation
+let tableSpawn
+let idSpawn
+let spawnElementTempId=0
+
+//Check required field
+function checkForm(formName){
+    let check=true
+    $($('#'+formName).prop('elements')).each(function(){
+        if (($(this).prop("required"))&&($(this).val()=="")){
+          check=false
+          $(this).addClass("border-danger")
+        }
+        else if (($(this).prop("required"))&&($(this).val()!="")){
+          $(this).removeClass("border-danger").addClass("border-success")
+        }
+        else{
+          $(this).removeClass("border-danger")
+        }
+    });
+    return check
+  }
+// Reset form
+function resetForm(formName){
+  $("#"+formName).get(0).reset()
+  $($('#'+formName).prop('elements')).each(function(){
+    $(this).removeClass("border-danger")
+    $(this).removeClass("border-success")
+  })
+}
+// Draw and update table
+async function  drawTable (){
+   await $.ajax({
+        type: "GET",
+        url: "/propagation/getAll",
+        success: async function (response) {
+          console.log(response)
+            let html=""
+            for (let i = 0; i < response.propagations.length; i++) {
+                let el=response.propagations[i]
+                let delBtnDisable=""
+                // if (el.used!=0){
+                //   delBtnDisable="disabled"
+                // }
+                html+=`<tr>
+                           <td>
+                            <button type="button" name="" id="showBtn${el.id}" 
+                            class="btn btn-primary btn-xs showPropagation" style="width:25px"
+                            idPropagation="${el.id}" propagationName="${el.propagation_name}">
+                              <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" name="" id="delete${el.id}" 
+                          class="btn btn-danger btn-xs deletePropagation_Btn" style="width: 25px" 
+                          idPropagation="${el.id}" propagationName="${el.propagation_name }" spawnId="${el.spawnId }" ${delBtnDisable}>
+                            <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                          </button>
+                        </td>
+                                <td>${el.code_propagation}</td>
+                                <td>${el.spawn?el.spawn.code_spawn:"-"} ${el.spawn?el.spawn.strain.strain_name:"-"}</td>
+                                <td>${el.substrate.cod_substrate} ${el.substrate.name_substrate}</td>
+                                <td>${el.nr_container} ${el.container?el.container.container_name:"-"}</td>
+                                <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                            </tr>`
+                
+                }
+                await $('#propagation_Tbl').DataTable().clear().rows.add($(html)).draw();
+            }
+    });
+
+}
+// Draw spawn list
+async function drawTableSpawnList(idSpawn){
+  console.log(idSpawn)
+  await $.ajax({
+        type: "GET",
+        url: "/spawn/getSpawnElementByRelated?relatedId="+idSpawn,
+        success: async function (response) {
+          console.log(response)
+            let html=""
+            for (let i = 0; i < response.spawnElement.length; i++) {
+                let el=response.spawnElement[i]
+                let delBtnDisable=""
+                // if (el.used!=0){
+                //   delBtnDisable="disabled"
+                // }
+                html+=`
+                <tr>
+                    <td scope="row">
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                            <input type="checkbox" class="selectSpawn_Ckb" idSpawn="${el.element_code}" id="${el.id}">
+                        <div>
+                      <div>
+                    </td>
+                    <td>
+                    ${el.element_code}
+                    </td>
+                  </tr>
+                `
+                }
+                $("#spawnList_Tblb").html(html)
+            }
+    });
+
+}
+
+async function drawElementTbl(idRelated) {
+  console.log(idRelated)
+  $.ajax({
+    type: "GET",
+    url: "/mushElement/getMushElementByRelated?relatedId="+idRelated,
+    success: function (response) {
+      console.log(response)
+      let html=""
+      if(response.mushElement.length>0){
+        for (let i = 0; i < response.mushElement.length; i++) {
+          $("#csvMushElementList_Btn").attr("href","/cultivation/propagationCsvElem?idPropagation="+idRelated)
+          $("#csvMushElementList_Btn").removeAttr("disabled")
+          const el = response.mushElement[i];
+          let bgRow
+          switch (el.stato) {
+            case "Buono":
+            bgRow="bg-success"
+              break;
+              case "Cattivo":
+              bgRow="bg-warning"
+              break;
+              case "Contaminato":
+              bgRow="bg-danger"
+              break;
+              case "In osservazione":
+              bgRow="bg-secondary"
+              break;
+            default :
+            bgRow=null
+              break;
+          }
+          if(el.pick_reason){
+            bgRow="bg-secondary text-withe"
+          }
+          // <td>
+          //       <button type="button" name="" id="showElementBtn${el.id}" 
+          //       class="btn btn-primary btn-xs showElement" style="width:25px"
+          //       idElement="${el.id}" >
+          //         <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+          //         </button>
+          //     </td>
+          html+=`<tr >
+              <td>
+                <a href="/mushElement/singleMushElement?id=${el.id}" target="_blank">
+                <button type="button" 
+                class="btn btn-primary btn-xs" style="width:25px" >
+                  <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                  </button>
+                  </a>
+              </td>
+              
+              <td>
+                ${el.mushElementNotes.length} </td>
+              <td> `
+            if (el.active==0){
+              html+=`<i class="text-danger fa fa-circle" aria-hidden="true"></i>`
+            }
+            else{
+              html+=`<i class="text-success fa fa-circle" aria-hidden="true"></i>`
+            }
+            html+=`  ${el.element_code}</td>
+              <td>${el.qt} </td>
+              <td class="${bgRow}">${el.stato}</td>
+              <td>${moment(el.load_date).format("DD-MM-YY HH:mm")}</td>
+              <td>${el.pick_reason?el.pick_reason:"-"} ${el.pick_date?moment(el.pick_date).format("DD-MM-YY"):""}</td>
+            </tr>`
+        }
+      } else {
+        $("#csvMushElementList_Btn").attr("href","/cultivation/propagationCsvElem?idPropagation="+idRelated)
+          $("#csvMushElementList_Btn").attr("disabled", "disabled");
+        html=`<tr >
+                <td class="bg-danger text-center" colspan="5"> Non sono presenti elementi per questo spawn</td>
+              </tr>`
+      }
+      
+      
+
+      $("#element_Tblb").html(html)
+      $("#mushElement_Table").show()
+      $("#mushElement_Row").show()
+  }
+  });
+}
+async function drawGUIMushElement(idElement){
+  $.ajax({
+        type: "GET",
+        url: "/mushElement/getSingleMushElement?id="+idElement,
+        success: function (response) {
+          console.log(response)
+          let data=response.mushElement
+          $("#mushElementCode").html(data.element_code)
+
+          for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+              }
+              switch (key) {
+                case "id":
+                  $("#idMushElement_Fld").val(value)
+                  $("#saveMushElementList_Btn").attr("idElement",value)
+                  break;
+                case "qt":
+                  $("#qtElem_Fld").val(value)
+                  $("#qtElem_Show").html(value)
+                  break;
+                case "load_date":
+                  $("#load_date_Show").html(moment(value).format("DD-MM-YY HH:mm"))
+                  $("#load_date_Fld").val(moment(value).format("DD-MM-YY HH:mm"))
+                  break;
+                case "pick_date":
+                  $("#pick_date_DT").val(value)
+                  $("#pick_date_Show").html(value?moment(value).format("DD-MM-YY HH:mm"):"-")
+                  break; 
+                default:
+                  $("#"+key+"_Show").html(value?value:"-")
+                  break;
+                }
+            }
+            drawElementNote(idElement)
+            $(".mushElementText").show()
+            $(".mushElementForm").hide()
+            $("#mushElement_Row").show()
+            $("#mushElement_Table").hide()
+            $("#mushElement_Data").show()
+        },
+        error:function(err){
+          console.log(err)
+        }  
+      });
+}
+async function drawElementNote(idMushElement){
+  console.log(idMushElement)
+  $.ajax({
+    type: "GET",
+    url: "/mushElement/getMushElementNote?idElement="+idMushElement+"&type=SPAWN",
+    success: function (response) {
+      console.log(response)
+      let html=""
+      if(response.mushElementNotes.length>0){
+        for (let i = 0; i < response.mushElementNotes.length; i++) {
+          const el = response.mushElementNotes[i];
+          html+=`<tr>
+              <td>
+                <button type="button" name="" id="${el.id}" 
+              class="btn btn-danger btn-xs delMushElementNote" style="width:25px"
+              idMushElementNote="${el.id}" idMushElement="${el.mushElementId}">
+                <i class="fa fa-trash fa-sm delMushElementNote" aria-hidden="true"></i>
+            </button></td>`
+          html+=` <td scope="row">${moment(el.check_date).format("DD-MM-YYYY HH:mm")}</td>
+                        <td>${el.stato}</td>
+                        <td>${el.pict?el.pict:"-"}</td>
+                        <td>${el.note?el.note:"-"}</td>
+                      </tr>`
+        }
+      } else {
+        html=`<tr >
+                <td class="bg-danger text-center" colspan="5"> Non sono presenti note per questo elemento</td>
+              </tr>`
+      }
+      $("#mushElementNote_Tblb").html(html)
+    }})
+}
+async function drawShowPropagation(id) {
+  await $.ajax({
+        type: "GET",
+        url: "/propagation/getOnePropagation?id="+id,
+        success: async function (response) {
+          console.log(response)
+          let data=response.propagation
+          // Populate GUI
+          for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+              }
+              switch (key) {
+                case "substrateId":
+                  $("#substrateId_Show").html(data.substrate.name_substrate)
+                  break;
+                case "containerId":
+                  $("#containerId_Show").html(data.container?data.container.container_name:"-")
+                  break;     
+                case "spawnId":
+                  $("#spawnId_Show").html(data.spawn.code_spawn+" - "+ data.spawn.strain.strain_name)
+                  break;
+                default:
+                  $("#"+key+"_Show").html(value?value:"-")
+                  break;
+                }
+            }
+            $("#id_Fld").val(data.id)
+            await drawElementTbl(id)
+          if (response.propagation.used>0){
+              $("#savePropagation_Btn").hide()
+              await drawTablePropagation()
+              $("#rowPropagation").show()
+              $("#addElement_Btn").prop("disabled","true")
+              $(".delElement_Btn").prop("disabled","true")
+            } else {
+              $("#rowPropagation").hide()
+              $("#addElement_Btn").removeAttr("disabled")
+              $(".delElement_Btn").removeAttr("disabled")
+            }
+              $("#savePropagation_Btn").hide()
+          $("#showPropagation_Crd").show()
+          $("#tablePropagation_Crd").hide()
+          $("#newPropagation_Btn").hide()
+          $("#saveModPropagation_Btn").hide()
+          $("#saveNewPropagation_Btn").hide()
+          $("#modPropagation_Btn").show()
+          $("#backToMain_Btn").show()
+          $("#mushElement_Data").hide()
+          $("#saveMushElementList_Btn").hide()  
+          $("#abortMushElementList_Btn").hide()  
+          
+          $(".elementForm").hide()
+          $(".elementText").show()
+        }
+      });   
+}
+
+$(document).ready(async function () {
+  // init   
+    tablePropagation=$('#propagation_Tbl').DataTable({responsive: true})
+    $('#dt_start_DT').datetimepicker({locale: 'it', format:"DD-MM-YYYY"})
+    $('#dt_end_DT').datetimepicker({locale: 'it', format:"DD-MM-YYYY"})
+    $('#pick_date_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#check_date_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+     $("#dt_start_Fl").on("dp.change", function (e) {
+           let data=$('#dt_start_Fl').val()
+           $('#dt_stop_DT').val(data)
+       });
+    
+      if (redirectId!=null){
+    drawShowPropagation(redirectId)
+  }
+  else{
+    await drawTable()
+  }  
+    
+    // New rawMAterial
+  $("#newPropagation_Btn").click(async function (e) { 
+    e.preventDefault();
+    resetForm("propagation_Form")   
+    $(".elementForm").show()
+    $(".elementText").hide()
+    $("#rowPropagation").hide() 
+    $("#newPropagation_Btn").hide()
+    $("#saveModPropagation_Btn").hide()
+    $("#backToMain_Btn").show()
+    $("#tablePropagation_Crd").hide()
+    $("#showPropagation_Crd").show()
+    $("#element_Row").hide()
+    $("#saveNewPropagation_Btn").show()
+    $.ajax({
+      type: "GET",
+      url: "/propagation/getPropagationCode",
+      success: function (response) {
+        $("#code_propagation_Fld").val(response.code)
+      }
+    });
+    $('#dt_start_DT').datetimepicker('date', moment().format("DD-MM-YYYY"))
+  });
+  
+  $("#dt_start_DT").on("change.datetimepicker", function (e) {
+            $('#dt_end_DT').datetimepicker('date', moment(e.date).add(15, 'd'));
+        });
+  // --> New propagation
+  $("#saveNewPropagation_Btn").click(function (e) { 
+    e.preventDefault();
+    if (checkForm("propagation_Form")){
+      $.ajax({
+        type: "POST",
+        url: "/propagation/newPropagation",
+        data: $("#propagation_Form").serialize(),   
+        success: async function (response) {
+          await drawTable()
+          $("#showPropagation_Crd").hide()
+          $("#tablePropagation_Crd").show()
+          $("#newPropagation_Btn").show()
+          $("#modPropagation_Btn").hide()
+          $("#backToMain_Btn").hide()
+          $(".elementForm").hide()
+          $(".elementText").show()
+          resetForm("propagation_Form")
+        },
+        error: function(err){
+          console.log(err)
+        }
+      });
+    } else{
+      alert("assicurati di aver compilato i campi richiesti")
+    }
+});
+    // Back to main
+  $("#backToMain_Btn").click(async function (e) { 
+    e.preventDefault();
+    window.location="/propagation"
+    // await drawTable()
+    // resetForm("propagation_Form")
+    // $("#newPropagation_Btn").show()
+    // $("#backToMain_Btn").hide()
+    // $("#newPropagation_Crd").hide()
+    // $("#showPropagation_Crd").hide()
+    // $("#tablePropagation_Crd").show()
+    // $("#modPropagation_Btn").hide()
+    // $("#saveNewPropagation_Btn").hide()
+    // $("#saveModPropagation_Btn").hide()
+    // $("#rowPropagationElement").hide()
+  });  
+  // Show/mod Raw material
+  $(document).on("click",".showPropagation", async function(e){
+    
+      let id=$(this).attr("idPropagation")
+      drawShowPropagation(id)
+       })
+    $("#modPropagation_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#saveModPropagation_Btn").show()
+      $(".elementForm").show()
+      $(".elementText").hide()
+    }); 
+     // --> Mod propagation
+   //YYYY-MM-DD hh:mm:ss
+   $("#saveModPropagation_Btn").click(function (e) { 
+    e.preventDefault();
+    if (checkForm("propagation_Form")){
+    $.ajax({
+        type: "PUT",
+        url: "/propagation/updatePropagation",
+        data: $("#propagation_Form").serialize(),   
+        success: async function (response) {
+          await drawTable()
+          $("#showPropagation_Crd").hide()
+          $("#tablePropagation_Crd").show()
+          $("#newPropagation_Btn").show()
+          $("#modPropagation_Btn").hide()
+          $("#backToMain_Btn").hide()
+          $("#saveNewPropagation_Btn").hide()
+          $("#saveModPropagation_Btn").hide()
+          $("#savePropagation_Btn").show()
+          $(".elementForm").hide()
+          $(".elementText").show()
+          resetForm("propagation_Form")
+        }
+      });
+      } else{
+            alert("Assicurati di aver compilato i campi richiesti")
+          }
+    });
+    // Delete propagation
+    $(document).on("click",".deletePropagation_Btn", async function(e){
+      e.preventDefault();
+      let id=$(this).attr("idPropagation")
+      let name=$(this).attr("propagationName")
+      let spawnId=$(this).attr("spawnId")
+      let c=confirm(`Stai eliminando lotto di coltivazione ${name}, vuoi continuare? `)
+      if (c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/propagation/deletePropagation?id="+id+"&spawnId="+spawnId,
+        success: async function (response) {
+          await drawTable()
+        }
+      });
+      }
+    })
+
+    // Select Spawn
+    // $("#spawnId_Fld").click(function (e) { 
+    //   e.preventDefault();
+    //   $("#selectSpawn_Mdl").modal('show')
+    // });
+
+    // $("#spawnSelect_Fld").change(function (e) { 
+    //   e.preventDefault();
+    //   let idSpawn=$(this).val()
+    //   drawTableSpawnList(idSpawn)
+    // });
+
+    // Element
+    $(document).on("click",".genQrCodeElement_Btn", function () {
+      let idElement=$(this).attr("idElement")
+      $.ajax({
+        type: "GET",
+        url: "/propagation/getQrElement?id="+idElement,
+        success: function (response) {
+          console.log(response)
+          let img=`<img src="${response.qrCode}"  />`
+          $("#qrcode").html(img)
+          $("#qrCode_Mdl").modal("show")
+        }
+      });
+      
+    });
+
+       // Element
+    
+    $(document).on("click",".showElement", async function (e) {
+      e.preventDefault()
+      let mushElementTempId=$(this).attr("idElement")
+      console.log(mushElementTempId)
+      await drawGUIMushElement(mushElementTempId)
+      $("#idMushElementNote_Fld").val(mushElementTempId)
+      $("#mushElementNote_Form").hide()
+      $("#mushElementNote_Tbl").show()
+    });
+
+    $("#backMushElementList_Btn").click(async function (e) { 
+      e.preventDefault();
+      await drawElementTbl(idPropagation)
+      $("#mushElement_Data").hide()
+      $("#mushElement_Table").show()
+      $("#saveMushElementList_Btn").hide()
+      $("#abortMushElementList_Btn").hide()
+      
+    });
+
+    $("#modMushElementList_Btn").click(function (e) { 
+      e.preventDefault();
+      $(".mushElementText").hide()
+      $(".mushElementForm").show()
+      $("#saveMushElementList_Btn").show()
+      $("#abortMushElementList_Btn").show()
+      
+
+    });
+    
+    $("#saveMushElementList_Btn").click(function (e) { 
+      e.preventDefault();
+      mushElementTempId=$(this).attr("idElement")
+      $.ajax({
+        type: "PUT",
+        url: "/mushElement/updateMushElement",
+        data: $("#mushElement_FRM").serialize(),
+        success: async function (response) {
+          await drawGUIMushElement(mushElementTempId)
+          $("#saveMushElementList_Btn").hide()
+          $("#abortMushElementList_Btn").hide()
+          
+        },
+        error: function(err){
+          console.log(err)
+        }
+      });
+    });
+
+    $("#abortMushElementList_Btn").click(async function (e) { 
+      e.preventDefault();
+      $(".mushElementText").show()
+      $(".mushElementForm").hide()
+      $("#saveMushElementList_Btn").hide()
+      $("#abortMushElementList_Btn").hide()
+    });
+  
+    $("#addMushElementNote_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#mushElementNote_Form").show()
+      $("#mushElementNote_Tbl").hide()
+      $("#addMushElementNote_Btn").hide()
+    });
+  
+    $("#saveMushElementNote_Btn").click(function (e) { 
+      e.preventDefault();
+      let idMushElement=$("#idMushElementNote_Fld").val()
+      //console.log(idMushElement)
+      $.ajax({
+        type: "POST",
+        url: "/mushElement/newMushElementNote",
+        data: $("#mushElementNote_Form").serialize(),
+        success: async function (response) {
+            await drawElementNote(idMushElement)
+            resetForm("mushElementNote_Form")
+            $("#mushElementNote_Form").hide()
+            $("#mushElementNote_Tbl").show()
+            $("#addMushElementNote_Btn").show()
+
+        },
+        error: function(err){
+          console.log(err)
+        }
+      });
+    });
+
+    $("#abortMushElementNote_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#mushElementNote_Form").hide()
+      $("#mushElementNote_Tbl").show()
+      $("#addMushElementNote_Btn").show()
+    });
+
+    $(document).on("click",".delMushElementNote", function (e) {
+      e.preventDefault()
+        let idMushElementNote=$(this).attr("idMushElementNote")
+        let idMushElement=$(this).attr("idMushElement")
+        let c=confirm(`Stai eliminando una nota, vuoi continuare? `)
+        if (c==true){
+          $.ajax({
+            type: "DELETE",
+            url: "/mushElement/deleteMushElementNote?id="+idMushElementNote,
+            success: async function (response) {
+               await drawElementNote(idMushElement)
+            }
+          });
+        }
+    });
+
+});
+    
+
+</script>
+<%- include ('../closeTag') %>

@@ -1,0 +1,11 @@
+ <script>
+      $(document).on("click",".search_Btn",function (e) { 
+        e.preventDefault();
+        let code=$(".searchField").val()
+        console.log(code)
+        let url= "/search?code="+code
+        window.location=url
+      });
+  </script>
+</body>
+</html>

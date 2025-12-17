@@ -1,0 +1,1261 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Propagation
+              <button class="btn btn-xs btn-primary" id="modPropagation_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca propagation</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newPropagation_Btn"><i class="fas fa-plus"></i> Nuova propagation</button>
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco propagation</button>
+            </h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Propagation</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Table propagation -->
+        <div class="row" style="width: 100%;" id="propagation_Table" style="display: none;">
+          <div class="card w-100" id="tablePropagation_Crd">
+            <div class="card-body">
+              <table class="display table table-striped table-bordered compact" id="propagation_Tbl" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 30px; "></th>
+                        <th style="max-width:50px">Codice</th>
+                        <th style="max-width:100px">Nome</th>
+                        <th style="max-width:250px">Qt</th>
+                        <th style="max-width:100px">Strain</th>
+                        <th style="max-width:50px">Creato il</th>
+                    </tr>
+                </thead>
+                <tbody id="propagation_Tblb">  
+                </tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+        <!-- Data propagation -->
+        <div class="card w-100" id="propagation_Data" style="display: none;">
+            <div class="card-body">
+              <h4 id="titoloForm">Nuovo propagation</h4>
+              <div class="row">
+                <div class="col">
+              <form id="propagation_FRM" class="p-3">
+                <div class="row w-100">
+                    <div class="col">
+
+                <!-- <div class="row border-bottom mb-2 pb-2 font-weight-bold w-100">
+                  Elemento <span id="propagationCode" class="mx-1"></span> 
+                  <button class="btn btn-xs btn-primary mx-1" id="backToMain_Btn"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco propagationi</button>
+                  <button class="btn btn-xs btn-primary mx-1" id="modPropagation_Btn"> <i class="fas fa-pen"></i> Modifica propagationo</button>
+                </div> -->
+                <%- include('../include/ejsForm',
+                  { classTxt: "propagationText",
+                    classField: "propagationForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idPropagation"
+                    },
+                    { type:"startRow"},
+// purchased
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"propagation_name",
+                      label:"Nome propagation",
+                      required:true, 
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"strainId",
+                      label:"Strain",
+                      firstField:"Seleziona la strain",
+                      required:true, 
+                      option:strainDD
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"containerId",
+                      label:"Contenitore",
+                      firstField:"Seleziona il contenitore",
+                      required:true, 
+                      option:containerDD
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"n_container",
+                      label:"Quantità contenitori",
+                      min:0,
+                      step:1,
+                      required:true,
+                      disabled:true
+                    },
+
+                    
+                    { type:"endRow"},
+                     { type:"startRow"},
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-1 col-sm-6",
+                      fieldName:"purchased",
+                      label:"Acquistato",
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"supplierId",
+                      label:"Fornitore",
+                      firstField:"Seleziona fornitore",
+                      disabled:true,
+                      option:supplierDD
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"purchased_date",
+                      label:"Data acquisto",
+                    },
+                    { type:"endRow"},
+                     {type:"startRow"},
+                    
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"substrateId",
+                      label:"Substrato",
+                      firstField:"Seleziona substrato",
+                      required:true, 
+                      option:substrateDD
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"substrateQt",
+                      label:"Qt substrato",
+                      min:0,
+                      step:0.1,
+                   //   required:true, 
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"strainPerc",
+                      label:"% di Inoculo",
+                      setValue:0,
+                      min:0,
+                      step:0.1,
+                   //   required:true, 
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"strainWeight",
+                      label:"Qt inoculo",
+                      min:0,
+                      step:0.1,
+                   //   required:true, 
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"storageId",
+                      label:"Magazzino",
+                      firstField:"Seleziona il magazzino",
+                      required:true, 
+                      option:storagesDD
+                    },
+                     { type:"endRow"},
+                     {type:"startRow"},                    
+                    {
+                      type:"date",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"createLot",
+                      label:"Data creazione",
+                      required:true
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"exp_date",
+                      label:"Data scadenza",
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"expected_maturation_date",
+                      label:"Maturazione prevista",
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"expected_fructification_date",
+                      label:"Fruttificazione prevista",
+                    },
+                    { type:"endRow"},
+                    
+                    ]  
+                }) %>
+                
+                <div class="row w-100 mt-2" id="setSeed_Row" >
+                  
+                  <div class="col-12 h5">Elementi di inoculo
+                    <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" 
+                          data-target="#inoculiModal" id="selSeed_BtnMdl" style="display: none;">
+                          Seleziona inoculo
+                        </button>
+                  </div>
+                    <div id="addSeedTbl_Div" style="display: none;" class="w-100"></div>
+
+                  <table class="table table-sm mb-0" id="setSeed_Tbl" style="display: none;width: 50%;">
+                    <thead>
+                      <tr>
+                        <th>Codice seed</th>
+                        
+                      </tr>
+                    </thead>
+                    <tbody id="setSeed_Tblb">
+                      
+                    </tbody>
+                  </table>
+                </div>
+                </div>
+                </div>
+                </form>
+                
+                <div class="row w-100 text-center">
+                  <button class="btn btn-xs btn-primary mx-auto col-2" id="saveNewPropagation_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva propagation </button>
+                  <button class="btn btn-xs btn-primary mx-auto col-2" id="savePropagation_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva modifica </button>
+                  <button class="btn btn-xs btn-secondary mx-auto col-2" id="abortPropagation_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Annulla modifica </button>
+                </div>
+                </div>
+               </div>
+              <hr>
+              <div class="row mx-2" id="mushElement_Div" >
+                <div class="col">
+                  <div class="row" >
+                      <div class="col-12 h5">
+                        Elementi lotto 
+                        <button type="button"  data-toggle="modal" data-target="#movimentazioni_Mdl" 
+                          class="btn btn-primary btn-xs mx-2 movimentazioneBtn" type="all">
+                          <i class="fas fa-truck-moving"></i>Movimenta elementi</button>
+                        <button type="button" class="btn btn-primary btn-xs mx-2" id="exportCsv_Btn">
+                          <i class="fas fa-file-csv"></i> Esporta csv</button>
+                        <button type="button" class="btn btn-primary btn-xs mx-2" id="insertHArvestBulk_Btn"
+                          data-toggle="modal" data-target="#insertBulk_Mdl">
+                          <i class="fas fa-file-csv"></i> Inserisci raccolto bulk</button>
+                      </div>
+                    <table class="table table-sm " id="mushElement_Tbl">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Codice elemento</th>
+                          <th>Stadio</th>
+                          <th>Stato elemento</th>
+                          <th>Magazzino</th>
+                          <th>Raccolto</th>
+                          <th>Note</th>
+                          <th>Data prelievo</th>
+                        </tr>
+                      </thead>
+                      <tbody id="mushElement_Tblb">
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                </div>
+            </div>
+        </div>
+</section>
+</div>
+<!-- Modal moviemntazione -->
+ <div class="modal fade" id="movimentazioni_Mdl" tabindex="-1" role="dialog" aria-labelledby="#movimentazioni_MdlTitleId" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="movimentazioni_MdlTitleId">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body">
+          <form id="movimentazioni_Frm">
+            <input type="hidden" name="movimentaIdElement" id="movimentaIdElement">
+            <input type="hidden" name="movimentaTypeElement" id="movimentaTypeElement">
+            <div class="row">
+              <div class="col-4">
+                <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="movimentaAll_Ckb" id="movimentaAll_Ckb" value="moveAll"> Movimentare tutto il lotto? 
+                </label>
+              </div>
+              </div>
+              <div class="col-4 movimentaAll_Div" style="display: none;">
+                <div class="form-group">
+                  <label for="">Provenienza intero lotto</label>
+                  <select class="form-control" name="movimentaFrom_Sel" id="movimentaFrom_Sel" disabled>
+                    
+                  </select>
+                </div>
+              </div>
+              <div class="col-4 movimentaAll_Div" style="display: none;" >
+                <div class="form-group">
+                  <label for="">Destinazione intero lotto</label>
+                  <select class="form-control" name="movimentaAll_Sel" id="movimentaAll_Sel" disabled>
+                    
+                  </select>
+                </div>
+              </div>
+              
+            </div>
+            <div class="row w-100">
+              <table class="table" id="movimenti_Tbl">
+                <thead>
+                  <tr>
+                    <th>Elemento</th>
+                    <th>Mag. atttuale</th>
+                    <th>Mag. destinazione</th>
+                  </tr>
+                </thead>
+                <tbody id="movimenti_Tblb">
+                  
+                </tbody>
+              </table>
+              <div>
+            <div class="row">
+              <button type="button" class="btn btn-primary btn-xs" id="saveMovimentation">Movimenta gli elementi</button>
+            </div>
+          </div>
+            </div>
+          </form>
+        </div>
+    </div>
+ </div>
+ </div>
+ </div>
+ <!-- Modal seleziona Inoculo-->
+<div class="modal fade" id="inoculiModal" tabindex="-1" aria-labelledby="inoculiModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="inoculiModalLabel">Seleziona seeds</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row w-100">
+          <div class="form-group col-12">
+            <label for="">Cerca elemento</label>
+            <input type="text" class="form-control" name="" id="liveSearch" >
+          </div>
+          <div id="liveResult_Div" style="height:500px; overflow-y: scroll;" class="col-12">
+            
+          </div>
+        </div>
+       
+      </div>
+    </div>
+  </div>
+</div>
+ <!-- Modal harvest bulk-->
+<div class="modal fade" id="insertBulk_Mdl" tabindex="-1" aria-labelledby="insertBulkLabel_Mdl" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="insertBulkLabel_Mdl">Inserimento raccolto massivo</h5>
+      </div>
+      <div class="modal-body">
+          <div class="callout callout-warning">
+            <h5>Attenzione</h5>
+            <p>L'inserimento massivo del raccolto verrà suddiviso per gli elementi selezionati </p>
+          </div>
+        <div class="row w-100 p-2">
+          <form id="insertBulk_Frm">
+              <div class="form-group text-xs">
+                <label for="weightBulk">Peso massivo (gr)</label>
+                <input type="number" min="0" step="1" class="form-control" name="weightBulk" id="weightBulk" required>
+              </div>
+              
+               
+            <div class="form-group">
+              <label for="harvestBulk_date_DT">Data raccolto</label>
+              <div class="input-group date" id="harvestBulk_date_DT" data-target-input="nearest">
+                <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" 
+                data-target="#harvestBulk_date_DT " name="harvest_date" required>
+                <div class="input-group-append" data-target="#harvestBulk_date_DT" data-toggle="datetimepicker">
+                  <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+                <label for="noteHarvest">Note raccolto</label>
+                <textarea class="form-control" id="noteHarvest" rows="2"></textarea>
+              </div>
+              <div class="h5">
+                Seleziona gli elementi:
+              </div>
+              <div class="row " id="listBulk_Wrp">
+                
+              </div>
+              <input type="hidden" name="filterCategoryHarvest" value="CULTIVATION">
+          </form>
+          <div class="row w-100 text-center mt-2">
+                <div class="col-12 mx-auto">
+                <button type="button" name="" id="saveHarvestBulk_Btn" class="btn btn-primary btn-xs">Inserisci raccolto massivo</button>
+                </div>
+              </div> 
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>
+  let idPropagation
+  let redirectId= <%- JSON.stringify( redirectId) %>
+  let spawnDD= <%- JSON.stringify( spawnDD) %>
+  let storagesDD= <%- JSON.stringify( storagesDD) %>
+  let dataElement
+  let filterCategory="CULTIVATION"
+  let inoculiList
+  let tempInoculiArray=[]
+ // Draw table Child element 
+  function drawTableChild(data,table,fields,topic,title) {
+    let html=""
+    console.log(data.length)
+    if (data.length>0){
+      for (let i = 0; i < data.length; i++) {
+        const elem = data[i];
+        html+=`<tr>
+        <td>
+          <button type="button" name="" id="showChildBtn_${elem.id}" 
+                  class="btn btn-primary btn-xs showChild_btn" style="width:25px"
+                  topic="${topic}">
+                    <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                </button>
+        </td>`
+        for (let y = 0; y < fields.length; y++) {
+          const fld = fields[y];
+          html+=`<td>${elem[fld]}</td>`
+        }
+        html+=`</tr>`
+      }
+      
+    } else {
+      html+=`<tr >
+        <td colspan="4" style="text-align:center" class="bg-danger"> Il materiale non è utilizzato in nessuno ${title}</td>
+      </tr>`
+    }
+    $("#"+table).html(html).parent().show()
+  }
+
+  function drawTableMushElement(data,topic) {
+    let html=""
+    console.log(data)
+    
+    if (data.length>0){
+      for (let i = 0; i < data.length; i++) {
+        const elem = data[i];
+        let delBtnDisable=""
+        let classTr=""
+        let classDD="destinationDD"
+        let enableDD=""
+        let enableFruct=""
+        let harvest=0
+        if (elem.mushElementHarvests!=null){
+          elem.mushElementHarvests.forEach(el=>{console.log(el)
+            harvest+=el.harvest_weight
+          })
+        }
+        if(elem.active==0){
+          classTr="text-danger"
+          enableDD="disabled"
+        }
+        if(elem.stage==2){
+          enableFruct="disabled"
+        }
+        html+=`<tr class="${classTr}">
+        <td>
+          <button type="button" name="" id="showChildBtn_${elem.id}" 
+                  class="btn btn-primary btn-xs showChild_btn" style="width:25px"
+                  topic="mushElement">
+                    <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                </button>
+          <button type="button" name="" mushElementId="${elem.id}" mushElementCode="${elem.element_code}"
+                  class="btn btn-primary btn-xs putFructification" style="width:25px" ${enableDD} ${enableFruct}
+                  >
+                    <i class="fas fa-seedling"></i>
+                </button>
+          
+        </td>
+        <td>${elem.element_code}</td>
+        <td>${elem.stage==2?"Fruttificazione":"Propagazione"}</td>
+
+        <td>${elem.stato}</td>
+        <td>${elem.storage.name_storage}</td>
+        <td>${harvest} g</td>
+        <td>${elem.mushElementNotes.length}</td>
+        <td>${elem.pick_date?moment(elem.pick_date).format("DD-MM-YYYY"):"-"}</td>
+        
+        `
+        
+        html+=`</tr>`
+      }
+      
+    } else {
+      html+=`<tr >
+        <td colspan="4" style="text-align:center" class="bg-danger"> Il materiale non è utilizzato in nessuno ${title}</td>
+      </tr>`
+    }
+    $("#mushElement_Tblb").html(html).parent().show()
+  }
+
+  async function  drawTablePropagation (){
+   await $.ajax({
+        type: "GET",
+        url: "/propagation/getAll",
+        success: async function (response) {
+          console.log(response)
+          let delBtnDisable=""
+            let html=""
+            for (let i = 0; i < response.propagations.length; i++) {
+                let el=response.propagations[i]
+                html+=`<tr>
+                           <td style="width:5%">
+                            <button type="button" name="" id="showBtn${el.id}" 
+                            class="btn btn-primary btn-xs showPropagation" style="width:25px"
+                            idPropagation="${el.id}" >
+                              <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" name="" id="delete_${el.id}" 
+                          class="btn btn-danger btn-xs deletePropagation_Btn" style="width: 25px" 
+                          idPropagation="${el.id}"  ${delBtnDisable}>
+                            <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                          </button>
+                        </td>
+                                <td style="width:12%">${el.code_propagation}</td>
+                                <td style="width:14%">${el.propagation_name}</td>
+                                <td style="width:14%">${el.n_container} - ${el.container.container_name}</td>
+                                <td style="width:14%">${el.strain.strain_name} ${el.strain.species_code} </td>
+                                <td style="width:9%">${moment(el.createLot).format("DD-MM-YY")}</td>
+                            </tr>`
+                
+                }
+                await $('#propagation_Tbl').DataTable().clear().rows.add($(html)).draw();
+            }
+    });
+    $("#propagation_Table").show();
+    $("#propagation_Data").hide();
+    $("#newPropagation_Btn").show();
+}
+
+  async function drawShowPropagation(id) {
+    $("#propagation_Data").show();
+    $("#propagation_Table").hide();
+    
+    await $.ajax({
+        type: "GET",
+        url: "/propagation/getOnePropagation?id="+id,
+        success: async function (response) {
+          console.log(response)
+          let data=response.propagation
+          let seeds=response.seeds
+          dataElement=data
+          // Populate GUI
+          for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+              }
+              switch (key) {
+                case "containerId":
+                  $("#containerId_Show").html(data.container?data.container.container_name:"-")
+                  break;     
+                case "strainId":
+                  $("#strainId_Show").html(data.strain.species_code+" - "+ data.strain.strain_name)
+                  $("#strainId_Fld").val(data.strainId)
+                  break;
+                case "substrateId":
+                  $("#substrateId_Show").html(data.substrate.name_substrate)
+                  $("#substrateId_Fld").val(data.substrateId)
+                  break;
+                case "purchased":
+                  $("#purchased_Show").html(data.purchased? "Sì" : "No")
+                  $("#purchased_Fld").attr("checked",data.purchased? true : false)
+                  break;
+                  case "createLot":
+                      $("#createLot_Show").html(moment(data.substrate.exp_date).format("DD-MM-YY"))
+                      break;
+                  case "exp_date":
+                    $("#exp_date_Show").html(moment(data.substrate.exp_date).format("DD-MM-YY"))
+                    break;
+                  case "expected_maturation_date":
+                    $("#expected_maturation_date_Show").html(moment(data.substrate.expected_maturation_date).format("DD-MM-YY"))
+                    break;
+                  case "expected_fructification_date":
+                    $("#expected_fructification_date_Show").html(moment(data.substrate.expected_fructification_date).format("DD-MM-YY"))
+                  break;
+                   case "supplierId":
+                      if(data.supplierId){
+                        $("#supplierId_Show").html(data.supplier.supplier_name?data.supplier.supplier_name:"-")
+                      }else{
+                        $("#supplierId_Show").html("-")
+                      }
+                      break;
+                      case "purchased_date":
+                        $("#purchased_date_Show").html(data.purchased_date?moment(data.purchased_date).format("DD-MM-YY"):"-")
+                        break;
+                        case "storageId":
+                    $("#storageId_Show").html(data.storage?data.storage.code_storage+" "+data.storage.name_storage:"-")
+                    break;  
+                default:
+                  $("#"+key+"_Show").html(value?value:"-")
+                  break;
+                }
+            }
+            let uom= data.container.uom
+              $("#substrateQt_Show").closest("dl").find("dt").html("Qt substrato "+uom);
+              $("#strainWeight_Show").closest("dl").find("dt").html("Qt inoculo "+uom);
+          $("#id_Fld").val(data.id)
+          if (response.propagation.used>0){
+              $("#savePropagation_Btn").hide()
+              await drawTablePropagation()
+              $("#rowPropagation").show()
+              $("#addElement_Btn").prop("disabled","true")
+              $(".delElement_Btn").prop("disabled","true")
+            } else {
+              $("#rowPropagation").hide()
+              $("#addElement_Btn").removeAttr("disabled")
+              $(".delElement_Btn").removeAttr("disabled")
+            }
+          if(data.purchased!=1){
+              if (seeds.length>0){
+              let html=""
+              for (let i = 0; i < seeds.length; i++) {
+                const elem = seeds[i];
+                html+=`<tr>
+                  <td>${elem.mushElementCode}</td>
+                  <td></td>
+                  </tr>`
+              }
+              $("#pdfStrain_Btn").show();
+            $("#titoloForm").html(` ${response.propagation.code_propagation} 
+                <button type="button" class="btn btn-xs btn-primary" id="pdfStrain_Btn"><i class="fa fa-print" aria-hidden="true"></i></button>
+          `)
+             $("#setSeed_Tblb").html(html)
+             $("#setSeed_Tbl").show()
+            }
+            
+            }else{
+              $("#setSeed_Row").hide()
+            }
+          let mushElements=response.propagation.mushElements
+          await drawTableMushElement(mushElements,"CULTIVATION")
+          // Draw bulk list checkbox
+          mushElements.sort((a, b) => {
+            const lastA = parseInt(a.element_code.slice(-2), 10);
+            const lastB = parseInt(b.element_code.slice(-2), 10);
+            return lastA - lastB;
+          });
+
+          html=""
+          mushElements.forEach(elem=>{
+            if (elem.active==1){
+            html+=`
+            <div class="form-check col mx-auto text-center">
+                   <input class="form-check-input" type="checkbox" value="${elem.id}" name="elementCode">
+                    <label class="form-check-label">
+                      ${elem.element_code}
+                    </label>
+              </div>`}
+          })
+          $("#harvestBulk_date_DT").datetimepicker('defaultDate',moment())
+          
+
+          $("#listBulk_Wrp").html(html)
+          
+          $("#savePropagation_Btn").hide()
+          $("#abortPropagation_Btn").hide()
+          $("#modPropagation_Btn").show();
+          $("#backToMain_Btn").show();
+          $("#newPropagation_Btn").hide();
+          $(".propagationForm").hide()
+          $(".propagationText").show()
+        }
+      });   
+
+  }
+  /** Gestione date */
+  $(document).ready(async function () {
+    $('#exp_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#expected_maturation_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#expected_fructification_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#purchased_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#harvestBulk_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#createLot_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+
+    if (redirectId!=null){
+      await drawShowPropagation(redirectId)
+    }
+    else{
+      tablePropagation=$('#propagation_Tbl').DataTable({responsive: true,pageLength: 50})
+      await drawTablePropagation()
+    }
+
+    $(document).on("click",".showPropagation",async function(){
+      let idPropagation=$(this).attr("idPropagation")
+      window.location="/propagation?redirectId="+idPropagation
+    })
+     
+    $("#newPropagation_Btn").click(function (e) { 
+      e.preventDefault();
+      resetForm("propagation_FRM")
+       $("#createLot_DT").datetimepicker('defaultDate',moment())
+      $("#addSeedTbl_Div").hide()
+      $("#propagation_Data").show();
+      $("#propagation_Table").hide();
+      $("#saveNewPropagation_Btn").show();
+      $("#selSeed_BtnMdl").show();
+      $("#saveNewPropagation_Btn").prop("disabled",true);
+      $("#mushElement_Div").hide()
+      $(this).hide()
+    });
+
+    $("#saveNewPropagation_Btn").click(function (e) { 
+      e.preventDefault();
+       let f=checkForm("propagation_FRM")
+       if (containerError==false){
+      if (f==true){
+      let c=confirm("Inserire l'elemento di coltivazione? L'operazione non è annullabile")
+        if(c==true){
+        $.ajax({
+          type: "POST",
+          url: "/propagation/newPropagation",
+          data: $("#propagation_FRM").serialize(),
+          success: function (response) {
+            console.log(response)
+            drawTablePropagation()
+          } 
+        });
+      }}
+      }else{
+        alert("Il numero contenitori non è congruo con la quantità substrato")
+      }
+
+      
+    });
+
+    $("#modPropagation_Btn").click(function (e) { 
+      e.preventDefault();
+      $(".propagationText").hide();
+      $(".propagationForm").show();
+      $("#propagation_FRM *").filter(':input').each( function ( index, element) { 
+        let arrField=["exp_date","expected_maturation_date","expected_fructification_date"]
+        let id=$(this).attr("name")  
+        if(!arrField.includes(id))
+          $(this).prop("disabled",true)
+         console.log( this)
+      });
+      // creare bottone per salvare i dati modificati
+      //AjaxUpdate, unici dati updatabili sono le date e lo stage
+    });
+    
+    $(document).on("click",".deletePropagation_Btn",async function(){
+      let idPropagation=$(this).attr("idPropagation")
+      //let c=confirm("Sei siscuro di voler cancellare l'elemento propagation? Facendo così eliminerai tutti gli elementi associati.")
+      if(confirm("Sei siscuro di voler cancellare l'elemento propagation? Facendo così eliminerai tutti gli elementi associati.")){
+        $.ajax({
+        type: "delete",
+        url: "/propagation/deletePropagation?id="+idPropagation,
+        success: function (response) {
+          console.log("res")
+           window.location="/propagation"
+        },
+        error:function(err){
+          console.log(err)
+        }
+      });
+      }
+      
+    })
+
+    //showChild_btn
+    $(document).on("click",".showChild_btn", function (e) {
+      e.preventDefault()
+      let topic=$(this).attr("topic")
+      let id=$(this).attr("id").split("_")[1]
+      console.log(topic)
+      switch (topic) {
+        case "mushElement":
+          window.open('/mushElement/singleMushElement?id='+id+'&filterCategory=CULTIVATION', '_blank');
+          break;
+        case "seedElement":
+          window.open('/mushElement/singleMushElement?id='+id+'&filterCategory=CULTIVATION', '_blank');
+        break;
+      }
+
+    })
+  
+    //Live search
+    $("#liveSearch").keyup(function (e) { 
+      e.preventDefault();
+      let str=$(this).val()
+      console.log(str)
+      if(str!=""){
+         $.ajax({
+        type: "GET",
+        url: "/spawn/liveSearch?str="+str,
+        success: function (response) {
+          let element=response.list
+          inoculiList=element
+            console.log(inoculiList)
+            console.log(tempInoculiArray)
+
+          let html=`<div class="col-12">
+                  <table class=" w-100 table table-sm">`
+                    
+          if (element.length>0){
+            
+            html+=`<thead >
+                        <tr>
+                          <th></th>  
+                          <th>Codice</th>  
+                          <th>Disponiblità</th>  
+                          <th>Prelievo</th> 
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>`
+          element.forEach(elem=>{
+            elem.requestQt=0
+            let disableBtn=""
+            let inList=[]
+            for (let i = 0; i < tempInoculiArray.length; i++) {
+              const e = tempInoculiArray[i];
+              if(e.element.element_code==elem.element_code){
+                        inList.push(e) 
+                      }
+            }
+
+            console.log(inList)
+
+            if (inList.length>0){
+              elem.perc=inList[0].tempQt
+              elem.requestQt=inList[0].requestQt
+              disableBtn="disabled"
+            }
+
+            html+=`
+                    <tr>
+                      <td class="text-xs"><span class="badge badge-secondary">${elem.type}</span></td>
+                      <td class="">${elem.element_code}</td>
+                      <td>${elem.perc}%</td>
+                      <td>
+                        <div class="form-group m-0 p-0">
+                        <input type="number"
+                          class="form-control py-1 "
+                          style="height: 30px;"
+                          id="inoculo_${elem.element_code}" type="${elem.type}" element_code="${elem.element_code}" 
+                          max="${elem.perc}"
+                          min="0"
+                          value="${elem.requestQt}"
+                          ${disableBtn}
+                          >
+                        </div>
+                      </td>
+                      <td><button  type="${elem.type}" element_code="${elem.element_code}" class="btn btn-primary btn-xs addSeed" ${disableBtn}> Aggiungi </button></td>
+                    </tr>
+                 `
+          })
+          html +=`<tbody>`
+          } else {
+            html+=`<tr>
+                      <td > Non sono presenti elementi </td>
+                  </tr>`
+          }
+          html +=`</table>
+            </div>`
+          $("#liveResult_Div").html(html)
+        }
+      });
+    
+      }
+     });
+     // Add Inoculo
+    $(document).on("click",".addSeed", function (e) {
+       e.preventDefault();
+
+      let elementCode=$(this).attr("element_code")
+      let requestQt=$("#inoculo_"+elementCode).val()
+      var element = inoculiList.filter(a => {
+        if(a.element_code==elementCode){
+          return a
+        }
+      });
+      console.log(element)
+     tempInoculiArray.push({element:element[0],requestQt:requestQt,tempQt:element[0].perc-requestQt})
+     console.log(tempInoculiArray)
+     let html=`<div class="col-12">
+                  <table class=" w-100 table table-sm">
+                      <thead >
+                        <tr>
+                            
+                          <th>Codice</th>  
+                          <th>Prelievo %</th>  
+                          <th>Qt avanzo %</th> 
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>`
+     tempInoculiArray.forEach((elem,i)=>{
+        html+=`<tr id="rowInoculo_${i}">
+
+                <td scope="row"> <input type="hidden" name="inoculumElementId" value="${elem.element.element_code+"|"+elem.element.id+"|"+elem.requestQt+"|"+elem.tempQt}">${elem.element.element_code}</td>
+                <td>${elem.requestQt}%</td>
+                <td>${elem.tempQt}%</td>
+                <td>
+                  <button class="btn btn-danger btn-xs deleteSeed" 
+                          id="deleteSeed_${i}" style="width: 25px"> 
+                          <i class="fa fa-trash fa-sm " aria-hidden="true"></i> 
+                  </button>
+                  </td>
+              </tr>`
+     })
+     html+="</tbody></table>"
+      $("#addSeedTbl_Div").html(html).show()
+      $("#saveNewSpawn_Btn").prop("disabled",false);
+      $('#inoculiModal').modal('hide')
+      $("#liveResult_Div").html("")
+      $("#liveSearch").val("")
+        $("#saveNewPropagation_Btn").prop("disabled",false)
+
+    });
+    // Delete inoculo dalla lista seed
+    $(document).on("click",".deleteSeed", function (e) {
+       e.preventDefault();
+       let idArrayInoculi=$(this).attr("id").split("_")[1]
+       $("#rowInoculo_"+idArrayInoculi).remove()
+       tempInoculiArray.splice(idArrayInoculi,1)
+    });
+    
+    
+    /** Gestione date */
+    let incubation_len=0
+    let fructification_len=0
+    let primordia_len=0
+    let creationDate=moment().format("DD-MM-YY")
+    $("#strainId_Fld").change(async function (e) { 
+      e.preventDefault();
+      let val=$(this).val()
+      await $.ajax({
+        type: "GET",
+        url: "/strain/getOneStrain?id="+val,
+        success: function (response) {
+          incubation_len=response.strain.incubation_len?parseInt(response.strain.incubation_len.length>0?response.strain.incubation_len.split("-")[0]:response.strain.incubation_len):0
+          fructification_len=response.strain.fructification_len?parseInt(response.strain.fructification_len.length>0?response.strain.fructification_len.split("-")[0]:response.strain.fructification_len):0
+          primordia_len=response.strain.primordia_len?parseInt(response.strain.primordia_len.length>0?response.strain.primordia_len.split("-")[0]:response.strain.primordia_len):0
+        }
+      });
+      creationDate=$('#createLot_DT').datetimepicker('defaultDate')
+      $('#expected_maturation_date_DT [name="expected_maturation_date"]').attr("value",moment(creationDate,"DD-MM-YY").add(incubation_len,'d').format("DD-MM-YY"))
+      $('#expected_fructification_date_DT  [name="expected_fructification_date"]').attr("value",moment(creationDate,"DD-MM-YY").add(incubation_len+primordia_len+fructification_len,'d').format("DD-MM-YY"))
+    });
+    
+    $("#createLot_DT").on("change.datetimepicker", function (e) {
+      e.preventDefault();
+      creationDate=e.date
+       $('#expected_maturation_date_DT [name="expected_maturation_date"]').attr("value",moment(creationDate,"DD-MM-YY").add(incubation_len,'d').format("DD-MM-YY"))
+      $('#expected_fructification_date_DT  [name="expected_fructification_date"]').attr("value",moment(creationDate,"DD-MM-YY").add(incubation_len+primordia_len+fructification_len,'d').format("DD-MM-YY"))
+    });
+     /** 
+     * Gestione calcoli qtSubstrato,% inoculo,qt inoculo
+    */
+    // Select container
+    let uomContainer
+      let capacityContainer
+      let strainPerc
+      let qtInoculo
+      let nContainer
+      let qtSubstrato
+      let numContainer
+      let containerError=false
+    // Acquistato
+    $("#purchased_Fld").change(function (e) { 
+      e.preventDefault();
+      let val=$(this).prop("checked")
+      if (val){
+        $("#selSeed_BtnMdl").prop("disabled",true)
+        $("#saveNewPropagation_Btn").prop("disabled",false)
+        $("#setSeed_Row").hide();
+        $("#supplierId_Fld").prop("disabled",false)
+        $("#strainWeight_Fld").val(capacityContainer).prop("disabled",true)
+        $("#strainPerc_Fld").val("100").prop("disabled",true)
+        $("#substrateQt_Fld").val(0).prop("disabled",true)
+         $('#substrateId_Fld option').each(function() {
+                          let forPurchased = $(this).val()
+                          if (forPurchased.split("|")[2]==0){
+                            $(this).css('display', 'none');
+                          }
+                      });
+      }else{
+        $("#supplierId_Fld").prop("disabled",true)
+        $("#selSeed_BtnMdl").prop("disabled",false)
+        $("#saveNewPropagation_Btn").prop("disabled",true)
+        $("#strainWeight_Fld").val(qtInoculo).prop("disabled",false)
+        $("#strainPerc_Fld").val(strainPerc).prop("disabled",false)
+        $("#substrateQt_Fld").val(qtSubstrato).prop("disabled",false)
+        //$('#substrateId_Fld option').each(function() {$(this).css('display', 'contents');})
+        $("#setSeed_Row").show();
+         $('#substrateId_Fld option').each(function() {
+                          let forPurchased = $(this).val()
+                            $(this).css('display', 'contents');
+                      });
+      }
+    });
+    // Select container
+    $("#containerId_Fld").change(function (e) { 
+      e.preventDefault();
+      let val=$(this).val()
+      
+      if(val.length>0){
+        capacityContainer=val.split("|")[1]
+        uomContainer=val.split("|")[2]
+        nContainer=$("#n_container_Fld").val()?$("#n_container_Fld").val():0
+        strainPerc=$("#strainPerc_Fld").val()?$("#strainPerc_Fld").val():0
+        
+        qtSubstrato=capacityContainer*nContainer
+        qtInoculo=qtSubstrato*strainPerc/100
+
+        $("#strainPerc_Fld").val(strainPerc)
+        $("#strainWeight_Fld").val(qtInoculo)
+        $("#substrateQt_Show").closest('.col-md-2.col-sm-6')
+                              .find('dt')
+                              .text("Qt substrato "+uomContainer);
+        $("#strainWeight_Show").closest('.col-md-2.col-sm-6')
+                              .find('dt')
+                              .text("Qt inoculo "+uomContainer);
+                              
+        $("#substrateQt_Fld").val(qtSubstrato)
+        $("#n_container_Fld").prop("disabled",false)
+      }else{
+        $("#n_container_Fld").prop("disabled",true)
+      }
+    });
+    // Numero container
+    $("#n_container_Fld").change(function (e) { 
+      e.preventDefault();
+      let val=$(this).val()
+      strainPerc=$("#strainPerc_Fld").val()?$("#strainPerc_Fld").val():0
+      numContainer=val
+      qtSubstrato=capacityContainer*val
+      qtInoculo=qtSubstrato*strainPerc/100
+      $("#substrateQt_Fld").val(qtSubstrato)
+        $("#strainPerc_Fld").val(strainPerc)
+        $("#strainWeight_Fld").val(qtInoculo)
+    });
+    // Gestione percentuale
+    $("#strainPerc_Fld").change(function (e) { 
+      e.preventDefault();
+      strainPerc=$(this).val()
+      qtSubstrato=$("#substrateQt_Fld").val()
+      qtInoculo=parseFloat(qtSubstrato)*parseFloat(strainPerc)/100
+      $("#strainWeight_Fld").val(qtInoculo)
+      
+    });
+    // Qt Substrato
+    $("#substrateQt_Fld").change(function (e) { 
+      e.preventDefault();
+      qtSubstrato=$(this).val()
+      qtInoculo=qtSubstrato*strainPerc/100
+      let newQtContainer=qtSubstrato/capacityContainer
+      console.log(newQtContainer,numContainer)
+      if (newQtContainer!=numContainer){
+        $("#n_container_Fld").addClass("border-warning")
+        containerError=true
+      }else{
+        $("#n_container_Fld").removeClass("border-warning")
+        containerError=false
+      }
+      $("#strainWeight_Fld").val(qtInoculo)
+    });
+    // Qt inoculo
+    $("#strainWeight_Fld").change(function (e) { 
+      e.preventDefault();
+      qtInoculo=$(this).val()
+      qtSubstrato=qtSubstrato*strainPerc/100
+      $("#strainWeight_Fld").val(qtInoculo)
+    });
+      
+
+    /// Area movimentazione elementi
+    $(document).on("click",".movimentazioneBtn",function(){
+      $("#movimentaIdElement").val(dataElement.id)
+      $("#movimentaTypeElement").val(dataElement.mushElements[0].type)
+      
+      $("#movimentazioni_MdlTitleId").html("Lotto propagazione:"+dataElement.code_propagation)
+      let storageSelectOption
+      storagesDD.forEach(elem => {
+        storageSelectOption+= `
+        <option value="${elem.val}">${elem.txt}</option>
+        `   
+      });
+      $("#movimentaAll_Sel").html(storageSelectOption)
+      $("#movimentaFrom_Sel").html(storageSelectOption).val(dataElement.storageId)
+      let html
+      for (let i = 0; i < dataElement.mushElements.length; i++) {
+        const elem = dataElement.mushElements[i];
+        console.log(elem)
+        let classTr=""
+        let classDD="destinationDD"
+        let enableDD=""
+        if(elem.active==0){
+          classTr="text-danger"
+          enableDD="disabled"
+          classDD=""
+        }
+        storageSelectOption=""
+        for (let y = 0; y < storagesDD.length; y++) {
+          const e = storagesDD[y];
+          storageSelectOption+= `<option value="${e.val}|${elem.id}|${elem.storageId}">${e.txt}</option>`   
+          
+        }
+        html+=`<tr class="${classTr}">
+        <td>
+          ${elem.element_code}
+        </td>
+        <td>
+          ${elem.storage.code_storage} - ${elem.storage.name_storage}
+        </td>
+        <td>
+                    <div class="form-group m-0 p-0">
+                        <select tp="selectField" class="form-control form-control-sm form-control-minimal ${classDD}" name="destinationDD" ${enableDD}>
+                             <option value="${elem.storage.id}|${elem.id}|${elem.storageId}">${elem.storage.code_storage} - ${elem.storage.name_storage}</option>
+                             <option disabled="disabled">----</option>
+                            ${storageSelectOption}
+                        </select>
+                    </div>
+        </td>
+        `
+      }
+      $("#movimenti_Tblb").html(html)
+      $("#movimentazioni_Mdl").modal("show")
+    })
+    $("#movimentaAll_Ckb").change(function (e) { 
+      e.preventDefault();
+      let val=$(this).prop("checked")
+      console.log(val)
+      if (val){
+        $(".destinationDD").prop('disabled',true); 
+        $(".movimentaAll_Div").show();
+        $("#movimentaAll_Sel").prop('disabled', false);
+        $("#movimentaFrom_Sel").prop('disabled', false);
+      }else{
+        $(".destinationDD").prop('disabled', false); 
+        $(".movimentaAll_Div").hide()
+        $("#movimentaAll_Sel").prop('disabled', true);
+        $("#movimentaFrom_Sel").prop('disabled', true);
+
+      }
+      
+    });
+    $("#saveMovimentation").click(function (e) { 
+      e.preventDefault();
+      $.ajax({
+        type: "PUT",
+        url: "/mushElement/movimentazioneElement",
+        data: $("#movimentazioni_Frm").serialize(),
+        success: function (response) {
+         // console.log(response)
+          window.location='propagation?redirectId='+dataElement.id
+        }
+      });
+    });
+    
+    $("#pdfStrain_Btn").click(function (e) { 
+      e.preventDefault();
+       window.open('/propagation/pdf?idPropagation='+dataElement.id, '_blank');
+    });
+  
+    /** Put in fructification */
+    $(document).on("click",".putFructification", function () {
+      let c=confirm("Vuoi mettere l'elemento in fruttificazione?")
+      let mushElementId=$(this).attr("mushElementId")
+      let mushElementCode=$(this).attr("mushElementCode")
+      if (c==true){
+      $.ajax({
+        type: "GET",
+        url: "/mushElement/changeStage?stage=2&idElement="+mushElementId+"&codElement="+mushElementCode,
+        success: function (response) {
+          window.location="/propagation?redirectId="+dataElement.id
+        }
+      });
+    }
+    });
+
+    /** Insert harvest Bulk */
+    $("#saveHarvestBulk_Btn").click(function (e) { 
+      e.preventDefault();
+     if (checkForm("insertBulk_Frm")){
+      
+      if ($("#insertBulk_Frm").serializeArray().some(el => el.name === "elementCode")){
+        $.ajax({
+          type: "POST",
+          url: "/mushElement/insertBulkHarvest",
+          data: $("#insertBulk_Frm").serialize(),
+          success: function (response) {
+            //console.log(response.result)
+            window.location='propagation?redirectId='+dataElement.id
+          }
+        });
+        // $("#insertBulk_Frm").get(0).reset()
+        // $("#weightBulk").removeClass("border-danger")
+        // $("#weightBulk").removeClass("border-success")
+      }
+      else{
+        alert("Seleziona almeno un elemento")
+      }
+     }
+
+      
+    });
+    
+
+    /** Export CSV Lotti */
+    $("#exportCsv_Btn").click(function (e) { 
+      e.preventDefault();
+      let url="/mushElement/csvLotto?relatedId="+dataElement.id+"&filterCategory="+filterCategory
+      window.open(url, '_blank').focus();
+    });
+  
+    $("#backToMain_Btn").click(function (e) { 
+        e.preventDefault();
+         window.location='/propagation'
+      });
+  
+  
+    });
+ 
+
+</script>
+<%- include ('../closeTag') %>

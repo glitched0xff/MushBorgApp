@@ -1,0 +1,726 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+<style>
+  table.dataTable.compact thead th,
+  table.dataTable.compact thead td,
+  table.dataTable.compact tfoot th,
+  table.dataTable.compact tfoot td,
+  table.dataTable.compact tbody th,
+  table.dataTable.compact tbody td {
+    padding: 4px;
+  }
+</style>
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione materiali 
+              <button type="button" class="btn btn-xs btn-primary" id="newRawMaterial_Btn"><i class="fas fa-plus"></i> Nuovo materiale</button>
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna ai materiali</button>
+              <button type="button" class="btn btn-xs btn-primary" id="materialCategory_Btn"><i class="fas fa-folder-open"></i> Gestione categorie</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newCategory_Btn" style="display: none;"><i class="fas fa-folder-open"></i> Nuova categoria</button>
+
+            </h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Materiali</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid" >
+        <div class="row" style="width: 100%;">
+          <!-- Category material card -->
+          <div class="card w-100" id="materialCategory_Crd" style="display: none;">
+            <div class="card-body">
+              <h4>Gestione categorie materiali</h4>
+              <div class="row">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Nome categoria</th>
+                      <th scope="col">Usato in N materiali</th>
+                      <th scope="col">Fattore umidità</th>
+                      <th scope="col">Note</th>
+                    </tr>
+                  </thead>
+                    <tbody id="materialCategory_Tblb">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!-- New Material Card -->
+          <div class="card w-100" id="newRawMaterial_Crd" style="display: none;">
+            <div class="card-body">
+              <h4>Nuovo materiale</h4>
+              <div class="row">
+                <div class="col">
+                  <form id="newRawMaterial_Frm" class="p-3">
+                    <div class="row">
+                      <div class="col-md-3 col-sm-12 ">    
+                        <dl>
+                          <dt>Nome materiale</dt>
+                          <dd >
+                            <div class="form-group">
+                              <input type="text" class="form-control form-control-sm form-control-minimal" id="material_name_Ins"  name="material_name">
+                            </div>
+                          </dd>
+                          
+                        </dl>
+                      </div>
+                      <div class="col-md-3 col-sm-12">   
+                        <dl>
+                          <dt>Categoria</dt>
+                          <dd >
+                            <div class="form-group ">
+                              <select class="custom-select dd" id="categoryName_Ins" name="materialCategoryId">
+                                
+                              </select>
+                            </div>
+                          </dd>
+                          
+                        </dl>
+                      </div>
+                      <div class="col-md-3 col-sm-12">
+                        <dl>
+                          <dt>Coef. umidità </dt>
+                          <dd>
+                            <div class="form-group">
+                              <input type="text" class="form-control form-control-sm form-control-minimal" id="hum_factor_Ins"  name="hum_factor">
+                            </div>
+                          </dd>
+                          
+                        </dl>
+                      </div>
+                      <div class="col-md-3 col-sm-12">
+                        <dl>
+                          <dt>Quantità</dt>
+                          <dd >
+                            <div class="row p-0 m-0">
+                              <div class="col">
+                                <input type="text" class="form-control form-control-sm form-control-minimal col" id="quantity_Ins" name="quantity">
+                              </div>
+                              <div class="col">
+                                <input type="text" class="form-control form-control-sm form-control-minimal col" id="uom_Ins" value="Kg" name="uom">
+                              </div>
+                            </div>
+                            
+                          </dd>
+                          
+                        </dl>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-6">
+                        <dl>
+                          <dt>Note</dt>
+                          <dd>
+                            <div class="form-group">
+                              <input type="text" class="form-control form-control-sm " id="note_Ins" name="note">
+                            </div>
+                          </dd>
+                          
+                        </dl>
+                      </div>
+                      <div class="col-md-3 col-sm-12">   
+                        <dl>
+                          <dt>Fornitore</dt>
+                          <dd>
+                            <div class="form-group ">
+                              <select class="custom-select dd" id="supplier_Ins" name="supplierId">
+                                
+                              </select>
+                            </div>
+                          </dd>
+                          
+                        </dl>
+                      </div>
+                    </div>
+                      <input type="hidden" class="form-control" name="id" id="id_Ins">
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Raw material card -->
+          <div class="card w-100" id="tableRawMaterial_Crd">
+            <div class="card-body">
+              <table class="display table table-striped table-bordered compact" id="rawMaterials_Tbl" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 45px; "></th>
+                        <th>material_name</th>
+                        <th>category_name</th>
+                        <th>quantity</th>
+                        <th>createdAt</th>
+                    </tr>
+                </thead>
+                <tbody id="rawMaterials_Tblb">
+                    
+                        <tr>
+                          <td>
+                            <button type="button" name="" id="showBtn" class="btn btn-primary btn-sm showBtn" idMaterial="">
+                              <i class="fa fa-eye" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" name="" id="delete" class="btn btn-primary btn-sm deleteBtn" idMaterial="">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                          </button>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+            </div>
+          </div>
+          <!-- Show/mod Raw MAterial Card -->
+          <dvi class="card w-100" id="showRawMaterial_Crd" style="display: none;">
+            <form id="modRawMaterial_Frm" class="p-3">
+              <div class="row">
+                <div class="col-md-3 col-sm-12 ">    
+                  <dl>
+                    <dt>Nome materiale</dt>
+                    <dd class="elementForm">
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-sm form-control-minimal" id="material_name_Fld"  name="material_name">
+                      </div>
+                    </dd>
+                    <dd id="material_name_Show" class="elementText"></dd>
+                  </dl>
+                </div>
+                <div class="col-md-3 col-sm-12">   
+                  <dl>
+                    <dt>Categoria</dt>
+                    <dd class="elementForm">
+                      <div class="form-group ">
+                        <select class="custom-select dd" id="categoryName_Fld" name="materialCategoryId">
+                          
+                        </select>
+                      </div>
+                    </dd>
+                    <dd id="categoryName_Show" class="elementText"></dd>
+                  </dl>
+                </div>
+                <div class="col-md-3 col-sm-12">
+                  <dl>
+                    <dt>Coef. umidità </dt>
+                    <dd class="elementForm">
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-sm form-control-minimal" id="hum_factor_Fld"  name="hum_factor">
+                      </div>
+                    </dd>
+                    <dd id="hum_factor_Show" class="elementText"></dd>
+                  </dl>
+                </div>
+                <div class="col-md-3 col-sm-12">
+                  <dl>
+                    <dt>Quantità</dt>
+                    <dd class="elementForm">
+                      <div class="row p-0 m-0">
+                        <div class="col">
+                          <input type="text" class="form-control form-control-sm form-control-minimal col" id="quantity_Fld" name="quantity">
+                        </div>
+                        <div class="col">
+                          <input type="text" class="form-control form-control-sm form-control-minimal col"  id="uom_Fld" name="uom">
+                        </div>
+                      </div>
+                      
+                    </dd>
+                    <dd id="quantity_Show" class="elementText"></dd>
+                  </dl>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <dl>
+                    <dt>Note</dt>
+                    <dd class="elementForm">
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-sm " id="note_Fld" name="note">
+                      </div>
+                    </dd>
+                    <dd id="note_Show" class="elementText"></dd>
+                  </dl>
+                </div>
+                <div class="col-md-3 col-sm-12">   
+                  <dl>
+                    <dt>Fornitore</dt>
+                    <dd class="elementForm">
+                      <div class="form-group ">
+                        <select class="custom-select dd" id="supplier_Fld" name="supplierId">
+                          
+                        </select>
+                      </div>
+                    </dd>
+                    <dd id="supplier_Show" class="elementText"></dd>
+                  </dl>
+                </div>
+              </div>
+              <div class="row" id="rowSubstrate">
+                
+              </div>
+                <input type="hidden" class="form-control" name="id" id="id_Fld">
+            </form>
+            <div class="row text-center m-2">
+              <div class=" w-100 text-center" id="modBtn_Wrp">
+                <div class="col"><button type="button" id="modBtn" class="btn btn-primary btn-sm">Modifica materiale</button></div>
+              </div>
+              <div class=" w-100 text-center " id="saveBtn_Wrp">
+                <button type="button" id="saveModBtn" class="btn btn-danger btn-sm">Salva modifiche</button>
+                <button type="button" id="abortModmodBtn" class="btn btn-secondary btn-sm">Annulla modifiche</button>
+              </div>
+            </div>
+          </dvi>
+       
+</section>
+
+</div>
+
+<!-- Modal showMaterial -->
+ <style>
+  .elementForm{
+    display: none;
+  }
+  .form-control-minimal{
+    margin-top:1px;
+     margin-bottom:  1px;
+  }
+  .dd{
+    padding: 1px;
+    margin-top: 1px;
+    height: 32px;
+  }
+ </style>
+<div class="modal fade" id="showMaterial_Mdl" tabindex="-1" role="dialog" aria-labelledby="showMaterial_MdlLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="showMaterial_MdlLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- <form id="modRawMaterial_Frm" class="p-3">
+        <div class="row">
+          <div class="col-md-3 col-sm-12 ">    
+            <dl>
+              <dt>Nome materiale</dt>
+              <dd class="elementForm">
+                <div class="form-group">
+                  <input type="text" class="form-control form-control-sm form-control-minimal" id="material_name_Fld"  name="material_name">
+                </div>
+              </dd>
+              <dd id="material_name_Show" class="elementText"></dd>
+            </dl>
+          </div>
+          <div class="col-md-3 col-sm-12">   
+            <dl>
+              <dt>Categoria</dt>
+              <dd class="elementForm">
+                <div class="form-group ">
+                  <select class="custom-select dd" id="categoryName_Fld" name="materialCategoryId">
+                    
+                  </select>
+                </div>
+              </dd>
+              <dd id="categoryName_Show" class="elementText"></dd>
+            </dl>
+          </div>
+          <div class="col-md-3 col-sm-12">
+            <dl>
+              <dt>Coef. umidità </dt>
+              <dd class="elementForm">
+                <div class="form-group">
+                  <input type="text" class="form-control form-control-sm form-control-minimal" id="hum_factor_Fld"  name="hum_factor">
+                </div>
+              </dd>
+              <dd id="hum_factor_Show" class="elementText"></dd>
+            </dl>
+          </div>
+          <div class="col-md-3 col-sm-12">
+            <dl>
+              <dt>Quantità</dt>
+              <dd class="elementForm">
+                <div class="row p-0 m-0">
+                  <div class="col">
+                    <input type="text" class="form-control form-control-sm form-control-minimal col" id="quantity_Fld" name="quantity">
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control form-control-sm form-control-minimal col"  id="uom_Fld" name="uom">
+                  </div>
+                </div>
+                
+              </dd>
+              <dd id="quantity_Show" class="elementText"></dd>
+            </dl>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <dl>
+              <dt>Note</dt>
+              <dd class="elementForm">
+                <div class="form-group">
+                  <input type="text" class="form-control form-control-sm " id="note_Fld" name="note">
+                </div>
+              </dd>
+              <dd id="note_Show" class="elementText"></dd>
+            </dl>
+          </div>
+          <div class="col-md-3 col-sm-12">   
+            <dl>
+              <dt>Fornitore</dt>
+              <dd class="elementForm">
+                <div class="form-group ">
+                  <select class="custom-select dd" id="supplier_Fld" name="supplier">
+                    
+                  </select>
+                </div>
+              </dd>
+              <dd id="supplier_Show" class="elementText"></dd>
+            </dl>
+          </div>
+        </div>
+        <div class="row" id="rowSubstrate">
+          
+        </div>
+          <input type="hidden" class="form-control" name="id" id="id_Fld">
+      </form>
+      <div class="row text-center">
+        <div class=" w-100 text-center" id="modBtn_Wrp">
+          <div class="col"><button type="button" id="modBtn" class="btn btn-primary btn-sm">Modifica materiale</button></div>
+        </div>
+        <div class=" w-100 text-center " id="saveBtn_Wrp">
+          <button type="button" id="saveModBtn" class="btn btn-danger btn-sm">Salva modifiche</button>
+          <button type="button" id="abortModmodBtn" class="btn btn-secondary btn-sm">Annulla modifiche</button>
+        </div> -->
+      </div>
+      
+      
+      </div>
+    </div>
+  </div>
+</div>
+<!--  -->
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>
+let supplier = '<%- JSON.stringify(supplier) %>'
+ supplier=JSON.parse(supplier)
+ let materialCategory = '<%- JSON.stringify(materialCategory) %>'
+ materialCategory=JSON.parse(materialCategory)
+
+let tableRawMaterial
+
+// Draw Category Drop down
+function drawCategoryDD(n,t){
+  let html=""
+  materialCategory.forEach(el => {
+    html+=`<option value="${el.id}">${el.category_name}</option>`
+  });
+  if (t="mod"){ $('#categoryName_Fld').html(html).val(n)}
+  if (t="new"){ $('#categoryName_Ins').html(html)}
+  
+}
+// Draw Supplier Drop down
+function drawSupplierDD(n,t){
+  let html=""
+  supplier.forEach(el => {
+    html+=`<option value="${el.id}">${el.supplier_name}</option>`
+  });
+  $('#supplier_Fld').html(html).val(n)
+  if (t="mod"){ $('#supplier_Fld').html(html).val(n)}
+  if (t="new"){ $('#supplier_Ins').html(html)}
+}
+// Draw able substrate
+function drawTableSubstrate(response){
+  let tableSubstrateHtml=`<table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Codice substrato</th>
+                    <th>Nome substrato</th>
+                    <th>Nome ricetta</th>
+                    <th>Pretrattamento</th>
+                  </tr>
+                </thead>
+                <tbody>`
+                response.where[0].forEach(el => {
+                  tableSubstrateHtml+=` <tr>
+                    <td scope="row">${el.cod_substrate}</td>
+                    <td scope="row">${el.name_substrate}</td>
+                    <td>${el.recipe_name}</td>
+                    <td>${el.pretreatment}</td>
+                  </tr>`
+                });           
+              tableSubstrateHtml+=` </tbody></table>`
+              $('#rowSubstrate').show().html(tableSubstrateHtml)
+
+}
+function drawMaterialCategoryTable(){
+  let html=""
+    materialCategory.forEach(el => {
+      let delBtnDisable=""
+      if (el.delRow==true){
+        delBtnDisable="disabled"
+      }
+      html+=`<tr>
+                      <td scope="row">
+                        <button type="button" name="" id="delete3" 
+                            class="btn btn-danger btn-xs deleteCategoryBtn" 
+                            style="width: 25px" idCategory="${el.id}" categoryName="${el.category_name}" 
+                            ${delBtnDisable}>
+                            <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                          </button>
+                        </td>
+                      <td>${el.category_name}</td>
+                      <td>${el.rawMaterials}</td>
+                      <td >${el.hum_factor}</td>
+                      <td>${el.note}</td>
+                    </tr>`
+    });
+    $("#materialCategory_Tblb").html(html)
+}
+// Draw and update table
+async function  drawTable (){
+   await $.ajax({
+        type: "GET",
+        url: "/rawMaterial/getAll",
+        success: function (response) {
+            let html=""
+            for (let i = 0; i < response.rawMaterials.length; i++) {
+                const el = response.rawMaterials[i];
+                html+=`<tr>
+                           <td>
+                            <button type="button" name="" id="showBtn${el.id}" class="btn btn-primary btn-xs showMaterialBtn" style="width:25px" idMaterial="${el.id}" materialName="${el.material_name}">
+                              <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" name="" id="delete${el.id}" class="btn btn-danger btn-xs deleteMaterialBtn" style="width: 25px" idMaterial="${el.id}" materialName="${el.material_name}">
+                            <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                          </button>
+                        </td>
+                                <td>${el.material_name}</td>
+                                <td>${el.materialCategory.category_name}</td>
+                                <td>${el.quantity}</td>
+                                <td>${moment(el.createdAt).format("DD-MM-YY HH:SS")}</td>
+                            </tr>`
+                }
+                $('#rawMaterials_Tblb').html(html)
+                $('#rawMaterials_Tbl').DataTable()
+                //tableRawMaterial=$('#rawMaterials_Tbl').DataTable({responsive: true});
+
+            }
+    });
+    
+}
+
+$(document).ready(async function () {
+    drawCategoryDD(false,"new")
+    drawSupplierDD(false,"new")
+    drawMaterialCategoryTable()
+    tableRawMaterial=$('#rawMaterials_Tbl').DataTable({responsive: true});
+    await drawTable()
+
+    // Card
+    
+  $("#newRawMaterial_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#newRawMaterial_Btn").hide()
+    $("#backToMain_Btn").show()
+    $("#materialCategory_Btn").hide()
+    $("#newCategory_Btn").hide()
+    $("#materialCategory_Crd").hide()
+      $("#newRawMaterial_Crd").show()
+      $("#tableRawMaterial_Crd").hide()
+      $("#showRawMaterial_Crd").hide()
+  });
+  $("#materialCategory_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#newRawMaterial_Btn").hide()
+    $("#backToMain_Btn").show()
+    $("#materialCategory_Btn").hide()
+    $("#newCategory_Btn").show()
+    $("#materialCategory_Crd").show()
+      $("#newRawMaterial_Crd").hide()
+      $("#tableRawMaterial_Crd").hide()
+      $("#showRawMaterial_Crd").hide()
+  });
+  // New Category
+  $("#newCategory_Btn").click(function (e) { 
+    e.preventDefault();
+    
+  });
+  // Delete Category
+  $(document).on("click",".deleteCategoryBtn", async function (e) {
+    e.preventDefault();
+      let id=$(this).attr("idCategory")
+      let categoryName=$(this).attr("categoryName")
+      let c=confirm(`Stai eliminando il materialem ${categoryName}, vuoi continuare? `)
+      if (c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/materialCategory/deleteMaterialCategory?id="+id,
+        success: async function (response) {
+            await $.ajax({
+              type: "GET",
+              url: "/materialCategory/getListCanDelete",
+              success: function (response) {
+                console.log(response)
+                materialCategory=response.materialCategories
+                drawMaterialCategoryTable()
+              }
+          })
+        }});
+      }
+
+  });
+  
+  $("#backToMain_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#newRawMaterial_Btn").show()
+    $("#backToMain_Btn").hide()
+    $("#materialCategory_Btn").show()
+    $("#newCategory_Btn").hide()
+    $("#materialCategory_Crd").hide()
+    $("#newRawMaterial_Crd").hide()
+    $("#showRawMaterial_Crd").hide()
+    $("#tableRawMaterial_Crd").show()
+  });  
+    // Show/mod Raw material
+    $(document).on("click",".showMaterialBtn", async function(e){
+      let id=$(this).attr("idMaterial")
+      let materialName=$(this).attr("materialName")
+      await $.ajax({
+        type: "GET",
+        url: "/rawMaterial/getOneRawMaterial?id="+id,
+        success: async function (response) {
+          let inUse= await $.ajax({
+            type: "GET",
+            url: "/rawMaterial/checkUseRawMaterial?id="+id,
+            success: function (response) {
+              if (response.checkUse==true){
+              drawTableSubstrate(response)
+              $("#modBtn").attr('disabled',true)
+              $("#modBtn_Wrp").show()
+              $("#saveBtn_Wrp").hide() 
+            } else {
+              $('#rowSubstrate').hide()
+              $("#modBtn").attr('disabled',false)  
+              $("#modBtn_Wrp").show()
+              $("#saveBtn_Wrp").hide()
+            }
+            return response.data
+          }});
+          let data=response.material
+          $("#material_name_Show").html(data.material_name)
+          $("#categoryName_Show").html(`<i class="fas fa-circle fa-xs" style="color:${data.materialCategory.color}"></i> ${data.materialCategory.category_name}`)
+          $("#hum_factor_Show").html(data.hum_factor?data.hum_factor:"--")
+          $("#quantity_Show").html(data.quantity?data.quantity:"--" + data.uom?data.uom:"" )
+          $("#supplier_Show").html(data.supplierId?data.supplier.supplier_name:"--")
+          $("#note_Show").html(data.note)
+          $("#material_name_Fld").val(data.material_name)
+          $("#categoryName_Fld").val(data.materialCategoryId)
+          $("#hum_factor_Fld").val(data.hum_factor)
+          $("#quantity_Fld").val(data.quantity)
+          $("#note_Fld").val(data.note)
+          $("#supplier_Fld").val(data.supplierId)
+          $("#id_Fld").val(data.id)
+          drawCategoryDD(data.materialCategory.id,"mod")
+          drawSupplierDD(data.supplierId?data.supplier.id:0,"mod")
+          // $("#showMaterial_Mdl").modal('show')
+          $("#showRawMaterial_Crd").show()
+          $("#materialCategory_Crd").hide()
+          $("#newRawMaterial_Crd").hide()
+          $("#tableRawMaterial_Crd").hide()
+          $("#newRawMaterial_Btn").hide()
+          $("#backToMain_Btn").show()
+          $("#materialCategory_Btn").hide()
+          $("#newCategory_Btn").hide()
+        }
+      });   
+    })
+    $('#showMaterial_Mdl').on('hidden.bs.modal', function (e) {
+        $(".elementForm").hide()
+        $(".elementText").show()
+        $("#modBtn").show()
+        $("#saveBtn_Wrp").hide()
+      })
+    $("#modBtn").click(function (e) { 
+      e.preventDefault();
+      $(".elementForm").show()
+      $(".elementText").hide()
+      $("#modBtn_Wrp").hide()
+      $("#saveBtn_Wrp").show()
+      console.log("ok")
+    });
+    $("#abortModmodBtn").click(function (e) { 
+      e.preventDefault();
+      $(".elementForm").hide()
+        $(".elementText").show()
+        $("#modBtn_Wrp").show()
+      $("#saveBtn_Wrp").hide()
+    });
+    $("#saveModBtn").click(function (e) { 
+      e.preventDefault();
+      $.ajax({
+        type: "PUT",
+        url: "/rawMaterial/updateRawMaterial",
+        data: $("#modRawMaterial_Frm").serialize(),   
+        success: async function (response) {
+          //$("#showMaterial_Mdl").modal('hide')
+          $("#showRawMaterial_Crd").hide()
+          $("#materialCategory_Crd").hide()
+          $("#newRawMaterial_Crd").hide()
+          $("#tableRawMaterial_Crd").show()
+          $("#newRawMaterial_Btn").show()
+          $("#backToMain_Btn").hide()
+          $("#materialCategory_Btn").show()
+          $("#newCategory_Btn").hide()
+          $("#modBtn_Wrp").show()
+          $("#saveBtn_Wrp").hide()
+          await drawTable()
+
+        }
+      });
+    });
+    
+    // delete Raw MAterial
+    $(document).on("click",".deleteMaterialBtn", async function(e){
+      e.preventDefault();
+      let id=$(this).attr("idMaterial")
+      let materialName=$(this).attr("materialName")
+      let c=confirm(`Stai eliminando il materialem ${materialName}, vuoi continuare? `)
+      if (c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/rawMaterial/deleteRawMaterial?id="+id,
+        success: async function (response) {
+          if (response.checkUse==true){
+            alert(response.message)
+          }else{
+            await drawTable()
+          }
+          
+        }
+      });
+      }
+    })
+
+    
+});
+    
+
+</script>
+<%- include ('../closeTag') %>

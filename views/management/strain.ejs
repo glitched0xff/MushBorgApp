@@ -1,0 +1,849 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione strain</h1>
+            <button type="button" class="btn btn-xs btn-primary" id="modStrain_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca strain</button>
+            <button type="button" class="btn btn-xs btn-primary" id="pdfStrain_Btn" style="display: none;"><i class="fa fa-print" aria-hidden="true"></i></button>
+             <button type="button" class="btn btn-xs btn-primary" id="newStrain_Btn"><i class="fas fa-plus"></i> Nuova strain</button>
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco strain</button>
+           
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Strain</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- Strain card -->
+          <div class="card w-100" id="tableStrain_Crd">
+            <div class="card-body">
+              <table class="display table table-striped table-bordered compact" id="strain_Tbl" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 40px; "></th>
+                        <th>Codice strain</th>
+                        <th>Nome strain</th>
+                        <th style="width: 200px; ">Specie</th>
+                        <th>Fornitore</th>
+                        <th>Generazione</th>
+                        <th>El. inoculi</th>
+                        <th>El. spawn</th>
+                        <th>El. coltivazione</th>
+                        <th>Creata il</th>
+                    </tr>
+                </thead>
+                <tbody id="strain_Tblb">
+                    
+                </tbody>
+            </table>
+            </div>
+          </div>
+          <!-- Show/mod strains Card -->
+          <div class="card w-100" id="showStrain_Crd" style="display: none;">
+            <form id="strain_Frm" class="p-3">
+
+              <div class="row m-2">
+                <%- include('../include/ejsForm',
+                { classTxt: "strainText",
+                    classField: "strainForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idStrain"
+                    },
+                    { type:"startRow"},
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"code_strain",
+                      label:"Codice strain",
+                      readonly:true, 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"strain_name",
+                      label:"Nome strain",
+                      required:'', 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"description",
+                      label:"Descrizione",
+                      required:'', 
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"species",
+                      label:"Codice specie",
+                      firstField:"Seleziona il specie",
+                      required:'', 
+                      option:speciesDD
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"species_code",
+                      label:"Codice specie",
+                      readonly:true, 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"sub_code",
+                      label:"Sub codice",
+                      required:'', 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"generation",
+                      label:"Generazione",
+                      required:'', 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"derivedFrom",
+                      label:"derivedFrom",
+                      required:'', 
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"supplierId",
+                      label:"Forniore",
+                      firstField:"Seleziona il fornitore",
+                      required:'', 
+                      option:supplierDD
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"buyed",
+                      label:"buyed",
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"conservationMedia",
+                      label:"Media di conservazione",
+                      firstField:"Seleziona il media",
+                      option:strainMediaDD
+                    },
+                     { type:"endRow"},
+                     { type:"startRow"},
+                    {
+                      type:"textarea",
+                      classBox:"col-md-5 col-sm-6",
+                      rows:3,
+                      fieldName:"note",
+                      label:"Note",
+                      required:'', 
+                    },
+                     { type:"endRow"},
+                    ]  
+                }) %>
+              </div>
+                <div class="row w-100" style="display: none;" id="strain_Frm_Btn">
+                  <button class="btn btn-xs btn-primary mx-1" id="saveStrain_Btn" > <i class="fas fa-pen"></i> Salva strain </button>
+                  <button class="btn btn-xs btn-secondary mx-1" id="abortStrain_Btn"  > <i class="fas fa-pen"></i> Annulla modifica </button>
+                </div>
+            </form>
+          </div>
+          <!-- Dati coltivazione -->
+           <div class="card w-100 " style="display: none;" id="parameter_Crd"><!-- collapsed-card -->
+            <div class="card-header">
+              <h3 class="card-title">Dati di coltivazione
+                <button class="btn btn-xs btn-primary mx-1" id="modParameter_Btn"> 
+              <i class="fas fa-plus"></i> 
+                Modifica dati
+              </button>
+              <button class="btn btn-xs btn-primary mx-1" id="importParameter_Btn" style="display: none;"> 
+              <i class="fas fa-plus"></i> 
+                Importa parametri
+              </button>
+              </h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+              </div>
+            </div>
+            <div class="card-body">
+              <form id="parameter_Frm">
+              <div class="row">
+                <span class="col-12 text-bold border-top border-bottom"> Propagazione</span>
+                <%- include('../include/ejsForm',
+                { classTxt: "parameterText",
+                    classField: "parameterForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idStrainParameter"
+                    },
+                    { type:"startRow", class:"p-2"},
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"incubation_temp",
+                      label:"Temperatura",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"incubation_hum",
+                      label:"Umidità",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"incubation_len",
+                      label:"Durata in giorni",
+                      required:'', 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"incubation_co2",
+                      label:"C02",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"incubation_airExch",
+                      label:"Ricambio d'aria",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"incubation_light",
+                      label:"Luce",
+                    },
+                     { type:"endRow"},
+                    ]  
+                }) %>
+              </div>  
+              <div class="row">
+                <span class="col-12 text-bold border-top border-bottom"> Primordia</span>
+                <%- include('../include/ejsForm',
+                { classTxt: "parameterText",
+                    classField: "parameterForm",
+                    form:[
+                    { type:"startRow", class:"p-2"},
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"primordia_temp",
+                      label:"Temperatura",
+                    },
+                     {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"primordia_hum",
+                      label:"Umidità",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"primordia_len",
+                      label:"Durata in giorni",
+                      required:'', 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"primordia_co2",
+                      label:"C02",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"primordia_airExch",
+                      label:"Ricambio d'aria",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"primordia_light",
+                      label:"Luce",
+                    },
+                     { type:"endRow"},
+                    ]  
+                }) %>
+              </div>
+
+              <div class="row">
+                <span class="col-12 text-bold border-top border-bottom"> Fruttificazione</span>
+                <%- include('../include/ejsForm',
+                { classTxt: "parameterText",
+                    classField: "parameterForm",
+                    form:[
+                    { type:"startRow", class:"p-2"},
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"fructification_temp",
+                      label:"Temperatura",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"fructification_hum",
+                      label:"Umidità",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"fructification_len",
+                      label:"Durata in giorni",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"fructification_co2",
+                      label:"C02",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"fructification_airExch",
+                      label:"Ricambio d'aria",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"fructification_light",
+                      label:"Luce",
+                    },
+                     { type:"endRow"},
+                    ]  
+                }) %>
+              </div>
+
+              <div class="row">
+                <span class="col-12 text-bold border-top border-bottom"> Coltivazione</span>
+                <%- include('../include/ejsForm',
+                { classTxt: "parameterText",
+                    classField: "parameterForm",
+                    form:[
+                    { type:"startRow", class:"p-2"},
+                    
+                     {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"outdoor",
+                      label:"Outdoor",
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"indoor",
+                      label:"Indoor",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"liked_substrate",
+                      label:"Substrati",
+                    },
+                     { type:"endRow"},
+                    ]  
+                }) %>
+              </div>
+              <div class="row w-100" style="display: none;" id="parameter_Btn">
+                  <button class="btn btn-xs btn-primary mx-1" id="saveParameter_Btn" > <i class="fas fa-pen"></i> Salva parametri </button>
+                  <button class="btn btn-xs btn-secondary mx-1" id="abortParameterBtn"  > <i class="fas fa-pen"></i> Annulla modifica </button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- Elenchi -->
+          <div class="card w-100 lotti_Crd" style="display: none;">
+            <div class="card-header">
+              <h3 class="card-title">Lotti di inoculo</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+              </div>
+            </div>
+            <div class="card-body">
+            <div class="row">
+              <table class="table table-sm mb-0" id="indexInoculum_Tbl" >
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Codice lotto inoculo</th>
+                          <th>Nome inoculo</th>
+                          
+                        </tr>
+                      </thead>
+                      <tbody id="indexInoculum_Tblb">
+                        
+                      </tbody>
+                    </table>
+              </div>
+             </div>
+          </div>
+          <div class="card w-100 lotti_Crd" style="display: none;">
+            <div class="card-header">
+              <h3 class="card-title">Lotti di spawn</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <table class="table table-sm mb-0" id="indexSpawn_Tbl" >
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Codice lotto spawn</th>
+                          <th>Nome spawn</th>
+                          
+                        </tr>
+                      </thead>
+                      <tbody id="indexSpawn_Tblb">
+                        
+                      </tbody>
+                    </table>
+              </div>
+            </div>
+          </div>  
+          <div class="card w-100 lotti_Crd" style="display: none;">
+            <div class="card-header">
+              <h3 class="card-title">Lotti di coltivazione</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row">
+              <table class="table table-sm mb-0" id="indexPropagation_Tbl" >
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Codice lotto coltivazione</th>
+                          <th>Nome coltivazione</th>
+                          
+                        </tr>
+                      </thead>
+                      <tbody id="indexPropagation_Tblb">
+                        
+                      </tbody>
+                    </table>
+            </div>
+            </div>
+          </div>
+
+        </div>
+    </div>
+</div>
+</section>
+
+</div>
+
+<!-- Modal import parameter -->
+<div class="modal fade" id="importParameter_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Importa parametri</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for=""></label>
+          <select class="form-control" name="importParameter_Slc" id="importParameter_Slc">
+            <% strainDD.forEach (el => {%>
+              <option value="<%= el.val%>"><%= el.txt%></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-12" >
+              <pre id="parameter_Div"></pre>
+            </div>
+        <button class="btn-xs btn btn-primary" id="importParameterSave_Btn">Import parametri</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>
+let redirectId= <%- JSON.stringify( redirectId) %>
+let strainDD= <%- JSON.stringify(strainDD) %>
+let tableStrain
+let strainId
+let importParam
+// Draw table Child element 
+function drawTableChild(data,table,fields,topic,title) {
+    let html=""
+    if (data.length>0){
+      for (let i = 0; i < data.length; i++) {
+        const elem = data[i];
+        html+=`<tr>
+        <td style="width:85px">
+          <button type="button" name="" id="showChildBtn_${elem.id}_${topic}" 
+                  class="btn btn-primary btn-xs showChild_btn" style="width:25px"
+                  topic="${topic}">
+                    <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                </button>
+        </td>`
+        for (let y = 0; y < fields.length; y++) {
+          const fld = fields[y];
+          html+=`<td style="width:${100/fields.length}%">${elem[fld]}</td>`
+        }
+        html+=`</tr>`
+      }
+      
+    } else {
+      html+=`<tr >
+        <td colspan="4" style="text-align:center" class="bg-danger"> Il materiale non è utilizzato in nessuno ${title}</td>
+      </tr>`
+    }
+    $("#"+table).html(html)
+  }
+
+async function  drawTable (){
+  await $.ajax({
+      type: "GET",
+      url: "/strain/getAll",
+      success: async function (response) {
+        console.log(response)
+          let html=""
+          for (let i = 0; i < response.strains.length; i++) {
+              let el=response.strains[i]
+              let delBtnDisable=""
+              if ((el.spawnCount!=0)||(el.inoculumCount!=0)||(el.propagationCount!=0)){
+                delBtnDisable="disabled"
+              }
+              html+=`<tr>
+                          <td>
+                          <button type="button" name="" id="showBtn${el.id}" 
+                          class="btn btn-primary btn-xs showStrain" style="width:25px"
+                          idStrain="${el.id}" strainName="${el.code_strain}">
+                            <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" name="" id="delete${el.id}" 
+                        class="btn btn-danger btn-xs deleteStrain_Btn" style="width: 25px" 
+                        idStrain="${el.id}" strainName="${el.strain_name}" ${delBtnDisable}>
+                          <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                        </button>
+                      </td>
+                              <td>${el.code_strain}</td>
+                              <td>${el.strain_name}</td>
+                              <td>${el.species}</td>
+                              <td>${el.supplier!=null?el.supplier.supplier_name?el.supplier.supplier_name:"-":"-"}</td>
+                              <td>${el.generation}</td>
+                              <td>${el.spawnCount}</td>
+                              <td>${el.inoculumCount}</td>
+                              <td>${el.propagationCount}</td>
+                              <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                          </tr>`
+              
+              }
+              await $('#strain_Tbl').DataTable().clear().rows.add($(html)).draw();
+          }
+  });
+}
+
+async function drawShowStrain(redirectId) {
+    //$("#saveStrain_Btn").hide()
+    strainId=redirectId
+    await $.ajax({
+      type: "GET",
+      url: "/strain/getOneStrain?id="+redirectId,
+      success: async function (response) {
+        console.log(response)
+        let data=response.strain
+        $("inoculumElement").show();
+        $("spawnElement").show();
+        $("propagationElement").show();
+        await drawTableChild(data.inoculums,"indexInoculum_Tblb",["code_inoculum","inoculum_name"],"INOCULUM","Lotto di inoculo ")
+        await drawTableChild(data.spawns,"indexSpawn_Tblb",["code_spawn","spawn_name"],"SPAWN","Lotto di spawn ")
+        await drawTableChild(data.propagations,"indexPropagation_Tblb",["code_propagation","propagation_name"],"PROPAGATION","Lotto di coltivazione ")
+        $("#modStrain_Btn").show()
+         for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+                if (key=="species"){
+                  $("#species_Fld").val(data.species_code).change();
+                }
+              }
+              switch (key) {
+                case "supplierId":
+                  $("#supplierId_Show").html(data.supplier?data.supplier.supplier_name:"-")
+                  break;
+                case "outdoor":
+                  $("#outdoor_Show").html(data.outdoor==1?"Sì":"No")                  
+                  data.outdoor==1?$("#outdoor_Fld").prop('checked', true):$("#outdoor_Fld").prop('checked', false);
+                  break;
+                case "indoor":
+                  $("#indoor_Show").html(data.indoor==1?"Sì":"No")                  
+                  data.indoor==1?$("#indoor_Fld").prop('checked', true):$("#indoor_Fld").prop('checked', false);
+                  break;
+                case "buyed":
+                  console.log(data.buyed)
+                  $("#buyed_Show").html(data.buyed ?moment(data.buyed).format("DD-MM-YY"):"-")
+                  $('#buyed_DT').datetimepicker({ format:"DD-MM-YY",defaultDate:moment(data.buyed)})
+                  break;
+                case "conservationMedia":
+                  let txt=$("#conservationMedia_Fld option:selected").text();
+                  $("#conservationMedia_Show").html(data.conservationMedia?txt:"-")
+                  break;
+                default:
+                  $("#"+key+"_Show").html(value?value:"-")
+                  break;
+                }
+            }
+        //---- Form //
+        $("#showStrain_Crd").show()
+        $("#parameter_Crd").show();
+        $(".lotti_Crd").show();
+        $("#newStrain_Crd").hide()
+        $("#tableStrain_Crd").hide()
+        $("#newStrain_Btn").hide()
+        $("#backToMain_Btn").show()
+        $(".strainText").show()
+        $(".strainForm").hide()
+        $(".parameterText").show()
+        $(".parameterForm").hide()
+      }
+    });   
+  
+}
+
+$(document).ready(async function () {
+  // init 
+   if (redirectId!=null){
+      await drawShowStrain(redirectId)
+      $("#idStrain_Fld").val(redirectId);
+      $("#idStrainParameter_Fld").val(redirectId);
+      $("#pdfStrain_Btn").show();
+    }
+    else{
+      tableStrain=$('#strain_Tbl').DataTable({responsive: true});
+      await drawTable()
+      $("#idStrain_Fld").val("");
+      $("#idStrainParameter_Fld").val("");
+    }
+   $('#buyed_DT').datetimepicker({locale: 'it', format:"DD-MM-YY",defaultDate:moment()})
+
+  $(document).on("click",".showStrain", async function(e){
+      let idstrain=$(this).attr("idstrain")
+      window.location="/strain?redirectId="+idstrain   
+  })
+
+    
+
+    $(document).on("click",".showChild_btn", function (e) { 
+      e.preventDefault();
+      let requestId=$(this).attr("id").split("_")[1]
+      let filterCategory=$(this).attr("id").split("_")[2]
+
+      console.log(filterCategory,requestId)
+      switch (filterCategory) {
+        case "INOCULUM":
+          window.open("/inoculum?redirectId="+requestId, '_blank').focus();
+          break;
+      case "SPAWN":
+          window.open("/spawn?redirectId="+requestId, '_blank').focus();
+          break;
+        case "PROPAGATION":
+          window.open("/propagation?redirectId="+requestId, '_blank').focus();
+          break;
+      }
+    });
+    
+    $(document).on("click",".deleteStrain_Btn", function (e) { 
+      e.preventDefault();
+      let idStrain=$(this).attr("idstrain")
+      let strainName=$(this).attr("strainname")
+      console.log(idStrain,strainName)
+      let c=confirm(`Si sta eliminando la strain ${strainName}, continuare? ` )
+      if(c){
+        $.ajax({
+          type: "DELETE",
+          url: "/strain/deleteStrain?id="+idStrain,
+          success: async function (response) {
+            await drawTable()
+          }
+        });
+      }
+    });
+    
+    // Gestione dati
+    $("#newStrain_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#showStrain_Crd").show()
+        $("#parameter_Crd").show();
+        $("#newStrain_Crd").hide()
+        $("#tableStrain_Crd").hide()
+        $("#newStrain_Btn").hide()
+        $(".strainText").hide()
+        $(".strainForm").show()
+        $(".parameterText").show()
+        $(".parameterForm").hide()
+        $("#strain_Frm_Btn").show();
+    });
+
+    $("#species_Fld").change(function (e) { 
+      e.preventDefault();
+      let val=$(this).val()
+      $("#species_code_Fld").val(val)
+    });
+
+    $("#saveStrain_Btn").click(function (e) { 
+      e.preventDefault();
+      //checkForm("strain_Frm")
+      let idStrain=$("#idStrain_Fld").val()
+      let strainSpecies=$( "#species_Fld option:selected" ).text().trim();
+      let serilizedForm=$("#strain_Frm").serializeArray()
+      console.log(serilizedForm)
+      let stringVal=""
+      for (let i = 0; i < serilizedForm.length; i++) {
+        if(serilizedForm[i].name=="species"){
+          serilizedForm[i].value=strainSpecies
+        }
+        stringVal+=serilizedForm[i].name+"="+serilizedForm[i].value
+        if(i!=serilizedForm.length-1){
+          stringVal+="&"
+        }
+      }
+
+      $("#species_Fld").val(strainSpecies)
+      console.log(stringVal)
+      if (idStrain==""){
+        $.ajax({
+          type: "POST",
+          url: "/strain/newStrain",
+          data: stringVal,//$("#strain_Frm").serialize(),
+          success: function (response) {
+            window.location="/strain?redirectId="+response.id
+          }
+        });
+      }else{
+        $.ajax({
+          type: "PUT",
+          url: "/strain/updateStrain",
+          data: stringVal,//$("#strain_Frm").serialize(),
+          success: function (response) {
+             window.location="/strain?redirectId="+idStrain
+          }
+        });
+      }
+    });
+
+    $("#modStrain_Btn").click(function (e) { 
+      e.preventDefault();
+      $(".strainForm").show()
+      $(".strainText").hide()
+      $("#strain_Frm_Btn").show();
+      
+    });
+
+    $("#abortStrain_Btn").click(function (e) { 
+      e.preventDefault();
+      window.location.reload()
+    });
+
+    // Gestione parametri
+    $("#modParameter_Btn").click(function (e) { 
+      e.preventDefault();
+      console.log(strainId)
+      $("#idStrainParameter_Fld").val(strainId)
+      $(".parameterText").hide()
+        $(".parameterForm").show()
+      $("#parameter_Btn").show();
+      $("#importParameter_Btn").show();
+    });
+
+    $("#importParameter_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#importParameter_Mdl").modal("show")
+    });
+
+
+    $("#importParameter_Slc").change(function (e) { 
+      e.preventDefault();
+      let idStrain=$(this).val().split("|")[0]
+      $.ajax({
+        type: "GET",
+        url: "/strain/getParameterStrain?idStrain="+idStrain,
+        success: function (response) {
+          console.log(response)
+          importParam=response.strain
+          $("#parameter_Div").html(`<h6 class="text-bold mt-1">Result:</h6> ${JSON.stringify(response.strain,null,8)}`)
+        }
+      });
+    });
+
+    $("#importParameterSave_Btn").click(function (e) { 
+      e.preventDefault();
+      for (const [key, value] of Object.entries(importParam)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              switch (key) {
+                case "outdoor":               
+                  importParam.outdoor==1?$("#outdoor_Fld").prop('checked', true):$("#outdoor_Fld").prop('checked', false);
+                  break;
+                case "indoor":                 
+                  importParam.indoor==1?$("#indoor_Fld").prop('checked', true):$("#indoor_Fld").prop('checked', false);
+                  break;
+                
+                }
+            }
+       $("#importParameter_Mdl").modal("hide")
+    });
+
+    $("#saveParameter_Btn").click(function (e) { 
+      e.preventDefault();
+      $.ajax({
+        type: "PUT",
+        url: "/strain/updateParameters",
+        data: $("#parameter_Frm").serialize(),
+        success: function (response) {
+          window.location.reload()
+        }
+      });
+    });
+    $("#abortParameterBtn").click(function (e) { 
+      e.preventDefault();
+      window.location.reload();
+      // resetForm("parameter_Frm")
+      // $(".parameterText").show();
+      // $(".parameterForm").hide();
+      // $("#parameter_Btn").hide();
+    });
+    $("#pdfStrain_Btn").click(function (e) { 
+      e.preventDefault();
+       window.open('/strain/pdf?idStrain='+strainId, '_blank');
+    });
+    //
+    $("#backToMain_Btn").click(function (e) { 
+        e.preventDefault();
+         window.location='/strain'
+      });
+})
+</script>
+<%- include ('../closeTag') %>

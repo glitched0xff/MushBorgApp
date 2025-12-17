@@ -1,0 +1,149 @@
+<%- include ('header') %>
+<%- include ('navbar') %>
+<%- include ('sidebar') %>
+
+  <div class="content-wrapper">
+    
+    <section class="content">
+        <div class="container-fluid">
+            <h2 class="text-center display-4">Search</h2>
+            <div class="row">
+                <div class="col-md-8 offset-md-2 mt-2">
+                    <form>
+                        <div class="input-group">
+                            <input type="search" class="form-control form-control-lg " id="search_FieldPage">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-lg btn-default " id="search_BtnPage">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <% if ( result!= false) { %>
+              <div class="row w-100 mt-2" id="result_Div">
+              
+            </div>
+            <% } %>
+            
+        </div>
+    </section>
+    
+  </div>
+
+  <%- include ('jsLoad') %>
+    
+<script>
+  let result= <%- JSON.stringify( result) %>
+  let searchedString= "<%= searchedString %>"
+
+  function drawResult(data){
+    let html=""
+    if(data!=false){
+    let total=0
+    data.forEach(elem => {   
+      if(elem.data.length>0){
+        for (let i = 0; i < elem.data.length; i++) {
+          total++
+          const el = elem.data[i];
+          let objVal={}
+          switch (elem.type) {
+            case "mushElement":
+              html+=`
+                    <div class="card w-100 col-8 mx-auto">
+                <img class="card-img-top" src="holder.js/100px180/" alt="">
+                <div class="card-body">
+                  <h4 class="card-title"><span class="badge badge-primary">Mush element</span></h4>
+                  <p class="card-text">
+                    <a href="/mushElement/singleMushElement?id=${el.id}&filterCategory=${el.type}" target="_blank">${el.element_code}<a><br>
+                    ${objVal.val3}<br>
+                    ${objVal.val4}</p>
+                </div>
+              </div>
+                    `
+              break;
+            case "propagation":
+              html+=`
+                    <div class="card w-100 col-8 mx-auto">
+                <img class="card-img-top" src="holder.js/100px180/" alt="">
+                <div class="card-body">
+                  <h4 class="card-title"><span class="badge badge-seconday">Propagation</span></h4>
+                  <p class="card-text">
+                    <a href="">${el.propagation_name}<a><br>
+                    ${objVal.val3}<br>
+                    ${el.id}</p>
+                </div>
+              </div>
+                    `
+              break;
+            case "spawn":
+              html+=`
+                    <div class="card w-100 col-8 mx-auto">
+                <img class="card-img-top" src="holder.js/100px180/" alt="">
+                <div class="card-body">
+                  <h4 class="card-title"><span class="badge badge-danger">Spawn</span></h4>
+                  <p class="card-text">
+                    <a href="">${el.spawn_name}<a><br>
+                    <br>
+                   ${el.id}</p>
+                </div>
+              </div>
+                    `
+              break;
+            case "inoculum":
+              html+=`
+                    <div class="card w-100 col-8 mx-auto">
+                <img class="card-img-top" src="holder.js/100px180/" alt="">
+                <div class="card-body">
+                  <h4 class="card-title"><span class="badge badge-danger">Inoculum</span></h4>
+                  <p class="card-text">
+                    <a href="">${el.inoculum_name}<a><br>
+                    <br>
+                   ${el.id}</p>
+                </div>
+              </div>
+                    `
+                break;
+            case "strain":
+              html+=`
+                    <div class="card w-100 col-8 mx-auto">
+                <img class="card-img-top" src="holder.js/100px180/" alt="">
+                <div class="card-body">
+                  <h4 class="card-title"><span class="badge badge-alert">Strain</span></h4>
+                  <p class="card-text">
+                    <a href="">${el.strain_name}<a><br>
+                    <br>
+                   ${el.id}</p>
+                </div>
+              </div>
+                    `
+              objVal={val1:"Strain",val2:el.strain_name,val3:el.purchased,val4:el.id,pillowColor:"badge-alert"}
+              break;
+          }
+          }
+      }
+    });
+    $("#result_Div").html(`<div class="col-8 mx-auto" id="searchString_Spn">Testo cercato:${searchedString} - trovati n° :${total}</div>`)
+    $("#result_Div").append(html)}
+  }
+
+    $(document).ready(function () {
+      $("#searchHeader").hide()
+      drawResult(result)
+
+      $("#search_BtnPage").click(function (e) { 
+        e.preventDefault();
+        let code=$("#search_FieldPage").val()
+        console.log(code)
+        let url= "/search?code="+code
+        window.location=url
+      });
+    });
+
+
+  </script>
+  <%- include ('footer') %>
+
+  <%- include ('closeTag') %>
+  
