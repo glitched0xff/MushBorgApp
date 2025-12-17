@@ -1,5 +1,5 @@
 #  Documentazione Database `mushborg`
-V0 rev.1 
+V0 rev.1 27-10-25
 
 - [Documentazione Database `mushborg`](#documentazione-database-mushborg)
   - [Tabella `calendarCategories`](#tabella-calendarcategories)
@@ -412,17 +412,14 @@ V0 rev.1
 |-------|------|----------|
 | id | int(11) | Id strain |
 | code_strain | varchar(255) | Codice strain |
-| sub_code | varchar(2) | Sub codice di 2 caratteri che identificano la strain
- |
+| sub_code | varchar(2) | Sub codice di 2 caratteri che identificano la strain|
 | strain_name | varchar(255) | Nome della strain |
 | percentage | int(11) | Percentuale di utilizzo *#Deprecato* |
 | species | varchar(255) | Specie -> collegato alla tabella species |
 | species_code | varchar(45) | Codice specie di 2 caratteri |
 | description | varchar(255) | Descrizione strain |
 | generation | varchar(255) | Generazione strain |
-| derivedFrom | varchar(255) | Strain derivata da altra strain, può essere usata per i rinfreschi delle strain. 
-
-Per la moltiplicazione si fa un lotto di inoculo |
+| derivedFrom | varchar(255) | Strain derivata da altra strain, può essere usata per i rinfreschi delle strain.Per la moltiplicazione si fa un lotto di inoculo |
 | incubation_temp | varchar(255) | Temperatura di incubazione |
 | incubation_hum | varchar(255) | Umidità relativa incubazione |
 | incubation_len | varchar(255) | Durata incubazione |
