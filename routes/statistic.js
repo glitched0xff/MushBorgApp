@@ -1,8 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const moment=require("moment")
-const db = require("../models");
-const { fn, col, literal, Op } = require("sequelize");
+let express = require('express');
+let router = express.Router();
+let moment=require("moment")
+let db = require("../models");
+let { fn, col, literal, Op } = require("sequelize");
 
 router.get('/',async  (req, res) => {
   res.render("statistic")
@@ -38,12 +38,12 @@ router.get('/checkWeigth',async (req,res)=>{
 });
     harvests=JSON.parse(JSON.stringify(harvests))
     for (let i = 0; i < harvests.length; i++) {
-        const el = harvests[i];
+        let el = harvests[i];
         let mushElementData=await db.mushElement.findAll({where:{id:el.mushElementId},include:db.propagation})
         harvests[i].mushElementData=JSON.parse(JSON.stringify(mushElementData))
     }
       let harvestsGroupedByDay = harvests.reduce((acc, item) => {
-      const { day } = item;
+      let { day } = item;
       if (!acc[day]) {
         acc[day] = [];
       }
@@ -56,10 +56,10 @@ router.get('/checkWeigth',async (req,res)=>{
     // ogni elemento contiene il totale, l'indice è uguale all'array precedente
     let arrayTotalWeight=[]
     for (let i = 0; i < harvestsGroupedByDay.length; i++) {
-      const day = harvestsGroupedByDay[i];
+      let day = harvestsGroupedByDay[i];
       let tot=0
       for (let y = 0; y < day.length; y++) {
-        const elem = day[y];
+        let elem = day[y];
         tot=tot+elem.total_harvest_weight
       }
       arrayTotalWeight.push(tot)
