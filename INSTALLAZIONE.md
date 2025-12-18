@@ -81,6 +81,8 @@ Creiamo un utente diverso da root per la gestione del database.
     Utente di default: mushborg
     Password di default: mushborg0x0
 ```
+`CREATE USER 'mushborg'@'localhost' IDENTIFIED BY 'mushborg0x0';`
+
 L'utente ha tutti i privilegi.
 
 `GRANT ALL ON *.* TO 'mushborg_admin'@'localhost' IDENTIFIED BY 'mushborg0x0' WITH GRANT OPTION;`
@@ -103,9 +105,12 @@ Esco da mariaDb
 
 ___
 
-#### Clonare il repository
+#### Clonazione repository
 
-` clone git`
+Posizionarsi nella cartella di installazione e clonare il repository **https://github.com/glitched0xff/MushBorgApp.git**
+
+`cd ~/Documents/`
+`git clone https://github.com/glitched0xff/MushBorgApp.git`
 
 #### Importare il nuovo database
 
@@ -113,22 +118,19 @@ Per importare il database di default seguire la seguente sintassi
 
 mysql -u [username] -p [nome_database] < [percorso_file.sql]
 
-` mariadb -u mushborg -p mushborg < dbBkup/mushborgDb.sql `
+` mariadb -u mushborg -p mushborg < dbBkup/FILE_DB.sql `
 
 #### Installo i pacchetti necessari
 
 ` npm i `
 
-Installo Pm2
+Installo Pm2 (gestione dei processi node)
 
 `sudo npm i pm2 -g`
 
-#### Clonazione repository
+Installo Nodemon (gestione del debug)
 
-Posizionarsi nella cartella di installazione e clonare il repository **https://github.com/glitched0xff/MushBorgApp.git**
-
-`cd ~/Documents/`
-`git clone https://github.com/glitched0xff/MushBorgApp.git`
+`sudo npm i nodemon -g`
 
 #### Edit file .env per connessione al db
 
@@ -138,9 +140,15 @@ Di defualt username e password sono quelli indicati precedentemente
 
 Modifico i dati necessari e chiudo il file con `Ctrl+x`
 
-#### avvio il server
+#### Test di funzionamento 
 
-pm2 start server.js --name Mushborg
+`nodemon server.js`
+
+Se l'avvio non presenta errori si può interrompere e passare al passaggio successivo
+
+#### Avvio il server
+
+`pm2 start server.js --name Mushborg`
 
 
 ### Installa webserver per reverse proxy verso la porta 3000
@@ -176,13 +184,15 @@ server {
 
 Controllo che non ci siano errori
 
+```
 sudo nginx -t
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
+```
 
 riavvio il servizio 
 
-sudo systemctl restart nginx
+`sudo systemctl restart nginx`
 
 Se tutto è andato a buon fine ci si può collegare a Mushborg e controllare il funzionamento
 

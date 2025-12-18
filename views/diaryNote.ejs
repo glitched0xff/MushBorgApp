@@ -193,7 +193,7 @@ async function drawTableNote(dtFrom=moment().startOf("day").subtract(7,'days').t
             url: "/diaryNote/newNota",
             data: $("#editDiaryNote_Frm").serialize(),
             success: function (response) { 
-              console.log(response)      
+              window.location="/diaryNote"      
             }
           })
         });
