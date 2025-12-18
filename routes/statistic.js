@@ -36,13 +36,13 @@ router.get('/checkWeigth',async (req,res)=>{
     [literal("day"), "DESC"]
   ]
 });
-    harvests=JSON.parse(JSON.stringify(harvests))
-    for (let i = 0; i < harvests.length; i++) {
-        let el = harvests[i];
+    let harvestsData=JSON.parse(JSON.stringify(harvests))
+    for (let i = 0; i < harvestsData.length; i++) {
+        let el = harvestsData[i];
         let mushElementData=await db.mushElement.findAll({where:{id:el.mushElementId},include:db.propagation})
-        harvests[i].mushElementData=JSON.parse(JSON.stringify(mushElementData))
+        harvestsData[i].mushElementData=JSON.parse(JSON.stringify(mushElementData))
     }
-      let harvestsGroupedByDay = harvests.reduce((acc, item) => {
+      let harvestsGroupedByDay = harvestsData.reduce((acc, item) => {
       let { day } = item;
       if (!acc[day]) {
         acc[day] = [];
