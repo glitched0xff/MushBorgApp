@@ -13,6 +13,7 @@
     "mushElement":true,
     "propagation":true,
     "statistic":true,
+    "material":true,
     "env":"SVILUPPO",
     "titlePage":"Mushborg - DEV"
 }

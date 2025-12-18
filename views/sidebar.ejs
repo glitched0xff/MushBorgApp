@@ -20,19 +20,6 @@
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
-               <% if (config.telemetry){%>
-               <li class="nav-item">
-                <a href="/telemetry" class="nav-link">
-                  <i class="nav-icon fas fa-plug"></i>
-                  <p>
-                    Telemetry
-                    <span class="badge badge-info right">2</span>
-                  </p>
-                </a>
-              </li>
-              <% } %>
               <% if (config.search){%>
               <li class="nav-item">
                 <a href="/search" class="nav-link">
@@ -43,69 +30,44 @@
                 </a>
               </li>
               <% } %>
-              <% if (config.todo){%>
-              <li class="nav-item">
-                <a href="/todo" class="nav-link">
-                  <i class="nav-icon fas fa-list"></i>
+               <% if ((config.telemetry)||(config.telemetry)){%>
+                <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-plug"></i>
                   <p>
-                    To do
+                    Telementry
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+               <% if (config.telemetry){%>
+                  <li class="nav-item">
+                <a href="/telemetry" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                    Telemetry
+                    <span class="badge badge-info right">2</span>
                   </p>
                 </a>
               </li>
               <% } %>
-              <% if (config.diaryNote){%>
-              <li class="nav-item">
-                <a href="/diaryNote" class="nav-link">
-                  <i class="nav-icon fa fa-book"></i>
-                  <p>
-                    Diario
-                  </p>
-                </a>
-              </li>
-              <% } %>
-              <% if (config.device){%>
+               <% if (config.device){%>
               <li class="nav-item">
                 <a href="/device" class="nav-link">
-                  <i class="nav-icon fas fa-cogs"></i>
+                <i class="far fa-circle nav-icon"></i>
                   <p>
                     Devices
                   </p>
                 </a>
               </li>
               <% } %>
-              <% if (config.strain){%>
-              <li class="nav-item">
-                <a href="/strain" class="nav-link">
-                  <i class="nav-icon fas fa-cogs"></i>
-                  <p>
-                    Strain
-                  </p>
-                </a>
-              </li>
-              <% } %>
-               <% if (config.statistic){%>
-              <li class="nav-item">
-                <a href="/statistic" class="nav-link">
-                  <i class="nav-icon fas fa-cogs"></i>
-                  <p>
-                    Statistiche
-                  </p>
-                </a>
-              </li>
-              <% } %>
-              <% if (config.calendar){%>
-              <li class="nav-item">
-                <a href="/calendar" class="nav-link">
-                  <i class="far fa-calendar-alt"></i>
-                  <p>
-                    Calendar
-                  </p>
-                </a>
-              </li>
-              <% } %>
+              </ul>
+              </li> 
+               <% } %>
+      <% if (config.material){%>              
               <li class="nav-item">
                 <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-table"></i>
+                  <i class="fas fa-pallet"></i>
                   <p>
                     Materiali
                     <i class="fas fa-angle-left right"></i>
@@ -118,18 +80,8 @@
                       <p>Gestione materiali</p>
                     </a>
                   </li>
-                  <li class="nav-item">
-                    <a href="/recipes" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Gestione ricette</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="/strain" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Gestione strain</p>
-                    </a>
-                  </li>
+                  
+                  
                   <li class="nav-item">
                     <a href="/supplier" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
@@ -150,89 +102,127 @@
                   </li>
                 </ul>
               </li>
-<% if (config.substrate){%>
-              <li class="nav-item">
-                <a href="/substrate" class="nav-link">
+                  <% } %>
+               <% if (config.strain){%>
+                <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-table"></i>
+                  <p>
+                    Strain
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="/strain" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Gestione strain</p>
+                    </a>
+                  </li>
+                  </ul>
+              </li>
+              <% } %> 
+              <% if (config.substrate){%>
+                 <li class="nav-item">
+                <a href="#" class="nav-link">
                   <i class="fas fa-layer-group"></i>
                   <p>
                     Substrati
+                    <i class="fas fa-angle-left right"></i>
                   </p>
                 </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="/recipes" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Gestione ricette</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/substrate" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Gestione substrati</p>
+                    </a>
+                  </li>
+                </ul>
               </li>
               <% } %>
-              <style>
-                p.subElement{
-                              margin-top: 5px;
-                              margin-bottom: 5px
-                }
-                ul.subElement{
-                  padding-inline-start: 30px;
-                }
-                a.subElement{
-                  color:#00f
-
-                }
-                a.subElement:hoover{
-                  color:#f00
-                }
-              </style>
-<% if (config.inoculum){%>
-               <li class="nav-item">
-                <a href="/inoculum" class="nav-link">
+              <% if (config.inoculum){%>
+                <li class="nav-item">
+                <a href="#" class="nav-link">
                   <i class="fas fa-flask"></i>
                   <p>
                     Inoculi
-                  </p></a>
-                  <ul class=" subElement">
-                    <li>
-                      <p class="subElement">
-                        <a href="/mushElement?filterCategory=INOCULUM" class="subElement">
-                        <i class="fa fa-arrow-circle-right fa-sm" aria-hidden="true"></i>
-                          Elementi inoculi
-                      </a>
-                        </p>
-                    </li>
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+
+                <li class="nav-item">
+                    <a href="/inoculum" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Lotti inoculi</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/mushElement?filterCategory=INOCULUM" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Elementi inoculi</p>
+                    </a>
+                  </li>
+
                   </ul>
-                
               </li>
               <% } %>
               <% if (config.spawn){%>
-              <li class="nav-item">
-                <a href="/spawn" class="nav-link">
+                <li class="nav-item">
+                <a href="#" class="nav-link">
                   <i class="fas fa-prescription-bottle"></i>
                   <p>
                     Spawn
+                    <i class="fas fa-angle-left right"></i>
                   </p>
                 </a>
-                <ul class="subElement">
-                    <li>
-                      <p class="subElement">
-                        <a href="/mushElement?filterCategory=SPAWN" >
-                  <i class="fa fa-arrow-circle-right fa-sm" aria-hidden="true"></i>
-                  
-                    Elementi spawn
-                  </p></a>
-                    </li>
+                <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="/spawn" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Lotti spawn</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/mushElement?filterCategory=SPAWN" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Elementi spawn</p>
+                    </a>
+                  </li>
+
                   </ul>
               </li>
              <% } %>
               <% if (config.propagation){%>
-              <li class="nav-item">
-                <a href="/propagation" class="nav-link">
+                  <li class="nav-item">
+                <a href="#" class="nav-link">
                   <i class="fas fa-seedling"></i>
-                  <p style="margin-left:5px">
+                  <p>
                     Coltivazione
+                    <i class="fas fa-angle-left right"></i>
                   </p>
                 </a>
-                <ul class="subElement">
-                    <li>
-                      <p class="subElement">
-                        <a href="/mushElement?filterCategory=CULTIVATION" >
-                  <i class="fa fa-arrow-circle-right fa-sm" aria-hidden="true"></i>
-                  
-                    Elementi coltivo
-                  </p></a>
-                    </li>
+                <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="/propagation" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Lotti coltivazione</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/mushElement?filterCategory=CULTIVATION" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Elementi coltivazione</p>
+                    </a>
+                  </li>
+
                   </ul>
               </li>
              <% } %>
@@ -263,6 +253,61 @@
                   </p>
                 </a>
               </li>
+              <% } %>
+              <% if ((config.todo)||(config.diaryNote)||(config.statistic)||(config.calendar)){%>
+                <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fas fa-toolbox"></i>
+                  <p>
+                    Tools
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                   <% if (config.todo){%>
+              <li class="nav-item">
+                <a href="/todo" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                    To do
+                  </p>
+                </a>
+              </li>
+              <% } %>
+              <% if (config.diaryNote){%>
+              <li class="nav-item">
+                <a href="/diaryNote" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                    Diario
+                  </p>
+                </a>
+              </li>
+              <% } %>
+              
+              <% if (config.calendar){%>
+              <li class="nav-item">
+                <a href="/calendar" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                    Calendar
+                  </p>
+                </a>
+              </li>
+              <% } %>
+              <% if (config.statistic){%>
+              <li class="nav-item">
+                <a href="/statistic" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                    Statistiche
+                  </p>
+                </a>
+              </li>
+              <% } %>
+                </ul>
+              </li>     
+
               <% } %>
         </ul>
       </nav>

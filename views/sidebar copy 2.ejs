@@ -1,0 +1,272 @@
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/" class="brand-link">
+      <img src="../dist/img/LogoMushborgWeb.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">MushBorg V0</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) 
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block">Alexander Pierce</a>
+        </div>
+      </div>-->
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+               <% if (config.telemetry){%>
+               <li class="nav-item">
+                <a href="/telemetry" class="nav-link">
+                  <i class="nav-icon fas fa-plug"></i>
+                  <p>
+                    Telemetry
+                    <span class="badge badge-info right">2</span>
+                  </p>
+                </a>
+              </li>
+              <% } %>
+              <% if (config.search){%>
+              <li class="nav-item">
+                <a href="/search" class="nav-link">
+                  <i class="nav-icon fas fa-search-plus"></i>
+                  <p>
+                    Search code
+                  </p>
+                </a>
+              </li>
+              <% } %>
+              <% if (config.todo){%>
+              <li class="nav-item">
+                <a href="/todo" class="nav-link">
+                  <i class="nav-icon fas fa-list"></i>
+                  <p>
+                    To do
+                  </p>
+                </a>
+              </li>
+              <% } %>
+              <% if (config.diaryNote){%>
+              <li class="nav-item">
+                <a href="/diaryNote" class="nav-link">
+                  <i class="nav-icon fa fa-book"></i>
+                  <p>
+                    Diario
+                  </p>
+                </a>
+              </li>
+              <% } %>
+              <% if (config.device){%>
+              <li class="nav-item">
+                <a href="/device" class="nav-link">
+                  <i class="nav-icon fas fa-cogs"></i>
+                  <p>
+                    Devices
+                  </p>
+                </a>
+              </li>
+              <% } %>
+              <% if (config.strain){%>
+              <li class="nav-item">
+                <a href="/strain" class="nav-link">
+                  <i class="nav-icon fas fa-cogs"></i>
+                  <p>
+                    Strain
+                  </p>
+                </a>
+              </li>
+              <% } %>
+               <% if (config.statistic){%>
+              <li class="nav-item">
+                <a href="/statistic" class="nav-link">
+                  <i class="nav-icon fas fa-cogs"></i>
+                  <p>
+                    Statistiche
+                  </p>
+                </a>
+              </li>
+              <% } %>
+              <% if (config.calendar){%>
+              <li class="nav-item">
+                <a href="/calendar" class="nav-link">
+                  <i class="far fa-calendar-alt"></i>
+                  <p>
+                    Calendar
+                  </p>
+                </a>
+              </li>
+              <% } %>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-table"></i>
+                  <p>
+                    Materiali
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="/rawMAterial" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Gestione materiali</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/recipes" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Gestione ricette</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/strain" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Gestione strain</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/supplier" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Gestione fornitori</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/container" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Gestione contenitori</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/storage" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Gestione magazzini</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+<% if (config.substrate){%>
+              <li class="nav-item">
+                <a href="/substrate" class="nav-link">
+                  <i class="fas fa-layer-group"></i>
+                  <p>
+                    Substrati
+                  </p>
+                </a>
+              </li>
+              <% } %>
+              <style>
+                p.subElement{
+                              margin-top: 5px;
+                              margin-bottom: 5px
+                }
+                ul.subElement{
+                  padding-inline-start: 30px;
+                }
+                a.subElement{
+                  color:#00f
+
+                }
+                a.subElement:hoover{
+                  color:#f00
+                }
+              </style>
+<% if (config.inoculum){%>
+               <li class="nav-item">
+                <a href="/inoculum" class="nav-link">
+                  <i class="fas fa-flask"></i>
+                  <p>
+                    Inoculi
+                  </p></a>
+                  <ul class=" subElement">
+                    <li>
+                      <p class="subElement">
+                        <a href="/mushElement?filterCategory=INOCULUM" class="subElement">
+                        <i class="fa fa-arrow-circle-right fa-sm" aria-hidden="true"></i>
+                          Elementi inoculi
+                      </a>
+                        </p>
+                    </li>
+                  </ul>
+                
+              </li>
+              <% } %>
+              <% if (config.spawn){%>
+              <li class="nav-item">
+                <a href="/spawn" class="nav-link">
+                  <i class="fas fa-prescription-bottle"></i>
+                  <p>
+                    Spawn
+                  </p>
+                </a>
+                <ul class="subElement">
+                    <li>
+                      <p class="subElement">
+                        <a href="/mushElement?filterCategory=SPAWN" >
+                  <i class="fa fa-arrow-circle-right fa-sm" aria-hidden="true"></i>
+                  
+                    Elementi spawn
+                  </p></a>
+                    </li>
+                  </ul>
+              </li>
+             <% } %>
+              <% if (config.propagation){%>
+              <li class="nav-item">
+                <a href="/propagation" class="nav-link">
+                  <i class="fas fa-seedling"></i>
+                  <p style="margin-left:5px">
+                    Coltivazione
+                  </p>
+                </a>
+                <ul class="subElement">
+                    <li>
+                      <p class="subElement">
+                        <a href="/mushElement?filterCategory=CULTIVATION" >
+                  <i class="fa fa-arrow-circle-right fa-sm" aria-hidden="true"></i>
+                  
+                    Elementi coltivo
+                  </p></a>
+                    </li>
+                  </ul>
+              </li>
+             <% } %>
+              <% if (config.mushElement){%>
+              <li class="nav-item">
+                <a href="/mushElement" class="nav-link">
+                  <?xml version="1.0" encoding="utf-8"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<i><svg width="20px" height="20px" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #C2C7D0;
+        stroke-miterlimit: 10;
+        stroke-width: 1.91px;
+      }
+    </style>
+  </defs>
+  <path class="cls-1" d="M12,1.5h0A10.5,10.5,0,0,1,22.5,12v0a1.91,1.91,0,0,1-1.91,1.91H3.41A1.91,1.91,0,0,1,1.5,12v0A10.5,10.5,0,0,1,12,1.5Z" />
+  <circle class="cls-1" cx="12" cy="3.41" r="1.91" />
+  <circle class="cls-1" cx="18.68" cy="9.14" r="1.91" />
+  <circle class="cls-1" cx="7.23" cy="9.14" r="1.91" />
+  <path class="cls-1" d="M12,22.5h0a3.83,3.83,0,0,0,3.74-4.66l-.88-3.93H9.14l-.88,3.93A3.83,3.83,0,0,0,12,22.5Z" />
+</svg></i>
+                  <p style="margin-left:5px">
+                    Elementi
+                  </p>
+                </a>
+              </li>
+              <% } %>
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
