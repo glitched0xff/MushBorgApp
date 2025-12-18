@@ -123,6 +123,13 @@ Installo Pm2
 
 `sudo npm i pm2 -g`
 
+#### Clonazione repository
+
+Posizionarsi nella cartella di installazione e clonare il repository **https://github.com/glitched0xff/MushBorgApp.git**
+
+`cd ~/Documents/`
+`git clone https://github.com/glitched0xff/MushBorgApp.git`
+
 #### Edit file .env per connessione al db
 
 Di defualt username e password sono quelli indicati precedentemente
@@ -197,3 +204,13 @@ Potrebbe essere legata alla configurazione del server.
 Controllare lo stato del webserver
 
 `sudo systemclt status nginx`
+
+
+# Mantenimento
+
+Per mantenre il sistema aggiornato è necessario sincronizzare il repository locale con quello remoto.
+Per aggiornare il sistema accedere alla cartella del sistema /MushBorgApp e digitare:
+
+`git pull`
+
+Se l'aggiornamento è andato a buon fine si potrà vedere la lista dei file aggiornati.
