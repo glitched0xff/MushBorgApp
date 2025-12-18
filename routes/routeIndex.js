@@ -23,7 +23,7 @@ router.get('/',async (req, res) => {
             },
             raw: true
           });
-    harvestWeek=harvestWeek[0].totalWeight 
+    harvestWeek=harvestWeek[0].totalWeight?harvestWeek[0].totalWeight:0
     harvests.push({harvest:harvestWeek,week:moment().week()})
     
     let harvestMonth = await db.mushElementHarvest.findAll({
@@ -37,7 +37,7 @@ router.get('/',async (req, res) => {
             },
             raw: true
           });
-    harvestMonth=harvestMonth[0].totalWeight
+    harvestMonth=harvestMonth[0].totalWeight?harvestMonth[0].totalWeight:0
 
     harvests.push({harvest:harvestMonth,month:moment().locale("it").format("MMMM")}) 
     let harvestYear = await db.mushElementHarvest.findAll({
@@ -51,7 +51,7 @@ router.get('/',async (req, res) => {
             },
             raw: true
           });
-    harvestYear=harvestYear[0].totalWeight
+    harvestYear=harvestYear[0].totalWeight?harvestYear[0].totalWeight:0
     harvests.push({harvest:harvestYear,year:moment().year()})
 
     
