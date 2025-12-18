@@ -9,10 +9,10 @@ router.get('/',async  (req, res) => {
 });
 
 router.get('/checkWeigth',async (req,res)=>{
-    let fromDate=req.query.fromDate?req.query.fromDate:moment().subtract(7,"days")
+    let fromDate=req.query.fromDate?req.query.fromDate:moment().subtract(10,"days")
     let toDate=req.query.toDate?req.query.toDate:moment()
     let propId=req.query.propId?req.query.propId:""
-    const harvests = await db.mushElementHarvest.findAll({
+    let harvests = await db.mushElementHarvest.findAll({
   attributes: [
     "mushElementId",
     [fn("DATE", col("createdAt")), "day"],
@@ -33,37 +33,42 @@ router.get('/checkWeigth',async (req,res)=>{
     literal("DATE(createdAt)")
   ],
   order: [
-    [literal("day"), "ASC"]
+    [literal("day"), "DESC"]
   ]
 });
     harvests=JSON.parse(JSON.stringify(harvests))
-    const grouped = harvests.reduce((acc, item) => {
-  if (!acc[item.day]) {
-    acc[item.day] = {
-      day: item.day,
-      total_harvest_weight: 0,
-      items: []
-    };
-  }
-
-  acc[item.day].total_harvest_weight += item.total_harvest_weight;
-  acc[item.day].items.push(item);
-
-  return acc;
-}, {});
-
-// Convertiamo in array, se preferisci
-const result = Object.values(grouped);
-
-console.log(grouped)
     for (let i = 0; i < harvests.length; i++) {
         const el = harvests[i];
-        let mushElementData=await db.mushElement.findAll({where:{id:el.mushElementId}})
-
+        let mushElementData=await db.mushElement.findAll({where:{id:el.mushElementId},include:db.propagation})
+        harvests[i].mushElementData=JSON.parse(JSON.stringify(mushElementData))
     }
-    res.render("stat_checkWeight",{harvests:harvests})
+      let harvestsGroupedByDay = harvests.reduce((acc, item) => {
+      const { day } = item;
+      if (!acc[day]) {
+        acc[day] = [];
+      }
+      acc[day].push(item);
+      return acc;
+    }, {});
+    harvestsGroupedByDay = Object.values(harvestsGroupedByDay);
+    
+    console.log(harvestsGroupedByDay)
+    // ogni elemento contiene il totale, l'indice è uguale all'array precedente
+    let arrayTotalWeight=[]
+    for (let i = 0; i < harvestsGroupedByDay.length; i++) {
+      const day = harvestsGroupedByDay[i];
+      let tot=0
+      for (let y = 0; y < day.length; y++) {
+        const elem = day[y];
+        tot=tot+elem.total_harvest_weight
+      }
+      arrayTotalWeight.push(tot)
+    }
+
+    res.render("stat_checkWeight",{harvests:harvestsGroupedByDay,arrayTotalWeight:arrayTotalWeight})
 
 })
+
 router.get('/getWeigthByElement',async (req,res)=>{
 
 })

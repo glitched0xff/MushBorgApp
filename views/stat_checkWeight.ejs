@@ -23,33 +23,68 @@
       <div class="container-fluid">
         <div class="row">
           
-            <div class="col-12"  id="tableStorage_Crd" style="">
-                <div class="card">
-                  <div class="card-header">
-                    <h3 class="card-title">Controllo peso  </h3>
-    
                     
+            <div class="card w-100" id="showStorage_Crd" >
+              <div class="row m-3">
+                <div class="accordion w-100" id="accordionRaccolto">
+                <% harvests.forEach ((elem,index) => {
+                  let total=0%>
+                  <div class="card " >
+                      <button class="btn  btn-block text-left" type="button" 
+                        data-toggle="collapse" data-target="#collapse<%= index %>" 
+                        aria-expanded="true" aria-controls="collapse<%= index %>">
+                  <div class="card-header" id="heading<%= index %>">
+                    <h5 class="mb-0">
+                        Raccolto del <%= elem[0].day %> - Raccolto totale= <%= arrayTotalWeight[index] %> g
+                    </h5>
                   </div>
-                  
-                  <div class="card-body ">
-                    <div class="row">
-                      <div class="col-md-3 mx-auto">
-                       
-                      </div>
+                      </button>
+
+                  <div id="collapse<%= index %>" class="collapse" aria-labelledby="heading<%= index %>" data-parent="#accordionRaccolto" >
+                    <div class="card-body">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Codice elemento</th>
+                        <th>Nome lotto</th>
+                        <th>Codice lotto</th>
+                        <th>Raccolto</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% elem.forEach (el => {%>
+                        <tr>
+                        <td><a href="/propagation?redirectId=<%= el.mushElementData[0].propagation.id%>" target="_blank" rel="noopener noreferrer">
+                          <%= el.mushElementData[0].element_code%></a></td>
+                        <td><%= el.mushElementData[0].propagation.propagation_name%></td>
+                        <td>
+                          <a href="/mushElement/singleMushElement?id=<%= el.mushElementData[0].propagation.id%>&filterCategory=CULTIVATION" target="_blank" rel="noopener noreferrer">
+                          <%= el.mushElementData[0].propagation.code_propagation%></a></td>
+                        <td><%= el.total_harvest_weight%> g 
+                          <% total=total+el.total_harvest_weight%>
+                          </td>
+                      </tr>
+                      <% }) %>
+                      
+                      <tfoot>
+                        <tr>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td >Totale : <%= total %> g</td>
+                          </tr>  
+                      </tfoot>
+                    </tbody>
+                  </table>  
                     </div>
                   </div>
-                  
-                  
                 </div>
-                
-              </div>
-            <div class="card w-100" id="showStorage_Crd" style="display: none;">
-              <div class="row m-3">
-                
+                <% }) %>
               </div>
             </div>
         </div>
         
+      </div>
       </div>
     </section>
     
@@ -59,8 +94,10 @@
   <%- include ('footer') %>
   <%- include ('jsLoad') %>
   <script>
+  let harvests= <%- JSON.stringify( harvests) %>
+
     $(document).ready(async function () {
-    
+      console.log(harvests)
     });
 
   </script>
