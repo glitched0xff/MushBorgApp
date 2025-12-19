@@ -9,6 +9,9 @@ Grow mushroom easy
 
 [Presentazione progetto](https://docs.google.com/presentation/d/1jiARf5I_i4XVHW7P7fHhvMNJuPiJO22C6u0J-STeSTs/edit?slide=id.p#slide=id.p)
 
-[Installazione](https://github.com/glitched0xff/MushBorgApp/blob/main/INSTALLAZIONE.md)
+[Installazione manuale](https://github.com/glitched0xff/MushBorgApp/blob/main/INSTALLAZIONE.md)
+
+[Installazione VM](https://github.com/glitched0xff/MushBorgApp/blob/main/INSTALLAZIONEVM.md)
 
 [TODO](https://github.com/glitched0xff/MushBorgApp/blob/main/TODO.md)
+
