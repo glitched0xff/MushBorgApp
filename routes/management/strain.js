@@ -218,4 +218,36 @@ router.get('/pdf',async (req,res)=>{
         }
 })
 
+
+/**
+ * Area gestione species
+ */
+router.get('/species',async (req,res)=>{
+    let redirectId=req.query.redirectId?req.query.redirectId:null
+   
+    res.render("management/species",{
+                                    redirectId:redirectId,
+                                })
+})
+router.get('/species/getAll',async (req,res)=>{
+    let species=await db.species.findAll()
+    species=JSON.parse(JSON.stringify(species))
+    for (let i = 0; i < species.length; i++) {        
+        let strain= await db.strain.count({where:{species_code:species[i].shortCode}})
+        species[i].strains=JSON.parse(JSON.stringify(strain))
+    }
+    res.status(200).json({species:species})
+})
+router.get('/species/getOneSpecies',async (req,res)=>{
+    let speciesId=req.query.id?req.query.id:false
+    if (speciesId!=false){
+        let specie=await db.species.findOne({where:{id:speciesId}})
+        specie=JSON.parse(JSON.stringify(species))
+        for (let i = 0; i < species.length; i++) {        
+            let strain= await db.strain.findAll({where:{species_code:species[i].shortCode}})
+            species[i].strains=JSON.parse(JSON.stringify(strain))
+        }
+        res.status(200).json({species:species})
+    }
+})
 module.exports=router;
