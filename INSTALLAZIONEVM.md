@@ -50,4 +50,14 @@
 - Torno sulla mia macchina locale, apro il browser e digito: http://indirizzoDellaVm
 - Voilà, se tutto è andato per il verso giusto dovreste vedere la homepage di Mushborg.
 
+## Manutenzione e aggiornamento Mushborg
+
+Per mantenre il sistema aggiornato è necessario sincronizzare il repository locale con quello remoto.
+Per aggiornare il sistema accedere alla VM. Posizionarsi nella cartella del sistema ~/MushBorgApp e digitare:
+
+`git pull`
+
+Se l'aggiornamento è andato a buon fine si potrà vedere la lista dei file aggiornati.
+
+
 ENJOY
