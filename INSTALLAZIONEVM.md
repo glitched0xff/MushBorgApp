@@ -57,6 +57,10 @@ Per aggiornare il sistema accedere alla VM. Posizionarsi nella cartella del sist
 
 `git pull`
 
+Riavvioare PM2
+
+`pm2 restart msuhborg` oppure `pm2 restart 0`
+
 Se l'aggiornamento è andato a buon fine si potrà vedere la lista dei file aggiornati.
 
 
