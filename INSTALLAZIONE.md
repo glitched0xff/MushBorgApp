@@ -1,7 +1,43 @@
 # Metodi di installazione Mushborg
 
-## Installazione tramite repository e configurazione manuale
-Configurazione macchina Linux/Raspberry. 
+- [Metodi di installazione Mushborg](#metodi-di-installazione-mushborg)
+  - [LINUX - Installazione tramite repository e configurazione manuale](#linux---installazione-tramite-repository-e-configurazione-manuale)
+    - [Prerequisiti](#prerequisiti)
+      - [Accesso tramite SSH al server](#accesso-tramite-ssh-al-server)
+    - [Installare i pacchetti necessari](#installare-i-pacchetti-necessari)
+      - [Curl](#curl)
+      - [Nodejs](#nodejs)
+      - [MariaDb](#mariadb)
+      - [Clonazione repository](#clonazione-repository)
+      - [Importare il nuovo database](#importare-il-nuovo-database)
+      - [Installo i pacchetti necessari](#installo-i-pacchetti-necessari)
+      - [Edit file .env per connessione al db](#edit-file-env-per-connessione-al-db)
+      - [Test di funzionamento](#test-di-funzionamento)
+      - [Avvio il server](#avvio-il-server)
+    - [Installa webserver per reverse proxy verso la porta 3000](#installa-webserver-per-reverse-proxy-verso-la-porta-3000)
+    - [Possibili problemi](#possibili-problemi)
+      - [Risposta 502 del browser](#risposta-502-del-browser)
+      - [Pagina irraggiungibile](#pagina-irraggiungibile)
+  - [OSX - Installazione tramite repository e configurazione manuale](#osx---installazione-tramite-repository-e-configurazione-manuale)
+    - [Prerequisiti](#prerequisiti-1)
+    - [Installare i pacchetti necessari](#installare-i-pacchetti-necessari-1)
+      - [Nodejs](#nodejs-1)
+      - [MariaDb](#mariadb-1)
+      - [Clonazione repository](#clonazione-repository-1)
+      - [Importare il nuovo database](#importare-il-nuovo-database-1)
+      - [Installo i pacchetti necessari](#installo-i-pacchetti-necessari-1)
+      - [Edit file .env per connessione al db](#edit-file-env-per-connessione-al-db-1)
+      - [Test di funzionamento](#test-di-funzionamento-1)
+      - [Avvio il server](#avvio-il-server-1)
+    - [Possibili problemi](#possibili-problemi-1)
+      - [Risposta 502 del browser](#risposta-502-del-browser-1)
+- [Mantenimento](#mantenimento)
+
+
+
+
+## LINUX - Installazione tramite repository e configurazione manuale
+Configurazione macchina Linux/RaspberryOS. 
 
 L'installazione è compatibile con Debian
 
@@ -215,6 +251,155 @@ Controllare lo stato del webserver
 
 `sudo systemclt status nginx`
 
+-----
+
+## OSX - Installazione tramite repository e configurazione manuale
+
+Configurazione macchina Linux/RaspberryOS. 
+
+### Prerequisiti
+- SO OSx 
+- Nodejs v >=22
+- MariaDb v >= 8
+
+### Installare i pacchetti necessari
+
+#### Nodejs
+
+Seguire le istruzioni del seguente link [NodeJs Official Download](https://nodejs.org/en/download).
+Dopo aver selezionato le impostazioni del sistema operativo di destinazione copia e incolla lo script
+
+Lo script dovrebbe apparire simile a quello seguente
+
+```
+    # Download and install nvm:
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+    
+    # in lieu of restarting the shell
+    \. "$HOME/.nvm/nvm.sh"
+    
+    # Download and install Node.js:
+    nvm install 24
+    
+    # Verify the Node.js version:
+    node -v # Should print "v24.12.0".
+    
+    # Verify npm version:
+    npm -v # Should print "11.6.2".
+    
+```
+
+___
+
+#### MariaDb
+
+Installo il pacchetto MariaDb
+
+` brew install mariadb`
+
+Avvio il server
+
+`brew services start mariadb`
+
+Configuro il database
+
+`  sudo mariadb-secure-installation `
+
+- Inserire la password di root
+- Switch to unix_socket authentication Y
+- Change the root password? Y -> Inserire la nuova password (può essere la stessa della precende)
+- Remove anonymous users? Y
+- Disallow root login remotely? Y
+- Remove test database and access to it? Y
+- Reload privilege tables now? Y
+
+Accedo al database
+
+`   mariadb -u root -p `
+
+Creiamo un utente diverso da root per la gestione del database.
+
+```
+    Utente di default: mushborg
+    Password di default: mushborg0x0
+```
+`CREATE USER 'mushborg'@'localhost' IDENTIFIED BY 'mushborg0x0';`
+
+L'utente ha tutti i privilegi.
+
+`GRANT ALL ON *.* TO 'mushborg_admin'@'localhost' IDENTIFIED BY 'mushborg0x0' WITH GRANT OPTION;`
+
+Aggiorno i provilegi
+
+`FLUSH PRIVILEGES;`
+
+Creo il database Mushborg
+
+`CREATE DATABASE mushborg`
+
+Controllo che il database sia creato correttamente
+
+`SHOW DATABASES;`
+
+Esco da mariaDb
+
+`EXIT;`
+
+___
+
+#### Clonazione repository
+
+Posizionarsi nella cartella di installazione e clonare il repository **https://github.com/glitched0xff/MushBorgApp.git**
+
+`cd ~/Documents/`
+`git clone https://github.com/glitched0xff/MushBorgApp.git`
+
+#### Importare il nuovo database
+
+Per importare il database di default seguire la seguente sintassi
+
+mysql -u [username] -p [nome_database] < [percorso_file.sql]
+
+` mariadb -u mushborg -p mushborg < dbBkup/FILE_DB.sql `
+
+#### Installo i pacchetti necessari
+
+` npm i `
+
+Installo Pm2 (gestione dei processi node)
+
+`sudo npm i pm2 -g`
+
+Installo Nodemon (gestione del debug)
+
+`sudo npm i nodemon -g`
+
+#### Edit file .env per connessione al db
+
+Di defualt username e password sono quelli indicati precedentemente
+
+`nano .env`
+
+Modifico i dati necessari e chiudo il file con `Ctrl+x`
+
+#### Test di funzionamento 
+
+`nodemon server.js`
+
+Se l'avvio non presenta errori si può interrompere e passare al passaggio successivo
+
+#### Avvio il server
+
+`pm2 start server.js --name Mushborg`
+
+### Possibili problemi
+
+#### Risposta 502 del browser
+
+Probabilmente il sistema avviato ha riscontrato un bug, controllare i parametri nel file `.env` che siano coretti
+
+Controllare il log `pm2 status Mushborg`
+
 
 # Mantenimento
 
@@ -224,3 +409,4 @@ Per aggiornare il sistema accedere alla cartella del sistema /MushBorgApp e digi
 `git pull`
 
 Se l'aggiornamento è andato a buon fine si potrà vedere la lista dei file aggiornati.
+

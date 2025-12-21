@@ -238,16 +238,37 @@ router.get('/species/getAll',async (req,res)=>{
     }
     res.status(200).json({species:species})
 })
-router.get('/species/getOneSpecies',async (req,res)=>{
+router.get('/species/getOneSpecie',async (req,res)=>{
     let speciesId=req.query.id?req.query.id:false
     if (speciesId!=false){
         let specie=await db.species.findOne({where:{id:speciesId}})
-        specie=JSON.parse(JSON.stringify(species))
-        for (let i = 0; i < species.length; i++) {        
-            let strain= await db.strain.findAll({where:{species_code:species[i].shortCode}})
-            species[i].strains=JSON.parse(JSON.stringify(strain))
-        }
-        res.status(200).json({species:species})
+        specie=JSON.parse(JSON.stringify(specie))       
+        let strain= await db.strain.findAll({where:{species_code:specie.shortCode}})
+        specie.strains=JSON.parse(JSON.stringify(strain))
+        res.status(200).json({specie:specie})
     }
 })
+router.post('/species/newSpecie', async(req,res) => {
+    let data=req.body
+    delete data.idSpecie
+    console.log(data)
+    await db.species.create(data)
+        .then(async(result)=>{
+            res.status(200).json(result)
+        })
+        .catch(err =>{
+            console.log(err)
+            res.status(522).json({message:err}) 
+        })
+})
+
+router.delete('/species/deleteSpecie',async  (req, res) => {
+    let specieId=req.query.id?req.query.id:false
+    if (specieId!=false){
+        result=await db.species.destroy({where:{id:specieId}})
+        res.status(200).json({result:result})
+    } else {
+            res.status(522).json()
+        }
+  });
 module.exports=router;

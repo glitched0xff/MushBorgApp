@@ -25,7 +25,7 @@
           <!-- Species card -->
           <div class="card w-100" id="tableSpecies_Crd">
             <div class="card-body">
-              <table class="display table table-striped table-bordered compact" id="strain_Tbl" style="width: 100%;">
+              <table class="display table table-striped table-bordered compact" id="specie_Tbl" style="width: 100%;">
                 <thead>
                     <tr>
                         <th style="width: 40px; "></th>
@@ -36,7 +36,7 @@
                      
                     </tr>
                 </thead>
-                <tbody id="strain_Tblb">
+                <tbody id="specie_Tblb">
                     
                 </tbody>
             </table>
@@ -44,12 +44,12 @@
           </div>
           <!-- Show/mod species Card -->
           <div class="card w-100" id="showSpecies_Crd" style="display: none;">
-            <form id="strain_Frm" class="p-3">
+            <form id="specie_Frm" class="p-3">
 
               <div class="row m-2">
                 <%- include('../include/ejsForm',
-                { classTxt: "strainText",
-                    classField: "strainForm",
+                { classTxt: "specieText",
+                    classField: "specieForm",
                     form:[
                     { 
                       type:"hidden",
@@ -60,28 +60,29 @@
                       type:"text",
                       classBox:"col-md-2 col-sm-6",
                       fieldName:"species_name",
-                      label:"Codice species",
-                      readonly:true, 
+                      label:"Nome specie",
+                      required:true, 
                     },
                     {
                       type:"text",
                       classBox:"col-md-2 col-sm-6",
                       fieldName:"description",
                       label:"Descrizione",
-                      required:'', 
+                      required:true, 
                     },
                     {
                       type:"text",
                       classBox:"col-md-2 col-sm-6",
                       fieldName:"shortCode",
                       label:"Short code",
-                      required:'', 
+                      required:true,
+                      maxlength:3,
                     },
                      { type:"endRow"},
                     ]  
                 }) %>
               </div>
-                <div class="row w-100" style="display: none;" id="strain_Frm_Btn">
+                <div class="row w-100" style="display: none;" id="specie_Frm_Btn">
                   <button class="btn btn-xs btn-primary mx-1" id="saveSpecies_Btn" > <i class="fas fa-pen"></i> Salva species </button>
                   <button class="btn btn-xs btn-secondary mx-1" id="abortSpecies_Btn"  > <i class="fas fa-pen"></i> Annulla modifica </button>
                 </div>
@@ -307,7 +308,7 @@
 <%- include ('../jsLoad') %>
 <script>
 let redirectId= <%- JSON.stringify( redirectId) %>
-let strainId
+let specieId
 let importParam
 
 async function  drawTable (){
@@ -327,12 +328,12 @@ async function  drawTable (){
                           <td>
                           <button type="button" name="" id="showBtn${el.id}" 
                           class="btn btn-primary btn-xs showSpecies" style="width:25px"
-                          idSpecies="${el.id}" strainName="${el.code_strain}">
+                          idSpecies="${el.id}" specieName="${el.species_name}">
                             <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
                         </button>
                         <button type="button" name="" id="delete${el.id}" 
                         class="btn btn-danger btn-xs deleteSpecies_Btn" style="width: 25px" 
-                        idSpecies="${el.id}" strainName="${el.strain_name}" ${delBtnDisable}>
+                        idSpecies="${el.id}" specieName="${el.species_name}" ${delBtnDisable}>
                           <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
                         </button>
                       </td>
@@ -343,7 +344,7 @@ async function  drawTable (){
                           </tr>`
               
               }
-              await $('#strain_Tbl').DataTable().clear().rows.add($(html)).draw();
+              await $('#specie_Tbl').DataTable({pageLength: 50}).clear().rows.add($(html)).draw();
           }
   });
 }
@@ -353,10 +354,10 @@ async function drawShowSpecies(redirectId) {
     strainId=redirectId
     await $.ajax({
       type: "GET",
-      url: "/species/getOneSpecies?id="+redirectId,
+      url: "/strain/species/getOneSpecie?id="+redirectId,
       success: async function (response) {
         console.log(response)
-        let data=response.species
+        let data=response.specie
         $("inoculumElement").show();
         $("spawnElement").show();
         $("propagationElement").show();
@@ -405,8 +406,8 @@ async function drawShowSpecies(redirectId) {
         $("#tableSpecies_Crd").hide()
         $("#newSpecies_Btn").hide()
         $("#backToMain_Btn").show()
-        $(".strainText").show()
-        $(".strainForm").hide()
+        $(".specieText").show()
+        $(".specieForm").hide()
         $(".parameterText").show()
         $(".parameterForm").hide()
       }
@@ -423,15 +424,82 @@ $(document).ready(async function () {
       $("#pdfSpecies_Btn").show();
     }
     else{
-      tableSpecies=$('#strain_Tbl').DataTable({responsive: true,"pageLength": 50});
+      tableSpecies=$('#strain_Tbl').DataTable({responsive: true,pageLength: 50});
       await drawTable()
       $("#idSpecies_Fld").val("");
       $("#idSpeciesParameter_Fld").val("");
     }
 
+    $(document).on("click",".showSpecies", async function(e){
+      let idstrain=$(this).attr("idspecies")
+      window.location="/strain/species?redirectId="+idstrain   
+  })
+
+    $(document).on("click",".deleteSpecies_Btn", function (e) { 
+      e.preventDefault();
+      let idSpecie=$(this).attr("idspecies")
+      let specieName=$(this).attr("speciename")
+      let c=confirm(`Si sta eliminando la specie ${specieName}, continuare? ` )
+      if(c){
+        $.ajax({
+          type: "DELETE",
+          url: "/strain/species/deleteSpecie?id="+idSpecie,
+          success: async function (response) {
+            await drawTable()
+          }
+        });
+      }
+    });
+    
+
+  // Gestione dati
+    $("#newSpecies_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#showSpecies_Crd").show()
+        $("#parameter_Crd").show();
+        $("#newSpecies_Crd").hide()
+        $("#tableSpecies_Crd").hide()
+        $("#newSpecies_Btn").hide()
+        $(".speciesText").hide()
+        $(".speciesForm").show()
+        $(".parameterText").show()
+        $(".parameterForm").hide()
+        $("#specie_Frm_Btn").show();
+    });
+
+    $("#saveSpecies_Btn").click(function (e) { 
+      e.preventDefault();
+      let check=checkForm("specie_Frm")
+      if(check){
+        $.ajax({
+          type: "POST",
+          url: "/strain/species/newSpecie",
+          data: $("#specie_Frm").serialize(),
+          success: function (response) {
+            console.log(response)
+            window.location="/strain/species?id="+response.id
+          }
+        });
+      }
+      
+    });
+
+    $("#modSpecie_Btn").click(function (e) { 
+      e.preventDefault();
+      $(".specieForm").show()
+      $(".specieText").hide()
+      $("#specie_Frm_Btn").show();
+      
+    });
+
+    $("#abortSpecie_Btn").click(function (e) { 
+      e.preventDefault();
+      window.location.reload()
+    });
+
     $("#backToMain_Btn").click(function (e) { 
         e.preventDefault();
-         window.location='/species'
+         window.location='/strain/species'
       });
 })
 </script>
