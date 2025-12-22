@@ -171,7 +171,7 @@ async function  drawTable (){
 $(document).ready(async function () {
   // init
     
-    tableSupplier=$('#supplier_Tbl').DataTable({responsive: true});
+    tableSupplier=$('#supplier_Tbl').DataTable({responsive: true,pageLength: 50});
     await drawTable()
     
     // Card

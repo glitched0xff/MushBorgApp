@@ -406,7 +406,7 @@ async function drawShowRawMaterial(id) {
 
 $(document).ready(async function () {
  
-  tableRawMaterial=$('#rawMaterials_Tbl').DataTable({responsive: true});
+  tableRawMaterial=$('#rawMaterials_Tbl').DataTable({responsive: true,pageLength: 50});
   if (redirectId!=null){
     await drawShowRawMaterial(redirectId)
   }

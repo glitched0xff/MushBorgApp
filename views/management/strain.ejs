@@ -636,7 +636,7 @@ $(document).ready(async function () {
       $("#pdfStrain_Btn").show();
     }
     else{
-      tableStrain=$('#strain_Tbl').DataTable({responsive: true});
+      tableStrain=$('#strain_Tbl').DataTable({responsive: true, pageLength: 50});
       await drawTable()
       $("#idStrain_Fld").val("");
       $("#idStrainParameter_Fld").val("");

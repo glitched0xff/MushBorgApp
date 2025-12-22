@@ -250,7 +250,7 @@ let recipeId
 
 $(document).ready(async function () {
   // init
-  tableSubstrate=$('#substrate_Tbl').DataTable({responsive: true});
+  tableSubstrate=$('#substrate_Tbl').DataTable({responsive: true,pageLength: 50});
   await drawTable()
   // Show substrate data
   $(document).on("click",".showSubstrate", async function(e){

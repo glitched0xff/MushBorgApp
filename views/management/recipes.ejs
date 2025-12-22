@@ -287,7 +287,7 @@ async function  drawTable (){
 $(document).ready(async function () {
   // init
     
-    tableRecipes=$('#recipes_Tbl').DataTable({responsive: true});
+    tableRecipes=$('#recipes_Tbl').DataTable({responsive: true,pageLength: 50});
     await drawTable()
     
     // Card

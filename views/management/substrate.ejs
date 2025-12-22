@@ -518,7 +518,7 @@ function drawShowSubstrate(id) {
           
 $(document).ready(async function () {
   // init
-  tableSubstrate=$('#substrate_Tbl').DataTable({responsive: true,lengthMenu: [50, 100, -1]});
+  tableSubstrate=$('#substrate_Tbl').DataTable({responsive: true,pageLength: 50});
 
   if (redirectId!=null){
     drawShowSubstrate(redirectId)

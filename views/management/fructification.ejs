@@ -218,7 +218,7 @@ async function  drawTable (){
 
 $(document).ready(async function () {
   // init   
-    tableContainer=$('#container_Tbl').DataTable({responsive: true});
+    tableContainer=$('#container_Tbl').DataTable({responsive: true,pageLength: 50});
     await drawTable()
     
     // New rawMAterial

@@ -731,7 +731,7 @@ async function drawShowPropagation(id) {
 
 $(document).ready(async function () {
   // init   
-    tablePropagation=$('#propagation_Tbl').DataTable({responsive: true})
+    tablePropagation=$('#propagation_Tbl').DataTable({responsive: true,pageLength: 50})
     $('#dt_start_DT').datetimepicker({locale: 'it', format:"DD-MM-YYYY"})
     $('#dt_end_DT').datetimepicker({locale: 'it', format:"DD-MM-YYYY"})
     $('#pick_date_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})

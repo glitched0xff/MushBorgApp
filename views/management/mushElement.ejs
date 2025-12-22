@@ -214,7 +214,7 @@ $(document).ready(async function () {
     $('#pickDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
 
   // init   
-    tableMushElement=$('#mushElement_Tbl').DataTable({responsive: true,lengthMenu: [25, 50, 100]})
+    tableMushElement=$('#mushElement_Tbl').DataTable({responsive: true,lengthMenu: [25, 50, 100],pageLength: 50})
     await drawTable()
   
   $("#dt_start_DT").on("change.datetimepicker", function (e) {
