@@ -1,0 +1,36 @@
+<div class="chart-wrapper">
+  <canvas id="dataArrayChart"></canvas>
+</div>
+
+<script>
+  (function () {
+    // 🔹 dati ricevuti da Node
+    const rawData = <%- JSON.stringify(dataArray) %>;
+
+    // 🔹 elaborazione lato client
+    const labels = rawData.map(item => item.xAxis);
+    const values = rawData.map(item => item.val);
+
+    const ctx = document.getElementById('dataArrayChart').getContext('2d');
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Specie',
+          data: values,
+          fill: false,
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  })();
+</script>

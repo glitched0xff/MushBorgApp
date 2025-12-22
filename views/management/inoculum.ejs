@@ -32,12 +32,12 @@
               <table class="display table table-striped table-bordered compact" id="inoculi_Tbl" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th style="width: 45px; "></th>
-                        <th style="max-width:100px">Codice</th>
-                        <th style="max-width:100px">Nome</th>
-                        <th style="max-width:250px">Qt</th>
-                        <th style="max-width:100px">Strain</th>
-                        <th style="max-width:50px">Creato il</th>
+                        <th style="max-width: 10%; "></th>
+                        <th style="max-width:20%">Codice</th>
+                        <th style="max-width:25%">Nome</th>
+                        <th style="max-width:15%">Qt</th>
+                        <th style="max-width:25%">Strain</th>
+                        <th style="max-width:8  %">Creato il</th>
                     </tr>
                 </thead>
                 <tbody id="inoculi_Tblb">  
@@ -242,8 +242,8 @@
                   <table class="table table-sm " id="mushElement_Tbl">
                       <thead>
                         <tr>
-                          <th></th>
-                          <th>Codice elemento</th>
+                          <th style="width: 10px;"></th>
+                          <th style="width: 10px;">Codice elemento</th>
                           <th>Stato elemento</th>
                           <th>Magazzino</th>
                           <th>Note</th>
@@ -399,7 +399,7 @@
                                 <td>${el.inoculum_name}</td>
                                 <td>${el.n_container} - ${el.container.container_name}</td>
                                 <td>${el.strain.strain_name} ${el.strain.species_code} </td>
-                                <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                                <td>${moment(el.createdAt).format("DD-MM-YY")}</td>
                             </tr>`
                 
                 }
@@ -610,7 +610,7 @@ function drawTableChild(data,table,fields,topic,title) {
       await drawShowInoculi(redirectId)
     }
     else{
-      tableInoculi=$('#inoculi_Tbl').DataTable({responsive: true,"pageLength": 50})
+      tableInoculi=$('#inoculi_Tbl').DataTable({responsive: true,pageLength: 50})
       $("#mushElement_Div").hide()
       await drawTableInoculi()
     }

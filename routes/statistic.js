@@ -2,15 +2,18 @@ let express = require('express');
 let router = express.Router();
 let moment=require("moment")
 let db = require("../models");
+let ejs=require("ejs")
 let { fn, col, literal, Op } = require("sequelize");
+let path=require("path")
 
 router.get('/',async  (req, res) => {
   res.render("statistic")
 });
 
 router.get('/checkWeigth',async (req,res)=>{
-    let fromDate=req.query.fromDate?req.query.fromDate:moment().subtract(10,"days")
-    let toDate=req.query.toDate?req.query.toDate:moment()
+  console.log(res.query)
+    let fromDate=req.query.fromDate?moment(req.query.fromDate,"YYYY-MM-DD"):moment().subtract(10,"days")
+    let toDate=req.query.toDate?moment(req.query.toDate,"YYYY-MM-DD"):moment()
     let propId=req.query.propId?req.query.propId:""
     let harvests = await db.mushElementHarvest.findAll({
   attributes: [
@@ -52,7 +55,6 @@ router.get('/checkWeigth',async (req,res)=>{
     }, {});
     harvestsGroupedByDay = Object.values(harvestsGroupedByDay);
     
-    console.log(harvestsGroupedByDay)
     // ogni elemento contiene il totale, l'indice è uguale all'array precedente
     let arrayTotalWeight=[]
     for (let i = 0; i < harvestsGroupedByDay.length; i++) {
@@ -65,12 +67,24 @@ router.get('/checkWeigth',async (req,res)=>{
       arrayTotalWeight.push(tot)
     }
 
-    res.render("stat_checkWeight",{harvests:harvestsGroupedByDay,arrayTotalWeight:arrayTotalWeight})
+    res.render("stat_checkWeight",{harvests:harvestsGroupedByDay,arrayTotalWeight:arrayTotalWeight,
+                                  fromDate:fromDate,toDate:toDate})
 
 })
 
-router.get('/getWeigthByElement',async (req,res)=>{
-
+router.get('/getWeigthGraph',async (req,res)=>{
+    let dataArray=req.query.dataArray?JSON.parse(req.query.dataArray):false
+    if(dataArray!=false){
+      let renderGraph=await ejs.renderFile(path.join(__dirname, "../views/include/chartJs.ejs"), {
+        dataArray: dataArray
+      });
+      res.status(200).send(renderGraph)
+    }else{
+      res.status(422)
+    }
+    
 })
+
+
 
 module.exports=router;

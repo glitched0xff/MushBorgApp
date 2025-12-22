@@ -11,7 +11,7 @@
             <h1 class="m-0">Controllo peso
             <!-- <button class="btn btn-xs btn-primary" id="modStorage_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca storage</button>
               <button type="button" class="btn btn-xs btn-primary" id="newStorage_Btn"><i class="fas fa-plus"></i> Nuova storage</button> -->
-              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco storage</button>
+              <button class="btn btn-xs btn-primary" id="createGraph" > <i class="fa fa-table" aria-hidden="true"></i> Crea grafico</button>
             </h1>
           </div>
         </div>
@@ -25,6 +25,25 @@
           
                     
             <div class="card w-100" id="showStorage_Crd" >
+              <div class="row w-100">
+                <div class="col-3 ml-auto mt-1">
+                  <table>
+                    <tr>
+                      <td style="width: 50%;">Intervallo raccolti</td>
+                      <td>
+                  <input type="text" class="form-control mb-2 mr-sm-2" id="intervalData" name="intervalData" value="">
+
+                      </td>
+                    </tr>
+                  </table>
+                  
+                
+                
+              </div>
+              </div>
+              
+            
+
               <div class="row m-3">
                 <div class="accordion w-100" id="accordionRaccolto">
                 <% harvests.forEach ((elem,index) => {
@@ -65,7 +84,6 @@
                           </td>
                       </tr>
                       <% }) %>
-                      
                       <tfoot>
                         <tr>
                           <td></td>
@@ -90,14 +108,86 @@
     
   </div>
   
-  
+  <!-- Modal -->
+<div class="modal fade" id="graph_Mdl" tabindex="-1" aria-labelledby="graph_MdlLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="graph_MdlLabel">Grafico</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col" id="graph_Wrp">
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
   <%- include ('footer') %>
   <%- include ('jsLoad') %>
   <script>
   let harvests= <%- JSON.stringify( harvests) %>
+  let arrayTotalWeight= <%- JSON.stringify( arrayTotalWeight) %>
+  let fromDate=<%-fromDate  %>
+  let toDate=<%- toDate %>
+
+  let totalDay=[]
+    function getTotalPerDayArray(harvests){
+      let totalDay=[]
+      for (let i = 0; i < harvests.length; i++) {
+        const elem = harvests[i];
+        let wDay=0
+        let dt
+        for (let y = 0; y < elem.length; y++) {
+          const el = elem[y];
+          wDay=wDay+el.total_harvest_weight
+          dt=el.day
+        }
+        totalDay.push({val:wDay,xAxis:moment(dt,"YYYY-MM-DD").format("DD-MM-YY")})
+      }
+      return totalDay
+    }
 
     $(document).ready(async function () {
-      console.log(harvests)
+        console.log(fromDate,toDate)
+        console.log(moment(fromDate).format("DD-MM"),moment(toDate).format("DD-MM"))
+
+      $('#intervalData').daterangepicker({
+          startDate: moment(fromDate).format("DD-MM"),
+          endDate: moment(toDate).format("DD-MM"),
+          locale: {
+            format: 'DD/MM'
+          }
+        });
+
+      totalDay=getTotalPerDayArray(harvests)
+
+
+      $('#intervalData').on('apply.daterangepicker', function(ev, picker) {
+  
+      });
+
+      $("#createGraph").click(async function (e) { 
+        e.preventDefault();
+        $.ajax({
+          type: "get",
+          url: "/statistic/getWeigthGraph?dataArray="+JSON.stringify(totalDay.reverse()),
+          success: function (response) {
+            $("#graph_Wrp").html(response)
+            $("#graph_Mdl").modal("show")
+          }
+        });
+      });
+      $('#intervalData').on('apply.daterangepicker', function(ev, picker) {
+        let fromDate=picker.startDate.format('YYYY-MM-DD')
+        let toDate=picker.endDate.format('YYYY-MM-DD')
+          window.location="/statistic/checkWeigth?fromDate="+fromDate+"&toDate="+toDate
+      });
+
     });
 
   </script>
