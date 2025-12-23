@@ -242,10 +242,7 @@ router.get('/species/getAll',async (req,res)=>{
 router.get('/species/getOneSpecie',async (req,res)=>{
     let speciesId=req.query.id?req.query.id:false
     if (speciesId!=false){
-        let specie=await db.species.findOne({where:{id:speciesId}})
-        specie=JSON.parse(JSON.stringify(specie))       
-        let strain= await db.strain.findAll({where:{species_code:specie.shortCode}})
-        specie.strains=JSON.parse(JSON.stringify(strain))
+        let specie=await db.species.findOne({where:{id:speciesId},include:{model:db.strain,as:"strain"}})
         res.status(200).json({specie:specie})
     }
 })

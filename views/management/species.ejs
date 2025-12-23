@@ -310,6 +310,7 @@
 let redirectId= <%- JSON.stringify( redirectId) %>
 let specieId
 let importParam
+let speciesData
 
 async function  drawTable (){
   await $.ajax({
@@ -357,41 +358,41 @@ async function drawShowSpecies(redirectId) {
       url: "/strain/species/getOneSpecie?id="+redirectId,
       success: async function (response) {
         console.log(response)
-        let data=response.specie
+        speciesData=response.specie
         $("inoculumElement").show();
         $("spawnElement").show();
         $("propagationElement").show();
         $("#modSpecies_Btn").show()
-         for (const [key, value] of Object.entries(data)) {
+         for (const [key, value] of Object.entries(speciesData)) {
               if($("#"+key+"_Fld").attr("tp")=="textField"){
                 $("#"+key+"_Fld").val(value)
               }
               if($("#"+key+"_Fld").attr("tp")=="selectField"){
                 $("#"+key+"_Fld").val(value).change();
                 if (key=="species"){
-                  $("#species_Fld").val(data.species_code).change();
+                  $("#species_Fld").val(speciesData.species_code).change();
                 }
               }
               switch (key) {
                 case "supplierId":
-                  $("#supplierId_Show").html(data.supplier?data.supplier.supplier_name:"-")
+                  $("#supplierId_Show").html(speciesData.supplier?speciesData.supplier.supplier_name:"-")
                   break;
                 case "outdoor":
-                  $("#outdoor_Show").html(data.outdoor==1?"Sì":"No")                  
-                  data.outdoor==1?$("#outdoor_Fld").prop('checked', true):$("#outdoor_Fld").prop('checked', false);
+                  $("#outdoor_Show").html(speciesData.outdoor==1?"Sì":"No")                  
+                  speciesData.outdoor==1?$("#outdoor_Fld").prop('checked', true):$("#outdoor_Fld").prop('checked', false);
                   break;
                 case "indoor":
-                  $("#indoor_Show").html(data.indoor==1?"Sì":"No")                  
-                  data.indoor==1?$("#indoor_Fld").prop('checked', true):$("#indoor_Fld").prop('checked', false);
+                  $("#indoor_Show").html(speciesData.indoor==1?"Sì":"No")                  
+                  speciesData.indoor==1?$("#indoor_Fld").prop('checked', true):$("#indoor_Fld").prop('checked', false);
                   break;
                 case "buyed":
-                  console.log(data.buyed)
-                  $("#buyed_Show").html(data.buyed ?moment(data.buyed).format("DD-MM-YY"):"-")
-                  $('#buyed_DT').datetimepicker({ format:"DD-MM-YY",defaultDate:moment(data.buyed)})
+                  console.log(speciesData.buyed)
+                  $("#buyed_Show").html(speciesData.buyed ?moment(speciesData.buyed).format("DD-MM-YY"):"-")
+                  $('#buyed_DT').datetimepicker({ format:"DD-MM-YY",defaultDate:moment(speciesData.buyed)})
                   break;
                 case "conservationMedia":
                   let txt=$("#conservationMedia_Fld option:selected").text();
-                  $("#conservationMedia_Show").html(data.conservationMedia?txt:"-")
+                  $("#conservationMedia_Show").html(speciesData.conservationMedia?txt:"-")
                   break;
                 default:
                   $("#"+key+"_Show").html(value?value:"-")
@@ -413,6 +414,16 @@ async function drawShowSpecies(redirectId) {
       }
     });   
   
+}
+
+async function drawTableStrain(params) {
+  $.ajax({
+    type: "GET",
+    url: "/strain/species/getStrainBySpecies?id="+speciesData.specieId,
+    success: function (response) {
+      console.log(response)
+    }
+  });  
 }
 
 $(document).ready(async function () {

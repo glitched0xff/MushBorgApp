@@ -58,6 +58,7 @@ db.strain = require("./management/strain.model.js")(sequelize, Sequelize);
  
 db.seed.associate(db)
 db.strain.associate(db)
+db.species.associate(db)
 db.spawn.associate(db)
 db.substrate.associate(db)
 db.substrateElement.associate(db)

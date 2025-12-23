@@ -21,7 +21,7 @@ module.exports = (sequelize, Sequelize) => {
     Species.associate = (models) => {
        Species.hasMany(models.strain, {
           foreignKey: 'speciesId',
-          as: 'strains'
+          as: 'strain'
         });
       }
     return Species;
