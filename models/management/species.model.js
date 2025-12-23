@@ -19,7 +19,10 @@ module.exports = (sequelize, Sequelize) => {
           
     });
     Species.associate = (models) => {
-       // Species.hasMany(models.spawn,{foreignkey:'strainId'});
+      //  Species.hasMany(models.strain, {
+      //     foreignKey: 'speciesId',
+      //     as: 'strains'
+      //   });
       }
     return Species;
   };
