@@ -2,7 +2,8 @@
 
 | File    | Sha256 | Rilascio | Deprecato |
 | -------- | ------- | --------- | ------------ |
-| [MushborgV0_19-12-25.ova](https://app.box.com/s/7y2da7tg5mitduxgbcrnj5zlu45mr58g)  | 3c9310aae9db8709d488619ac03cf74b42670f6c     | 23-12-2025|
+| [Mushborg0.1a.ova](https://app.box.com/s/rw2a63fi5pslsautpa5yylq8qjbmtfrp)  | afdbb3c81ffa63326150549f2a246329fb0d1e40     | 23-12-2025|
+|| Aggiunta campo speciesId a a tabella Strain - Configutato hostname mushborg.local - Fix sync errato .env - Aggiunta area statistiche in Tools->Statistiche Controllo peso (controlla il peso totale di funghi raccolti in un intervallo di tempo)|
 | ~~MushborgV0_19-12-25.ova~~  | 6e1f1ad32ea79126c3fabf4aad3c0db6fd7e83ad     | 19-12-2025| V
 
  
@@ -37,18 +38,41 @@
     user: mushborg
     password mushborg0x0
     ```
-- controlla che l'applicativo sia attivo digitando
+- Aggiorna l'applicazione
+  
+  `cd MushborgApp`
+
+  `git pull`
+
+- Riavvi PM2
+
+    `pm2 restart 0`    
+
+- Controlla che l'applicativo sia attivo digitando
   
     `pm2 ls`    
 
-    Il risultato del comando dovrebbe essere status online (vedi immagine allegata)
-- Trovo l'indirizzo ip della macchina virtuale digitando:
+    Il risultato del comando dovrebbe essere status online 
+
+- (Facoltativo) Trovo l'indirizzo ip della macchina virtuale digitando (V0):
   
     `ip addr`
 
-    L'indirizzo IP pubblico è il secondo che viene presentato della scheda enp0s3, campo inet  (è qualcosa simile a 192.168.x.xx in base alla vostra configurazione)
+    L'indirizzo IP pubblico è il secondo che viene presentato della scheda enp0s3, campo inet  (è qualcosa simile a 192.168.x.xx in base alla vostra configurazione).
 
-- Torno sulla mia macchina locale, apro il browser e digito: http://indirizzoDellaVm
+- Torno sulla mia macchina locale, apro il browser e digito: `http://mushborg.local`
+    
+    Attenzione: per sistemi windows se si riscontrano problemi controllare l'installazione del servizio Bonjour
+    
+    Se si riscontrano problemi nel raggiungere `mushborg.local`:
+
+      - Accedere al terminale del computer locale e digitare `ping mushborg.local` 
+    
+      - Se la risposta è negativa provare a pingare l'ip ddella VM `ping xxx.xxx.xxx.xxx`
+    
+      - Se la risposta è ancora negativa assicurarsi di essersi loggati nella VM o che la VM non sia spenta.
+
+
 - Voilà, se tutto è andato per il verso giusto dovreste vedere la homepage di Mushborg.
 
 ## Manutenzione e aggiornamento Mushborg
