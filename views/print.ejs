@@ -8,10 +8,10 @@
       <div class="storage-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Statistiche
+            <h1 class="m-0">Stampa etichette
             <!-- <button class="btn btn-xs btn-primary" id="modStorage_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca storage</button>
-              <button type="button" class="btn btn-xs btn-primary" id="newStorage_Btn"><i class="fas fa-plus"></i> Nuova storage</button> -->
-              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco storage</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newStorage_Btn"><i class="fas fa-plus"></i> Nuova storage</button> 
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco storage</button>-->
             </h1>
           </div>
           
@@ -27,21 +27,30 @@
             <div class="col-12"  id="tableStorage_Crd" style="">
                 <div class="card">
                   <div class="card-header">
-                    <h3 class="card-title">Seleziona  statistica  </h3>
+                    <h3 class="card-title">Seleziona  stampa  </h3>
     
                     
                   </div>
                   
                   <div class="card-body ">
-                    <div class="row">
+                    <div class="row m-3">
                       <div class="col-md-3 mx-auto">
-                        <a href="/statistic/checkWeigth">
+                        <a href="/print/massivePrint">
                           <button type="button" name="" id="" class="btn btn-primary btn-sm btn-block">
-                          <i class="fas fa-weight"></i> Controllo peso
+                          <i class="fas fa-qrcode"></i>  CSVS stampa massiva etichette lotti 
                         </button>
                         </a>
                         
                         
+                      </div>
+                    </div>
+                    <div class="row m-3">
+                      <div class="col-md-3 mx-auto">
+                        <a href="/print/printElement">
+                          <button type="button" name="" id="" class="btn btn-primary btn-sm btn-block">
+                          <i class="fas fa-qrcode"></i> CSV elementi singolo lotto 
+                        </button>
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -50,11 +59,7 @@
                 </div>
                 
               </div>
-            <div class="card w-100" id="showStorage_Crd" style="display: none;">
-              <div class="row m-3">
-                
-              </div>
-            </div>
+            
         </div>
         
       </div>

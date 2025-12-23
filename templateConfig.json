@@ -14,6 +14,7 @@
     "propagation":true,
     "statistic":true,
     "material":true,
+    "print":true,
     "env":"SVILUPPO",
     "titlePage":"Mushborg - DEV"
 }

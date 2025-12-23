@@ -1,0 +1,130 @@
+<%- include ('header') %>
+<%- include ('navbar') %>
+<%- include ('sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="storage-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">CSVS stampa massiva etichette lotti</h1>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          
+            <div class="col-12"  id="tableStorage_Crd" style="">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Seleziona  stampa  </h3>
+                  </div>
+                  
+                  <div class="card-body ">
+                    <div class="row ">
+                      <form class="form-inline" id="searchElement_Frm">
+                        <div class="form-group">
+                        <label for=""></label>
+                        <select class="form-control" name="" id="elementType_DD">
+                          <option value="">Seleziona il tipo di lotto</option>
+                          <option value="INOCULUM">Lotti inoculo</option>
+                          <option value="SPAWN">Lotti spawn</option>
+                          <option value="CULTIVATION">Lotti coltivazione</option>
+                        </select>
+                      </div>
+                      <button type="button" class="btn btn-primary bt-sm" id="searchElement_Btn"> Cerca elementi</button>
+                      </form>
+                      
+                    </div>
+                    <div class="row mt-2" id="elementList_Wrp">
+                      <form id="elementList_Frm" class="w-100">
+
+                      </form>
+                     <button type="button" class="btn btn-xs btn-primary" id="createCsv" style="display: none;"> <i class="fas fa-file-csv    "></i> Crea CSV</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            
+        </div>
+        
+      </div>
+    </section>
+    
+  </div>
+  
+ 
+  
+  <%- include ('footer') %>
+  <%- include ('jsLoad') %>
+  <script>
+    $(document).ready(async function () {
+
+      $("#searchElement_Btn").click(function (e) { 
+        e.preventDefault();
+        let elementType=$("#elementType_DD").val()
+        if(elementType!=""){
+          $.ajax({
+            type: "GET",
+            url: "/print/getElementByType?elementType="+elementType,
+            success: function (response) {
+              console.log(response.result)
+              let html=""
+               response.result.forEach(async elem => {
+                
+                html+=`<div class="row w-100 p-2 m-1 border-bottom">
+                        <div class="col-12 h5">
+                        ${elem.name}
+                        </div>`
+                        for (let y = 0; y < elem.mushElements.length; y++) {
+                          const el = elem.mushElements[y];
+                      html+=`<div class="col-2">
+                          <div class="form-check">
+                                  <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" name="elementCode" id="${el.element_code}" value="${el.element_code}" >
+                                  ${el.element_code}
+                                  </label>
+                                </div>
+                                </div>`
+                        }
+                  html+="</div>"  
+               });
+            $("#elementList_Frm").html(html)
+            $("#createCsv").show()
+            }
+          });
+        } else {
+          alert("Selezionare il tipo di elemento")
+        }
+        
+      });
+
+      $("#createCsv").click(function (e) { 
+        e.preventDefault();
+        let elementArr=[]
+        $("#elementList_Frm").serializeArray().forEach(element => {
+            elementArr.push(element.value)
+        });
+        console.log(elementArr)
+         let url="/print/massivePrintCSV?elementCode="+elementArr
+      window.open(url, '_blank').focus();
+        // $.ajax({
+        //   type: "POST",
+        //   url: "/print/massivePrint",
+        //   data: $("#elementList_Frm").serializeArray(),
+        //   success: function (response) {
+        //     console.log(response)
+        //   }
+        // });
+      });
+    });
+
+  </script>
+  <%- include ('closeTag') %>
+  

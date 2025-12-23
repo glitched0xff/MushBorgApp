@@ -95,7 +95,8 @@ let inoculum = require('./routes/management/inoculum.js');
 app.use('/inoculum', inoculum);
 let statistic = require('./routes/statistic.js');
 app.use('/statistic', statistic);
-
+let print = require('./routes/print.js');
+app.use('/print', print);
 const sensorData=require("./controllers/sensorData.controller.js")
 // Connessione server mqtt in locale e storing dei messaggi
 // TODO: Controllo della provenienza del messaggio tramite il topic, l'indirizzo del topic deve essere un cod_sensore approvato e registrato
