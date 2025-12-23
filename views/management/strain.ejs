@@ -65,7 +65,8 @@
                       classBox:"col-md-2 col-sm-6",
                       fieldName:"code_strain",
                       label:"Codice strain",
-                      readonly:true, 
+                      readonly:true,
+                      hidden:true,
                     },
                     {
                       type:"text",
@@ -102,21 +103,20 @@
                       classBox:"col-md-2 col-sm-6",
                       fieldName:"sub_code",
                       label:"Sub codice",
-                      required:true, 
+                      required:true,
+                      maxlength:2
                     },
                     {
                       type:"text",
                       classBox:"col-md-2 col-sm-6",
                       fieldName:"generation",
                       label:"Generazione",
-                      required:true, 
                     },
                     {
                       type:"text",
                       classBox:"col-md-2 col-sm-6",
                       fieldName:"derivedFrom",
-                      label:"derivedFrom",
-                      required:true, 
+                      label:"Derivato da",
                     },
                     {
                       type:"select",
@@ -610,6 +610,7 @@ async function drawShowStrain(redirectId) {
                   break;
                 }
             }
+        $("#code_strain").show()
         //---- Form //
         $("#showStrain_Crd").show()
         $("#parameter_Crd").show();
@@ -694,6 +695,7 @@ $(document).ready(async function () {
         $("#newStrain_Crd").hide()
         $("#tableStrain_Crd").hide()
         $("#newStrain_Btn").hide()
+        $("#backToMain_Btn").show()
         $(".strainText").hide()
         $(".strainForm").show()
         $(".parameterText").show()
@@ -704,47 +706,60 @@ $(document).ready(async function () {
     $("#species_Fld").change(function (e) { 
       e.preventDefault();
       let val=$(this).val()
+      console.log(val)
+      val=val.split("|")[0]
       $("#species_code_Fld").val(val)
     });
 
     $("#saveStrain_Btn").click(function (e) { 
       e.preventDefault();
-      //checkForm("strain_Frm")
-      let idStrain=$("#idStrain_Fld").val()
-      let strainSpecies=$( "#species_Fld option:selected" ).text().trim();
-      let serilizedForm=$("#strain_Frm").serializeArray()
-      console.log(serilizedForm)
-      let stringVal=""
-      for (let i = 0; i < serilizedForm.length; i++) {
-        if(serilizedForm[i].name=="species"){
-          serilizedForm[i].value=strainSpecies
+      let c=checkForm("strain_Frm")
+      if (checkForm("strain_Frm")){
+        let idStrain=$("#idStrain_Fld").val()
+        let strainSpecies=$( "#species_Fld option:selected" ).text().trim();
+        let serilizedForm=$("#strain_Frm").serializeArray()
+        console.log(serilizedForm)
+        
+        let stringVal=""
+        for (let i = 0; i < serilizedForm.length; i++) {
+          let specId={}
+          if(serilizedForm[i].name=="species"){
+            serilizedForm[i].value=strainSpecies
+          }
+          if(serilizedForm[i].name=="species_code"){
+            specId.value=serilizedForm[i].value.split("|")[1]
+            serilizedForm.push(specId)
+            serilizedForm[i].value=serilizedForm[i].value.split("|")[0]
+            specId.name="speciesId"
+            
+          }
+          stringVal+=serilizedForm[i].name+"="+serilizedForm[i].value
+          if(i!=serilizedForm.length-1){
+            stringVal+="&"
+          }
         }
-        stringVal+=serilizedForm[i].name+"="+serilizedForm[i].value
-        if(i!=serilizedForm.length-1){
-          stringVal+="&"
-        }
-      }
 
-      $("#species_Fld").val(strainSpecies)
-      console.log(stringVal)
-      if (idStrain==""){
-        $.ajax({
-          type: "POST",
-          url: "/strain/newStrain",
-          data: stringVal,//$("#strain_Frm").serialize(),
-          success: function (response) {
-            window.location="/strain?redirectId="+response.id
-          }
-        });
-      }else{
-        $.ajax({
-          type: "PUT",
-          url: "/strain/updateStrain",
-          data: stringVal,//$("#strain_Frm").serialize(),
-          success: function (response) {
-             window.location="/strain?redirectId="+idStrain
-          }
-        });
+        $("#species_Fld").val(strainSpecies)
+        console.log(stringVal)
+        if (idStrain==""){
+          $.ajax({
+            type: "POST",
+            url: "/strain/newStrain",
+            data: stringVal,//$("#strain_Frm").serialize(),
+            success: function (response) {
+              window.location="/strain?redirectId="+response.id
+            }
+          });
+        }else{
+          $.ajax({
+            type: "PUT",
+            url: "/strain/updateStrain",
+            data: stringVal,//$("#strain_Frm").serialize(),
+            success: function (response) {
+              window.location="/strain?redirectId="+idStrain
+            }
+          });
+        }
       }
     });
 

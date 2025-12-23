@@ -86,7 +86,7 @@ module.exports=async (nameDD,filter=false)=>{
                    obj={val:el.id,txt:el.code_storage+" - "+el.name_storage}
                 break;
                 case "species":
-                    obj={val:el.shortCode,txt:el.description}
+                    obj={val:el.shortCode+"|"+el.id,txt:el.description}
                 break;
                 case "strain":
                     obj={val:el.id+"|"+el.species_code+"|"+el.sub_code,txt:el.strain_name+" - "+el.species_code}

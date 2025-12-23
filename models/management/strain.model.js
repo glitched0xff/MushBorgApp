@@ -19,9 +19,9 @@ module.exports = (sequelize, Sequelize) => {
           species_code:{
             type:Sequelize.STRING
           },
-          // speciesId:{
-          //   type:Sequelize.INTEGER
-          // },
+          speciesId:{
+            type:Sequelize.INTEGER
+          },
           sub_code:{
             type:Sequelize.STRING
           },
@@ -118,10 +118,10 @@ module.exports = (sequelize, Sequelize) => {
         Strain.hasMany(models.inoculum,{foreignKey:'strainId'});
         Strain.hasMany(models.propagation,{foreignKey:'strainId'});
         Strain.belongsTo(models.supplier)
-        // Strain.belongsTo(models.species, {
-        //   foreignKey: 'speciesId',
-        //   as: 'species'
-        // });
+        Strain.belongsTo(models.species, {
+          foreignKey: 'speciesId',
+          as: 'speciesData'
+        });
       }
     return Strain;
   };

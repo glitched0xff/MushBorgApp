@@ -20,7 +20,7 @@ const { Readable } = require("stream");
 const ejs=require("ejs")
 const fs=require("fs")
 const path=require("path")
-Strain.associate(db)
+//Strain.associate(db)
 
 /**
  * Route serving login form.
@@ -81,7 +81,8 @@ router.post('/newStrain', async(req,res) => {
     let code=await generateStrainCode(data.species_code,data.buyed,data.sub_code)
     data.code_strain=code
     data.buyed=moment(data.buyed,"DD-MM-YY").utc()
-    //console.log(data)
+    console.log(data)
+    data.species_code=data.species_code
     await db.strain.create(data)
         .then(async(result)=>{
             await createNote(`Inserito nuovo strain: ${result.code_strain}`,"Strain","Strain")
