@@ -1,8 +1,9 @@
 # VM Mushborg
 
-| File    | Sha256 | Rilascio |
-| -------- | ------- | ---------
-| [MushborgV0_19-12-25.ova](https://app.box.com/s/qw8gvw7l11aql7oxcnalyjdxtetzze3w)  | 6e1f1ad32ea79126c3fabf4aad3c0db6fd7e83ad     | 19-12-2025|
+| File    | Sha256 | Rilascio | Deprecato |
+| -------- | ------- | --------- | ------------ |
+| [MushborgV0_19-12-25.ova](https://app.box.com/s/7y2da7tg5mitduxgbcrnj5zlu45mr58g)  | 3c9310aae9db8709d488619ac03cf74b42670f6c     | 23-12-2025|
+| ~~MushborgV0_19-12-25.ova~~  | 6e1f1ad32ea79126c3fabf4aad3c0db6fd7e83ad     | 19-12-2025| V
 
  
 
