@@ -128,14 +128,21 @@ router.get('/singleMushElement',async  (req, res) => {
      
     if (mushElementId!=false){
         let mushElement=await MushElement.findOne({where:{id:mushElementId,type:filterCategory},
-                                                    include: [{model: MushElementNotes,attributes:[]},{model: MushElementHarvest,attributes:["id","harvest_date","harvest_weight","note"]}],
+                                                    include: [
+                                                        {model: MushElementNotes,attributes:[]},
+                                                        {model: MushElementHarvest,attributes:[]}
+                                                    ],
                                                     attributes: {
                                                         include: [[fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
                                                                 [fn("COUNT", col("mushElementNotes.id")), "totalNote"]]
                                                     },
                                                     group: ["mushElement.id"] // serve il group by per fare l’aggregazione
                                                         })
-        
+         let harvests= await db.mushElementHarvest.findAll({where:{mushElementId:mushElementId,type:mushElement.type}})
+        mushElement=JSON.parse(JSON.stringify(mushElement))
+        harvests=JSON.parse(JSON.stringify(harvests))
+        mushElement.mushElementHarvests=harvests
+
         let stageDD=await db.dDOption.findAll({where:{ddMenu:"stageMushElement"}})
         let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
         let parentElement
@@ -229,7 +236,7 @@ router.get('/singleMushElement',async  (req, res) => {
         }}
        // console.log(JSON.parse(JSON.stringify(parentElement)))
 
-        console.log(JSON.parse(JSON.stringify(seeds)))
+        //console.log(JSON.parse(JSON.stringify(seeds)))
         //console.log(mushElement)
         res.render("management/mushElementZoom",{mushElement:mushElement,
                                                     parentElement:parentElement,
@@ -251,8 +258,15 @@ router.get('/getSingleMushElement',async  (req, res) => {
         let mushElement=await MushElement.findOne({where:{id:mushElementId},
                 include: [
                     {model: MushElementNotes},
-                    {model: MushElementHarvest}
+                   // {model: MushElementHarvest}
                 ]})
+        let harvests= await db.mushElementHarvest.findAll({where:{mushElementId:mushElementId,type:mushElement.type}})
+        
+        mushElement=JSON.stringify(mushElement)
+        harvests=JSON.stringify(harvests)
+        console.log("---")
+        console.log(harvests)
+        mushElement.mushElementHarvests=harvests
         let propagationData=mushElement.relatedId?await Propagation.findOne({where:{id:mushElement.relatedId},
             include: [
                 {model: db.spawn,include:[{model: db.strain}]},
@@ -632,14 +646,16 @@ router.delete('/deleteMushElementNote',async  (req, res) => {
 /** Mushroom element harvest */
 router.post('/insertHarvest',async (req,res)=>{
     let data=req.body
+    console.log(data)
     await MushElementHarvest.create({mushElementId:data.idMushElementHarvest,
                         harvest_date:moment(data.harvest_date,"DD-MM-YY"),
                         harvest_weight:data.harvest_weight,
                         type:data.filterCategoryHarvest,
                     note:data.harvest_note?data.harvest_note:""})
                     .then(async result=>{
-                        //let harvest=await MushElementHarvest.findAll({where:{mushElementId:data.idMushElementHarvest,type:data.filterCategoryHarvest},limit: 300})
-                        res.status(200).json({result:result})
+                        console.log(result)
+                        let harvest=await MushElementHarvest.findAll({where:{mushElementId:data.idMushElementHarvest,type:data.filterCategoryHarvest},limit: 300})
+                        res.status(200).json({harvest:harvest})
                     })
 })
 
@@ -662,8 +678,18 @@ router.post('/insertBulkHarvest',async (req,res)=>{
 router.get('/getHarvest',async (req,res)=>{
     let data=req.query
     console.log(data)
-    let harvest=await MushElementHarvest.findAll({where:{mushElementId:data.idMushElementHarvest,type:data.filterCategoryHarvest},limit: 300})
+    let harvest=await MushElementHarvest.findAll({where:{mushElementId:data.id,type:data.filterCategoryHarvest},limit: 300})
     res.status(200).json({harvest:harvest})
+})
+
+router.delete('/deleteHarvest',async (req,res)=>{
+    let idMushElementHarvest=req.query.idMushElementHarvest?req.query.idMushElementHarvest:false
+    if(idMushElementHarvest!=false){
+        await db.mushElementHarvest.destroy({where:{id:idMushElementHarvest}})
+        .then(result=>{
+            res.status(200).json({result})
+        })
+    }
 })
 
 

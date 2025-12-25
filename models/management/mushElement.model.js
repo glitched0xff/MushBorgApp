@@ -70,9 +70,7 @@ module.exports = (sequelize, Sequelize) => {
         MushElement.hasMany(models.mushElementNote,{foreignKey:'mushElementId',
                                                     onDelete: 'CASCADE',   // 🔥 se cancello il MushElement, cancella anche i MushElementNote
                                                     hooks: true   });
-        MushElement.hasMany(models.mushElementHarvest,{foreignKey:'mushElementId',
-                                                    onDelete: 'CASCADE',   
-                                                    hooks: true   });
+        MushElement.hasMany(models.mushElementHarvest,{foreignKey:'mushElementId' });
         MushElement.belongsTo(models.spawn,{foreignKey:'relatedId',targetKey: "id"});
         MushElement.belongsTo(models.propagation,{foreignKey:'relatedId',targetKey: "id"});
         MushElement.belongsTo(models.inoculum,{foreignKey:'relatedId',targetKey: "id"});

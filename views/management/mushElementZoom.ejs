@@ -388,8 +388,7 @@
           <div class="card w-100 collapsed-card">
             <div class="card-header " data-card-widget="collapse" > 
               <!--  data-card-widget="collapse" -->
-              <h3 class="card-title">Raccolto elemento
-            
+              <h3 class="card-title">Raccolto elemento: <%= mushElement.totalHarvestWeight %>g
                 
               </h3>
               <div class="card-tools">
@@ -1160,7 +1159,8 @@ async function drawElementNote(idMushElement){
 
 //Draw Element table
 async function drawElementHarvest(mushElementHarvest){
-  console.log(mushElementHarvest)
+  // console.log("mushElementHarvest")
+  // console.log(mushElementHarvest)
   let html=""
     if((mushElementHarvest!=null)&&(mushElementHarvest.length>0)){
         for (let i = 0; i < mushElementHarvest.length; i++) {
@@ -1170,7 +1170,7 @@ async function drawElementHarvest(mushElementHarvest){
                 <button type="button" name="" id="${el.id}" 
               class="btn btn-danger btn-xs delMushElementHarvest" style="width:25px"
               idMushElementHarvest="${el.id}" idMushElement="${el.mushElementId}">
-                <i class="fa fa-trash fa-sm delMushElementHarvest" aria-hidden="true"></i>
+                <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
             </button></td>`
           html+=` <td scope="row" class="col-2">${moment(el.harvest_date).format("DD-MM-YYYY HH:mm")}</td>
                       
@@ -1268,7 +1268,7 @@ $(document).ready(async function () {
                 $(this).ekkoLightbox();
             });
   // init   
-        await getMovimentation()
+   await getMovimentation()
     
     switch (filterCategory) {
       case "INOCULUM":
@@ -1328,8 +1328,9 @@ $(document).ready(async function () {
            let data=$('#dt_start_Fl').val()
            $('#dt_stop_DT').val(data)
        });
-  drawElementNote(mushElement.id)
-  drawElementHarvest(mushElement.mushElementHarvests)
+    drawElementNote(mushElement.id)
+    console.log(mushElement)
+    drawElementHarvest(mushElement.mushElementHarvests)
   $("#dt_start_DT").on("change.datetimepicker", function (e) {
             $('#dt_end_DT').datetimepicker('date', moment(e.date).add(15, 'd'));
         });
@@ -1575,17 +1576,37 @@ $("#saveHarvest_Btn").click(function (e) {
     url: "/mushElement/insertHarvest",
     data: $("#mushElementHarvest_Form").serialize(),
     success: function (response) {
-      console.log(response)
-      //window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
-    }
+      //console.log(response)
+      $("#insertHarvest_Mdl").modal("hide")
+      drawElementHarvest(response.harvest)
+     // window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
+    }     
   });
 });
+$(".delMushElementHarvest").click(function (e) { 
+  e.preventDefault();
+  let idMushElementHarvest=$(this).attr("idmushelementharvest")
+  let c=confirm("Eliminare il raccolto selezionato?")
+  if(c==true){
+    $.ajax({
+    type: "DELETE",
+    url: "/mushElement/deleteHarvest?idMushElementHarvest="+idMushElementHarvest,
+    success: function (response) {
+      $.ajax({
+        type: "GET",
+        url: "/mushElement/getHarvest?id="+mushElement.id+"&filterCategoryHarvest="+mushElement.type,
+        success: function (response) {
+          drawElementHarvest(response.harvest)
+        }
+      });}
+  });
+  }
+});
 
-
-// insertHarvest_Mdl
-// mushElementHarvest_Form
-// saveHarvest_Btn
-// abortHarvest_Btn
+  // insertHarvest_Mdl
+  // mushElementHarvest_Form
+  // saveHarvest_Btn
+  // abortHarvest_Btn
 
 // Default
     $("#backToMain_Btn").click(function (e) { 

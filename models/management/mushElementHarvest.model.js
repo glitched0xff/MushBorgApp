@@ -26,7 +26,6 @@ module.exports = (sequelize, Sequelize) => {
     MushElementHarvest.associate = (models) => {
       MushElementHarvest.belongsTo(models.mushElement, {
                                   foreignKey: 'mushElementId',
-                                  onDelete: 'CASCADE'
                                 });
       }
     return MushElementHarvest;
