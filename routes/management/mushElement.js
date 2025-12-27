@@ -45,7 +45,8 @@ router.get('/getAll',async  (req, res) => {
     if(filterCategory!=false){
          mushElements=await MushElement.findAll({
         where:{type:filterCategory},
-        include: [{model: MushElementNotes,attributes:[]},{model: MushElementHarvest,attributes:[]}],
+        include: [{model: MushElementNotes,attributes:[]},
+        {model: MushElementHarvest,attributes:[]}],
          attributes: {
             include: [[fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
                     [fn("COUNT", col("mushElementNotes.id")), "totalNote"]]

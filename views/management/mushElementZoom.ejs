@@ -385,10 +385,10 @@
             </div>
           </div>
           <!-- Raccolto -->
-          <div class="card w-100 collapsed-card">
+          <div class="card w-100 collapsed-card" id="harvest_Crd">
             <div class="card-header " data-card-widget="collapse" > 
               <!--  data-card-widget="collapse" -->
-              <h3 class="card-title">Raccolto elemento: <%= mushElement.totalHarvestWeight %>g
+              <h3 class="card-title">Raccolto elemento: <span id="totalWeight"></span>
                 
               </h3>
               <div class="card-tools">
@@ -992,7 +992,7 @@
       <div class="modal-body">
         <div class="row w-100">
           <div class="col-12">
-            <!-- Form inserimento nota -->
+            <!-- Form inserimento raccolto -->
           <form class="form w-100" enctype="multipart/form-data" id="mushElementHarvest_Form" >
             <input type="hidden" class="form-control" name="idMushElementHarvest"  tp="hidden" value="<%= mushElement.id %>">
             <input type="hidden" class="form-control" name="filterCategoryHarvest"  tp="hidden" value="<%= filterCategory %>">
@@ -1003,7 +1003,10 @@
                   <dd class="mushElementNoteForm">
                     <div class="form-group">
                       <div class="input-group date" id="harvest_date_DT" data-target-input="nearest">
-                        <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" data-target="#harvest_date_DT " name="harvest_date">
+                        <input type="text" 
+                        class="form-control datetimepicker-input form-control-sm form-control-minimal" 
+                        data-target="#harvest_date_DT " name="harvest_date"
+                        required >
                         <div class="input-group-append" data-target="#harvest_date_DT" data-toggle="datetimepicker">
                           <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
                         </div>
@@ -1017,8 +1020,12 @@
                   <dt>Peso</dt>
                   <dd class="mushElementNoteForm">
                     <div class="form-group">
-                      <input type="text"
-                        class="form-control" name="harvest_weight" id="harvest_weight" required placeholder="Inserisci peso in grammi">
+                      <input type="number"
+                        min="0"
+                        step="0"
+                        class="form-control" name="harvest_weight" id="harvest_weight"  
+                        placeholder="Inserisci peso in grammi"
+                        required >
                     </div>
                   </dd>
                 </dl>
@@ -1162,9 +1169,11 @@ async function drawElementHarvest(mushElementHarvest){
   // console.log("mushElementHarvest")
   // console.log(mushElementHarvest)
   let html=""
+  let toalWeight=0
     if((mushElementHarvest!=null)&&(mushElementHarvest.length>0)){
         for (let i = 0; i < mushElementHarvest.length; i++) {
           const el = mushElementHarvest[i];
+          toalWeight=toalWeight+el.harvest_weight
           html+=`<tr>
               <td>
                 <button type="button" name="" id="${el.id}" 
@@ -1177,6 +1186,7 @@ async function drawElementHarvest(mushElementHarvest){
                         <td class="col-2">${el.harvest_weight} g</td>
                          <td>${el.note}</td>
                       </tr>`
+
         }
       } else {
         html=`<tr >
@@ -1186,6 +1196,7 @@ async function drawElementHarvest(mushElementHarvest){
      // $("#idMushElementNote_Fld").val(idMushElement)
       $("#mushElementHarvest_Tblb").html(html)
       $("#mushElementHarvest_Tbl").show()
+      $("#totalWeight").html(toalWeight+" g")
       if(mushElement.active==0){
         $(".delMushElementHarvest").attr('disabled','true');
       }
@@ -1278,6 +1289,7 @@ $(document).ready(async function () {
         $("#lottoExpDate").html(parentElement.exp_date)
         $("#lottoName").html(parentElement.inoculum_name)
         $("#lottoCode").html(parentElement.code_inoculum)
+        $("#harvest_Crd").hide()
         break;
 
       case "SPAWN":
@@ -1288,6 +1300,7 @@ $(document).ready(async function () {
         $("#lottoName").html(parentElement.spawn_name)
         $("#lottoCode").html(parentElement.code_spawn)
         $('#lottoExpDate').closest('div').hide();
+        $("#harvest_Crd").hide()
         break;
 
       case "CULTIVATION":
@@ -1297,6 +1310,7 @@ $(document).ready(async function () {
         $("#cultivation_info_Show").html(parentElement.propagation_name)
         $("#lottoName").html(parentElement.propagation_name)
         $("#lottoCode").html(parentElement.code_propagation)
+        $("#harvest_Crd").show()
         break;
     }
     $("#lottoStrain").html(parentElement.strain.code_strain)
@@ -1568,22 +1582,25 @@ $("#abortHarvest_Btn").click(function (e) {
   e.preventDefault();
   $("#insertHarvest_Mdl").modal('hide')
 });
+
 $("#saveHarvest_Btn").click(function (e) { 
-  checkForm("mushElementHarvest_Form")
+  let c=checkForm("mushElementHarvest_Form")
   e.preventDefault();
-  $.ajax({
+  if(c==true){
+    $.ajax({ 
     type: "POST",
     url: "/mushElement/insertHarvest",
     data: $("#mushElementHarvest_Form").serialize(),
     success: function (response) {
-      //console.log(response)
       $("#insertHarvest_Mdl").modal("hide")
+      $("#harvest_weight").val("").removeClass("border-danger border-success")
       drawElementHarvest(response.harvest)
-     // window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
     }     
   });
-});
-$(".delMushElementHarvest").click(function (e) { 
+  }
+  });
+
+$(document).on("click",".delMushElementHarvest", function (e) { 
   e.preventDefault();
   let idMushElementHarvest=$(this).attr("idmushelementharvest")
   let c=confirm("Eliminare il raccolto selezionato?")
