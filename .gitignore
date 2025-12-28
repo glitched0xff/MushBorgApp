@@ -88,6 +88,7 @@ node_modules
 build
 npm-debug.log
 public/AdminLTE-3.2.0/
+public/imgMushEleNote/*
 test_area
 dbBkup
 out

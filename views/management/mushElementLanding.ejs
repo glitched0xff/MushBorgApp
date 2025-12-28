@@ -25,16 +25,18 @@
               <h4 class="mx-auto"><%= mushElement.element_code %></h4>
                 <div class="row w-100 mt-3">
                   <!--Raccolto  -->
-                  <div class="col-lg-8 col-sm-12 mx-auto my-2">
-                    <div class="card w-100 collapsed-card mx-auto">
-                    <div class="card-header"  data-card-widget="collapse">
-                      <h3 class="card-title">Inserisci raccolto</h3>
+                  <div class="col-12 mx-auto my-2">
+                    <div class="card w-100 mx-auto">
+                    <div class="card-header"  >
+                      <h3 class="card-title">Raccolto (<span id="countHarvest"></span>) </h3>
                       <div class="card-tools">
-                        <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+                        <button class="btn btn-xs btn-primary mx-1" id="insertHarvest_Btn"> <i class="fas fa-plus"></i> Inserisci raccolto</button>
+                        <!-- <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button> -->
                       </div>
                     </div>
-                    <div class="card-body">
-                      <div class="row w-100 m-2">
+                    <div class="card-body py-0">
+                      <!-- Harvest form -->
+                      <div class="row w-100 py-2" id="mushElementHarvest_Frm_Wrp" style="display: none;">
                         <form class="form w-100" enctype="multipart/form-data" id="mushElementHarvest_Form" >
                         <input type="hidden" class="form-control" name="idMushElementHarvest"  tp="hidden" value="<%= mushElement.id %>">
                         <input type="hidden" class="form-control" name="filterCategoryHarvest"  tp="hidden" value="<%= mushElement.type %>">
@@ -45,7 +47,7 @@
                               <dd class="mushElementNoteForm">
                                 <div class="form-group">
                                   <div class="input-group date" id="harvest_date_DT" data-target-input="nearest">
-                                    <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" data-target="#harvest_date_DT " name="harvest_date">
+                                    <input type="text" required class="form-control datetimepicker-input form-control-sm form-control-minimal" data-target="#harvest_date_DT " name="harvest_date">
                                     <div class="input-group-append" data-target="#harvest_date_DT" data-toggle="datetimepicker">
                                       <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
                                     </div>
@@ -59,8 +61,11 @@
                               <dt>Peso</dt>
                               <dd class="mushElementNoteForm">
                                 <div class="form-group">
-                                  <input type="text"
-                                    class="form-control" name="harvest_weight" id="harvest_weight" required placeholder="Inserisci peso in grammi">
+                                  <input type="number"
+                                  step="0"
+                                  min="0"
+                                    class="form-control" name="harvest_weight" id="harvest_weight" 
+                                    required placeholder="Inserisci peso in grammi">
                                 </div>
                               </dd>
                             </dl>
@@ -82,20 +87,18 @@
                         <button class="btn btn-xs btn-secondary mx-1" id="abortHarvest_Btn"> <i class="fas fa-plus"></i> Annulla inserimento</button>
                       </form>
                       </div>
-                      <div class="row w-100">
-                        <table class="table table-sm table-striped col-11 mx-auto" id="harvestTable_Tbl">
+                      <!-- Harvest table -->
+                      <div class="row w-100 " id="harvestList_Wrp" style="display: none;">
+                        <table class="table table-sm table-striped  mx-auto" id="harvestTable_Tbl">
                           <thead>
                             <tr>
-                              <th>Data</th>
-                              <th>Raccolto in g</th>
+                              <th  class="col-1">#</th>
+                              <th class="col-2">Raccolto in g</th>
+                              <th class="col-7">Note</th>
+                              <th class="col-2">Data raccolto</th>
                             </tr>
                           </thead>
                           <tbody id="harvestTable_Tblb">
-                            <tr>
-                              <td scope="row"></td>
-                              <td></td>
-                            </tr>
-                            
                           </tbody>
                         </table>
                       </div>
@@ -103,16 +106,34 @@
                     </div>
                   </div>
                   <!-- Nota -->
-                  <div class="col-lg-8 col-sm-12 mx-auto my-2">
-                    <div class="card w-100 collapsed-card mx-auto">
-                    <div class="card-header"  data-card-widget="collapse">
-                      <h3 class="card-title">Inserisci nota</h3>
+                  <div class="col-12 mx-auto my-2">
+                    <div class="card w-100  mx-auto">
+                    <div class="card-header" >
+                      <h3 class="card-title">Note (<span id="countNote"></span>) </h3>
+                        
                       <div class="card-tools">
-                        <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+                        <button class="btn btn-xs btn-primary mx-1" id="insertNote_Btn"> <i class="fas fa-plus"></i> Inserisci nota</button>
+<!--                       
+                          <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button> -->
                       </div>
                     </div>
-                    <div class="card-body">
-                  <div class="row w-100 m-2">
+                    <div class="card-body py-0">
+                      <div class="row w-100 p-2" id="noteZoom_Wrp" style="display: none;">
+                        <div class="col-sm-12 col-md-4">
+                          <img src="/dist/placeholder.png" id="note_Img" style="max-width: 300px; max-height: 300px;">
+                        </div>
+
+                        <div class="col-sm-12 col-md-8">
+                        <di class="row"><span id="dataNote"></span></di>
+                        <di class="row"><span id="statoNote"></span></di>
+                        <di class="row"><span id="nota"></span></di>
+                        </div>
+                        <div class="col-12 my-2">
+                        <button class="btn btn-xs btn-primary mx-1" id="backListNote_Btn" style="width: 40px;"> <i class="fa fa-arrow-left" aria-hidden="true"></i></button>
+
+                        </div>
+                      </div>
+                  <div class="row w-100 m-2 py-2" id="mushElementNote_Wrp" style="display: none;">
                     <form class="form w-100" enctype="multipart/form-data" id="mushElementNote_Form" >
               <input type="hidden" class="form-control" name="idMushElementNote" id="idMushElementNote_Fld" tp="hidden" value="<%= mushElement.id %>">
               <input type="hidden" class="form-control" name="filterCategoryNote" id="filterCategoryNote_Fld" tp="hidden" value="<%= mushElement.type %>">
@@ -180,12 +201,30 @@
                 
               <button class="btn btn-xs btn-primary mx-1" id="saveMushElementNote_Btn"> <i class="fas fa-plus"></i> Salva nota</button>
               <button class="btn btn-xs btn-secondary mx-1" id="abortMushElementNote_Btn"> <i class="fas fa-plus"></i> Annulla inserimento</button>
-            </form>
+                    </form>
+                  </div>
+                  <div class="row w-100" id="mushElementNote_Tbl_Wrp" style="display: none;">
+                    <table class="table table-sm table-striped">
+                      <thead>
+                        <tr>
+                          <th class="col-md-1 col-sm-1">#</th>
+                          <th class="col-md-2 col-sm-1">Stato</th>
+                          <th class="col-md-8 col-sm-7">Nota</th>
+                          <th class="col-md-1 col-sm-2">Data</th>
+                        </tr>
+                      </thead>
+                      <tbody id="noteTable_Tblb">
+                        
+                        
+                      </tbody>
+                    </table>
                   </div>
                   </div>
                     </div>
                   </div>
-<div class="col-lg-8 col-sm-12 mx-auto my-2">
+
+
+<div class="col-12 mx-auto my-2">
                   <% if (mushElement.type=="CULTIVATION"){
                       if(mushElement.stage==1){%>
                     <button type="button" name="" id="fructElement_Btn" class="btn btn-success btn-block"> 
@@ -194,13 +233,13 @@
                     <div class="col mx-auto h4 text-center">Elemento in fruttificazione</div>
                   <% }} %>
                   </div>
-                  <div class="col-lg-8 col-sm-12 mx-auto my-2">
+                  <div class="col-12 mx-auto my-2">
                     <a href="/mushElement/singleMushElement?id=<%= mushElement.id%>&filterCategory=<%= mushElement.type%>">
                       <button type="button" name="" id="" class="btn btn-primary btn-block"> 
                          Dati elemento <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></button>
                     </a>
                   </div>
-                  <div class="col-lg-8 col-sm-12 mx-auto my-2">
+                  <div class="col-12 mx-auto my-2">
                     <button type="button" name="" id="" class="btn btn-danger btn-block">Pick elemento
                       <i class="fa fa-minus-circle" aria-hidden="true"></i>
                     </button>
@@ -215,64 +254,172 @@
 
 <%- include ('../footer') %>
 <%- include ('../jsLoad') %>
+
 <script>
 
-let mushElement =<%- JSON.stringify(mushElement) %> 
+let mushElement =<%- JSON.stringify(mushElement) %>
+let mushElementNotes=[]
+let filterCategory=mushElement.type
+let limitListHarvest=3
+let limitListNote=3
+let pathLetter
+
 // Harvest table
 function drawHarvestTable(limit=0) {
   $.ajax({
     type: "GET",
-    url: "/mushElement/getHarvest?idMushElementHarvest="+mushElement.id+"&filterCategoryHarvest="+mushElement.type,
+    url: "/mushElement/getHarvest?id="+mushElement.id+"&filterCategoryHarvest="+mushElement.type,
     success: function (response) {
       let html=""
         let total=0
-        let harvest=response.harvest.slice(limit*-1).reverse()
-        console.log(harvest)
+        let harvest=response.harvest
+        if (harvest.length>0){
           for (let i = 0; i < harvest.length; i++) {
             const hv = harvest[i];
             total+=hv.harvest_weight
              html+=`<tr>
-              <td>${moment(hv.harvest_date).format("DD-MM-YY")}</td>
+              <td>
+                <button type="button" name="" id="${hv.id}" 
+              class="btn btn-danger btn-xs delMushElementHarvest" style="width:25px"
+              idMushElementHarvest="${hv.id}" idMushElement="${hv.mushElementId}">
+                <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+            </button></td>
              <td>${hv.harvest_weight}</td>
+             <td>${hv.note}</td>
+              <td>${moment(hv.harvest_date).format("DD-MM-YY")}</td>
+
              </tr>`
 
           } 
-      $("#harvestTable_Tblb").html(html)
+        } else {
+          html=`<tr class="bg-danger txt-white text-center" > <td colspan="4">Non sono presenti raccolti</td></tr>`
+        }
+        console.log(html)
+        $("#harvestTable_Tblb").html(html)
+      $("#countHarvest").html(total+" g")
+      $("#mushElementHarvest_Frm_Wrp").hide();
+      $("#harvestList_Wrp").show();
     }
   });
   
   }
+
+// Note table
+function drawNoteTable(limit=0){
+  $.ajax({
+    type: "GET",
+    url: "/mushElement/getMushElementNote?idElement="+mushElement.id+"&filterCategoryNote="+mushElement.type,
+    success: function (response) {
+       let html=""
+        mushElementNotes=response.mushElementNotes
+        if (mushElementNotes.length>0){
+          for (let i = 0; i < mushElementNotes.length; i++) {
+            const nt = mushElementNotes[i];
+            let notaTxt=nt.note
+            if(notaTxt.length>30){
+              notaTxt=notaTxt.slice(0,20)
+            }
+             html+=`<tr>
+              <td>
+                <button type="button" name="" id="${nt.id}" 
+              class="btn btn-danger btn-xs delMushElementNote" style="width:25px"
+              idMushElementNote="${nt.id}" idMushElement="${nt.mushElementId}">
+                <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+            </button>
+            <button type="button" name="" id="" class="btn btn-primary btn-xs showNote" idNote="${i}" style="width:25px">
+                <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+            </button>
+            </td>
+              <td>${nt.stato}</td>
+             <td>${notaTxt}</td>
+
+              <td>${moment(nt.check_date).format("DD-MM-YY")}</td>
+             </tr>`
+            }
+         } else {
+          html=`<tr class="bg-danger txt-white text-center" > <td colspan="4">Non sono presenti note</td></tr>`
+        }
+      $("#noteTable_Tblb").html(html)
+      $("#mushElementNote_Tbl_Wrp").show()
+      $("#mushElementNote_Wrp").hide()
+      $("#countNote").html(mushElementNotes.length)
+    }
+  });
+}
 
 $(document).ready(async function () {
   $('#harvest_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
   $('#harvest_date_DT').datetimepicker('date', new Date())
   $('#check_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY",autoclose:true})
   $('#check_date_DT').datetimepicker('date', new Date())
-  drawHarvestTable(3)
-// Element Note
-    $("#saveHarvest_Btn").click(function (e) { 
-      e.preventDefault();
-      checkForm("mushElementHarvest_Form")
-      $.ajax({
-        type: "POST",
-        url: "/mushElement/insertHarvest",
-        data: $("#mushElementHarvest_Form").serialize(),
-        success: function (response) {
-          drawHarvestTable(3)
-          $(document).Toasts('create', {
-            title: 'Inserimento raccolto',
-            body: 'Il raccolto è stato inserito correttamente',
-            class:'toast-danger'
-          })
-          resetForm("mushElementHarvest_Form")
-          //window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
+  
+  switch (mushElement.type) {
+    case "INOCULUM":
+      pathLetter="I"
+    break;
+    case "SPAWN":
+      pathLetter="S"
+    break;
+    case "CULTIVATION":
+      pathLetter="C"
+    break;
+  }
+
+  /** 
+   * Harvests - raccolti
+  */
+  drawHarvestTable(limitListHarvest)
+  $("#insertHarvest_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#mushElementHarvest_Frm_Wrp").show();
+      $("#harvestList_Wrp").hide();
+  });
+  $("#saveHarvest_Btn").click(function (e) { 
+    e.preventDefault();
+    checkForm("mushElementHarvest_Form")
+    $.ajax({
+      type: "POST",
+      url: "/mushElement/insertHarvest",
+      data: $("#mushElementHarvest_Form").serialize(),
+      success: function (response) {
+        drawHarvestTable(limitListHarvest)
+        $(document).Toasts('create', {
+          title: 'Inserimento raccolto',
+          body: 'Il raccolto è stato inserito correttamente',
+          class:'toast-danger'
+        })
+        $("#harvest_weight").val("").removeClass("border-danger border-success")
+        $("#harvest_note_Fld").val("").removeClass("border-danger border-success")
+        $("#harvest_date").removeClass("border-danger border-success")
+        
         }
-      });
     });
-    $("#abortHarvest_Btn").click(function (e) { 
+  });
+  $("#abortHarvest_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#harvest_weight").val("")
+    $("#mushElementHarvest_Frm_Wrp").hide();
+      $("#harvestList_Wrp").show();
+      $("#harvest_weight").val("").removeClass("border-danger border-success")
+        $("#harvest_note_Fld").val("").removeClass("border-danger border-success")
+        $("#harvest_date").removeClass("border-danger border-success")
+  });
+  $(document).on("click",".delMushElementHarvest", function (e) { 
       e.preventDefault();
-      
-    });
+      let idMushElementHarvest=$(this).attr("idmushelementharvest")
+      let c=confirm("Eliminare il raccolto selezionato?")
+      if(c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/mushElement/deleteHarvest?idMushElementHarvest="+idMushElementHarvest,
+        success: function (response) {
+              drawHarvestTable(limitListHarvest)
+          }
+          });
+          }
+        })
+
+    /** Fructification BTN */
     $("#fructElement_Btn").click(function (e) { 
     e.preventDefault();
     let c=confirm("Stai mettendo l'elemento in fruttificazione, continuare l'operazione?")
@@ -287,17 +434,21 @@ $(document).ready(async function () {
     }
   });
   
-    //  Element note
-        $("#saveMushElementNote_Btn").click(function (e) { 
+   /** Element note */
+    drawNoteTable(limitListNote)
+    $("#insertNote_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#mushElementNote_Wrp").show()
+      $("#mushElementNote_Tbl_Wrp").hide();
+      $(this).hide()
+    });
+    $("#saveMushElementNote_Btn").click(function (e) { 
       e.preventDefault();
       let idMushElement=$("#idMushElementNote_Fld").val()
       //console.log(idMushElement)
       let el=document.getElementById("mushElementNote_Form")
       console.log(el)
-      let formdata = new FormData(document.getElementById("mushElementNote_Form"));
-      for (var [key, value] of formdata.entries()) { 
-          console.log(key, value);
-        }
+      let formdata = new FormData(document.getElementById("mushElementNote_Form"))
       $.ajax({
         type: "POST",
         url: "/mushElement/newMushElementNote?type="+filterCategory,
@@ -305,27 +456,56 @@ $(document).ready(async function () {
         processData: false,
         contentType: false,
         success: async function (response) {
-          console.log(response)
-            if (response.error==true){
-              alert(response.data)
-            }else{
-          window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
-          }
+          drawNoteTable(limitListNote)
+          $("#insertNote_Btn").show()
         },
-        error: function(err){
-          console.log(err)
-        }
       });
     });
-
     $("#abortMushElementNote_Btn").click(function (e) { 
       e.preventDefault();
-      $("#mushElementNote_Form").hide()
-      $("#mushElementNote_Tbl").show()
-      $("#addMushElementNote_Btn").show()
+      drawNoteTable(limitListNote)
+      $("#insertNote_Btn").show()
     });
-    
-});
+    $(document).on("click",".delMushElementNote", function (e) { 
+      e.preventDefault();
+      let idMushElementNote=$(this).attr("idMushElementNote")
+      let c=confirm("Eliminare la nota selezionata?")
+      if(c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/mushElement/deleteMushElementNote?id="+idMushElementNote,
+        success: function (response) {
+              drawNoteTable(limitListHarvest)
+          }
+          });
+          }
+        })
+    $(document).on("click",".showNote", function (e) {
+      e.preventDefault();
+      let idNote=$(this).attr("idNote")
+      let nota=mushElementNotes[idNote]
+      console.log(mushElementNotes)
+      console.log(idNote)
+      console.log(mushElementNotes.length)
+      console.log(nota)
+      
+      let imgUrl="/imgMushEleNote/"+mushElement.id+"_"+pathLetter+"/"+nota.pict
+      $("#note_Img").attr('src', imgUrl);
+      $("#dataNote").html(moment(nota.check_date).format("DD-MM-YY"))
+      $("#statoNote").html(nota.stato)
+      $("#nota").html(nota.note)
+      $("#noteZoom_Wrp").show()
+      $("#mushElementNote_Tbl_Wrp").hide();
+    });
+
+    /** Utility */
+    $(document).on("click","#backListNote_Btn", function (e) {
+      e.preventDefault();
+      console.log("back")
+      $("#noteZoom_Wrp").hide()
+      $("#mushElementNote_Tbl_Wrp").show();
+    })
+  });
     
 
 </script>

@@ -1120,7 +1120,7 @@ async function drawElementNote(idMushElement){
   console.log(idMushElement)
   $.ajax({
     type: "GET",
-    url: "/mushElement/getMushElementNote?idElement="+mushElement.id,
+    url: "/mushElement/getMushElementNote?idElement="+mushElement.id+"&filterCategoryNote="+mushElement.type,
     success: function (response) {
       console.log("response")
       console.log(response)

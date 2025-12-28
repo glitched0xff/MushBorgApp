@@ -18,16 +18,7 @@ const QRCode = require('qrcode')
 const {generateSync}=require("text-to-image")
 const mergeImages = require('merge-base64');
 const { Json } = require('sequelize/lib/utils');
-const MushElementNotes = db.mushElementNote;
-const MushElement = db.mushElement;
-const Propagation=db.propagation
-const Inoculum=db.inoculum
-const Spawn=db.spawn
-const MushElementHarvest=db.mushElementHarvest
 const Op = db.Sequelize.Op;
-// MushElementNotes.associate(db)
-// MushElement.associate(db)
-// Propagation.associate(db)
 
 router.get('/',async  (req, res) => {
     let searchCode=req.query.searchCode?req.query.searchCode:false
@@ -40,13 +31,13 @@ router.get('/',async  (req, res) => {
 
 router.get('/getAll',async  (req, res) => {
     let filterCategory=req.query.filterCategory?req.query.filterCategory:false
-    console.log(req.query)
+    //console.log(req.query)
     let mushElements
     if(filterCategory!=false){
-         mushElements=await MushElement.findAll({
+         mushElements=await db.mushElement.findAll({
         where:{type:filterCategory},
-        include: [{model: MushElementNotes,attributes:[]},
-        {model: MushElementHarvest,attributes:[]}],
+        include: [{model: db.mushElementNote,attributes:[]},
+        {model: db.mushElementHarvest,attributes:[]}],
          attributes: {
             include: [[fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
                     [fn("COUNT", col("mushElementNotes.id")), "totalNote"]]
@@ -54,8 +45,8 @@ router.get('/getAll',async  (req, res) => {
         group: ["mushElement.id"] // serve il group by per fare l’aggregazione
         },{ order:[['id', 'ASC']]})
     }else{
-        mushElements=await MushElement.findAll({
-        include: [{model: MushElementNotes,attributes:[]},{model: MushElementHarvest,attributes:[]}],
+        mushElements=await db.mushElement.findAll({
+        include: [{model: db.mushElementNote,attributes:[]},{model: db.mushElementHarvest,attributes:[]}],
          attributes: {
             include: [[fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
                     [fn("COUNT", col("mushElementNotes.id")), "totalNote"]]
@@ -66,34 +57,12 @@ router.get('/getAll',async  (req, res) => {
     res.status(200).json({mushElements:mushElements})
 });
 
-/** DEPRECATED */
-// router.post('/newMushElement', async(req,res) => {
-//     let name_fructification = req.body.name_fructification?req.body.name_fructification:false
-//     let data=req.body
-//     if (name_fructification!=false){
-//         await MushElement.create({
-//             // ..
-//             // ..
-//             // ..
-//             })
-//         .then(result=>{
-//             res.status(200).json({data:result})
-//         })
-//         .catch(err =>{
-//             res.status(422).json({message:err}) 
-//         })
-                
-//     } else {
-//         res.status(422).json()
-//     }
-// })
-
 router.put('/updateMushElement', async(req,res) => {
     //console.log(req.body)
     let idMushElement=req.body.idMushElement?req.body.idMushElement:false
     let data=req.body
     if (idMushElement!=false){
-        await MushElement.update({
+        await db.mushElement.update({
             pick_date:data.pick_date?data.pick_date:null,
             pick_reason:data.pick_reason?data.pick_reason:null,
             stato:data.stato,
@@ -113,13 +82,13 @@ router.put('/updateMushElement', async(req,res) => {
 })
 
 router.get('/singleMushElement',async  (req, res) => {
-    console.log(req.query)
+    //console.log(req.query)
     let titoloFiltro=""
     let filterCategory
     let mushElementId
     if(req.query.elementCode){
-        let findPar=await MushElement.findOne({where:{element_code:req.query.elementCode}, attributes:['id','type']})
-        console.log(JSON.parse(JSON.stringify(findPar)))
+        let findPar=await db.mushElement.findOne({where:{element_code:req.query.elementCode}, attributes:['id','type']})
+        //console.log(JSON.parse(JSON.stringify(findPar)))
         mushElementId=findPar.id        
         filterCategory=findPar.type
     }else{
@@ -128,10 +97,10 @@ router.get('/singleMushElement',async  (req, res) => {
     }
      
     if (mushElementId!=false){
-        let mushElement=await MushElement.findOne({where:{id:mushElementId,type:filterCategory},
+        let mushElement=await db.mushElement.findOne({where:{id:mushElementId,type:filterCategory},
                                                     include: [
-                                                        {model: MushElementNotes,attributes:[]},
-                                                        {model: MushElementHarvest,attributes:[]}
+                                                        {model: db.mushElementNote,attributes:[]},
+                                                        {model: db.mushElementHarvest,attributes:[]}
                                                     ],
                                                     attributes: {
                                                         include: [[fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
@@ -151,7 +120,7 @@ router.get('/singleMushElement',async  (req, res) => {
         if (filterCategory!=null)
        { switch (filterCategory) {
             case "INOCULUM":
-                parentElement=await Inoculum.findOne({where:{id:mushElement.relatedId},
+                parentElement=await db.inoculum.findOne({where:{id:mushElement.relatedId},
                         include: [
                             {model:db.strain},
                             {model:db.substrate,include:[{model:db.substrateElement,include:[{model:db.rawMaterial}]},{model:db.recipe}]},
@@ -161,7 +130,7 @@ router.get('/singleMushElement',async  (req, res) => {
                 seeds=await db.seed.findAll({where:{relatedId:parentElement.id,typeDestination:"INOCULUM"}})
                 break;
             case "SPAWN":
-            parentElement=await Spawn.findOne({where:{id:mushElement.relatedId},
+            parentElement=await db.spawn.findOne({where:{id:mushElement.relatedId},
                         include: [
                             {model: db.strain},
                             {model:db.substrate,include:[{model:db.substrateElement,include:[{model:db.rawMaterial}]},{model:db.recipe}]},
@@ -171,7 +140,7 @@ router.get('/singleMushElement',async  (req, res) => {
                 seeds=await db.seed.findAll({where:{relatedId:parentElement.id,typeDestination:"SPAWN"}})
             break;
             case "CULTIVATION":
-                parentElement=await Propagation.findOne({where:{id:mushElement.relatedId},
+                parentElement=await db.propagation.findOne({where:{id:mushElement.relatedId},
                         include: [
                             // {model: db.spawn},
                             {model: db.strain},
@@ -256,19 +225,19 @@ router.get('/getSingleMushElement',async  (req, res) => {
     
     let mushElementId=req.query.id?req.query.id:false
     if (mushElementId!=false){
-        let mushElement=await MushElement.findOne({where:{id:mushElementId},
+        let mushElement=await db.mushElement.findOne({where:{id:mushElementId},
                 include: [
-                    {model: MushElementNotes},
-                   // {model: MushElementHarvest}
+                    {model: db.mushElementNote},
+                   // {model: db.mushElementHarvest}
                 ]})
         let harvests= await db.mushElementHarvest.findAll({where:{mushElementId:mushElementId,type:mushElement.type}})
         
         mushElement=JSON.stringify(mushElement)
         harvests=JSON.stringify(harvests)
-        console.log("---")
-        console.log(harvests)
+        //console.log("---")
+        //console.log(harvests)
         mushElement.mushElementHarvests=harvests
-        let propagationData=mushElement.relatedId?await Propagation.findOne({where:{id:mushElement.relatedId},
+        let propagationData=mushElement.relatedId?await db.propagation.findOne({where:{id:mushElement.relatedId},
             include: [
                 {model: db.spawn,include:[{model: db.strain}]},
                 {model:db.substrate,include:[{model:db.substrateElement,include:[{model:db.rawMaterial}]}]},
@@ -284,8 +253,8 @@ router.get('/getSingleMushElement',async  (req, res) => {
 
 router.get('/changeStage',async (req,res)=>{
     let {stage,idElement,codElement}=req.query
-    console.log(req.query)
-    await MushElement.update({stage:stage,real_maturation_date:moment()},{where:{id:idElement}})
+    //console.log(req.query)
+    await db.mushElement.update({stage:stage,real_maturation_date:moment()},{where:{id:idElement}})
     .then(async result=>{ 
         await db.diaryNote.create({nota:`Elemento ${codElement} messo in fruttificazione`,tag:"",area:""}) 
         res.status(200).json({result:result})
@@ -322,8 +291,8 @@ router.get('/getMoviementation',async (req,res)=>{
                         to=mushElement[0].pick_date
                     }
                     from=movimentation[i-1].createdAt
-                    console.log(movimentation[i-1].createdAt)
-                    console.log(from,to)
+                    //console.log(movimentation[i-1].createdAt)
+                    //console.log(from,to)
                     storageStory.push({storageId:el.to,from:from,to:to})
                 } 
                 else if(i==0){
@@ -357,7 +326,7 @@ async function getSampledData(data,sampleSize) {
 
 router.get('/getSensorData',async (req,res)=>{
     let {storageId,from,to,sampleSize}=req.query
-    console.log(req.query)
+    //console.log(req.query)
     let data=await db.sensorData.findAll({where:{storageId:storageId,
                                                         createdAt: {
                                                                 [Op.between]: [from, to]
@@ -373,7 +342,7 @@ router.get('/getSensorData',async (req,res)=>{
   router.get('/getMushElementByRelated',async  (req, res) => {
     let relatedId=req.query.relatedId?req.query.relatedId:false
     if (relatedId!=false){
-        await MushElement.findAll({where:{relatedId:relatedId},include: [{model: MushElementNotes}]})
+        await db.mushElement.findAll({where:{relatedId:relatedId},include: [{model: db.mushElementNote}]})
             .then((result)=>{
                 res.status(200).json({mushElement:result})})
             .catch(err=>{
@@ -387,8 +356,8 @@ router.get('/getSensorData',async (req,res)=>{
 router.delete('/deleteMushElement',async  (req, res) => {
     let fructificationId=req.query.id?req.query.id:false
     if (fructificationId!=false){
-        let result=await MushElementNotes.destroy({where:{fructificationId:fructificationId}})
-        result=await MushElement.destroy({where:{id:fructificationId},include:[{model: MushElementNotes}]})
+        let result=await db.mushElementNote.destroy({where:{fructificationId:fructificationId}})
+        result=await db.mushElement.destroy({where:{id:fructificationId},include:[{model: db.mushElementNote}]})
         res.status(200).json({result:result})
     } else {
             res.status(422).json()
@@ -397,7 +366,7 @@ router.delete('/deleteMushElement',async  (req, res) => {
 
 router.get('/getMushElementOfRecipe',async  (req, res) => {
     let idRecipe=req.query.idRecipe
-    let recipeMushElement=await MushElement.findAll({where:{recipeId:idRecipe}})
+    let recipeMushElement=await db.mushElement.findAll({where:{recipeId:idRecipe}})
     res.status(200).json({recipeMushElement:recipeMushElement})
 });
 
@@ -406,7 +375,7 @@ router.put('/modMushElement', async(req,res) => {
     let idMushElement=req.body.idMushElement?req.body.idMushElement:false
     let data=req.body
     if (idMushElement!=false){
-        await MushElement.update({
+        await db.mushElement.update({
             stage:data.stage?data.stage:null,
             pick_date:data.pickDate?moment(data.pickDate,"DD-MM-YY hh:mm:ss").format("YYYY-MM-DD hh:mm:ss"):null,
             pick_reason:data.pickReason?data.pickReason:null,
@@ -417,7 +386,7 @@ router.put('/modMushElement', async(req,res) => {
             note:data.note,
             },{where:{id:idMushElement}})
         .then(async result=>{
-            let obj=await MushElement.findOne({where:{id:idMushElement}})
+            let obj=await db.mushElement.findOne({where:{id:idMushElement}})
                 res.status(200).json({data:obj})
         })
         
@@ -438,8 +407,8 @@ router.put('/pickElement', async(req,res) => {
     if (idMushElement!=false){
         let mushElement=await db.mushElement.findOne({where:{id:idMushElement}})
         if ((req.body.deleteElem!= undefined)&&(req.body.deleteElem=="1")){
-            // await MushElementNotes.destroy({where:{mushElementId:idMushElement}})
-            await MushElement.destroy({where:{id:idMushElement}})
+            // await db.mushElementNote.destroy({where:{mushElementId:idMushElement}})
+            await db.mushElement.destroy({where:{id:idMushElement}})
             .then(()=>{
                 res.status(200).json({message:"ok"})
             })
@@ -448,7 +417,7 @@ router.put('/pickElement', async(req,res) => {
                 res.status(422).json({message:err}) 
             }) 
         } else {
-            await MushElement.update({
+            await db.mushElement.update({
                 pick_date:moment(data.pickDate,"DD-MM-YY hh:mm:ss").format("YYYY-MM-DD hh:mm:ss"),
                 pick_reason:data.pickReason,
                 active:0
@@ -581,7 +550,7 @@ router.post('/newMushElementNote', async(req,res) => {
         
     }
     if(uploadFlag==true){
-        await MushElementNotes.create({
+        await db.mushElementNote.create({
             mushElementId:data.idMushElementNote,
             check_date:data.check_date?moment(data.check_date,"DD-MM-YYYY"):null,
             stato:data.statoMushElementNote,
@@ -591,7 +560,7 @@ router.post('/newMushElementNote', async(req,res) => {
             })
         .then(async result=>{
             //console.log(result)
-            await MushElement.update({stato:data.statoMushElementNote},{where:{id:result.mushElementId,type:result.type}})
+            await db.mushElement.update({stato:data.statoMushElementNote},{where:{id:result.mushElementId,type:result.type}})
             .then(result=>{
                 console.log(result)
             })
@@ -617,17 +586,18 @@ router.post('/newMushElementNote', async(req,res) => {
 
 router.get('/getMushElementNote',async  (req, res) => {
     let idElement=req.query.idElement
-    let mushElementNotes=await MushElementNotes.findAll({where:{mushElementId:idElement}})
+    let filterCategoryNote=req.query.filterCategoryNote
+    let mushElementNotes=await db.mushElementNote.findAll({where:{mushElementId:idElement,type:filterCategoryNote}})
     res.status(200).json({mushElementNotes:mushElementNotes})
 });
 
 router.delete('/deleteMushElementNote',async  (req, res) => {
     let mushElementNoteId=req.query.id?req.query.id:false
-    console.log("delete")
-    console.log(req.query)
+    //console.log("delete")
+    //console.log(req.query)
     if (mushElementNoteId!=false){
-        let elemData=await MushElementNotes.findOne({where:{id:mushElementNoteId}})
-        console.log(JSON.parse(JSON.stringify(elemData)))
+        let elemData=await db.mushElementNote.findOne({where:{id:mushElementNoteId}})
+        //console.log(JSON.parse(JSON.stringify(elemData)))
         if (elemData.pict){
              const pathToDir = path.join(__dirname, "../../public/imgMushEleNote",elemData.mushElementId.toString(),elemData.pict);
             fs.unlink(pathToDir, (err) => {
@@ -637,7 +607,7 @@ router.delete('/deleteMushElementNote',async  (req, res) => {
                     }console.log(`File "../../public/imgMushEleNote/${elemData.mushElementId.toString()}" has been successfully removed.`);
                     });
         }
-        let result=await MushElementNotes.destroy({where:{id:mushElementNoteId}})
+        let result=await db.mushElementNote.destroy({where:{id:mushElementNoteId}})
         res.status(200).json({result:result})
     } else {
             res.status(422).json()
@@ -647,15 +617,15 @@ router.delete('/deleteMushElementNote',async  (req, res) => {
 /** Mushroom element harvest */
 router.post('/insertHarvest',async (req,res)=>{
     let data=req.body
-    console.log(data)
-    await MushElementHarvest.create({mushElementId:data.idMushElementHarvest,
+    //console.log(data)
+    await db.mushElementHarvest.create({mushElementId:data.idMushElementHarvest,
                         harvest_date:moment(data.harvest_date,"DD-MM-YY"),
                         harvest_weight:data.harvest_weight,
                         type:data.filterCategoryHarvest,
                     note:data.harvest_note?data.harvest_note:""})
                     .then(async result=>{
-                        console.log(result)
-                        let harvest=await MushElementHarvest.findAll({where:{mushElementId:data.idMushElementHarvest,type:data.filterCategoryHarvest},limit: 300})
+                        //console.log(result)
+                        let harvest=await db.mushElementHarvest.findAll({where:{mushElementId:data.idMushElementHarvest,type:data.filterCategoryHarvest},limit: 300})
                         res.status(200).json({harvest:harvest})
                     })
 })
@@ -666,7 +636,7 @@ router.post('/insertBulkHarvest',async (req,res)=>{
     weightSingle=Number(weightSingle.toFixed(2))
 
     elementCode.forEach(async elem=>{
-        await MushElementHarvest.create({mushElementId:elem,
+        await db.mushElementHarvest.create({mushElementId:elem,
                             harvest_date:moment(harvestBulk_date_DT),
                             harvest_weight:weightSingle,
                             type:filterCategoryHarvest,
@@ -678,8 +648,8 @@ router.post('/insertBulkHarvest',async (req,res)=>{
 
 router.get('/getHarvest',async (req,res)=>{
     let data=req.query
-    console.log(data)
-    let harvest=await MushElementHarvest.findAll({where:{mushElementId:data.id,type:data.filterCategoryHarvest},limit: 300})
+    //console.log(data)
+    let harvest=await db.mushElementHarvest.findAll({where:{mushElementId:data.id,type:data.filterCategoryHarvest},limit: 300})
     res.status(200).json({harvest:harvest})
 })
 
@@ -699,16 +669,16 @@ router.put("/changeVal",async (req,res)=>{
     let field=req.query.field
     let val=req.query.val
     let id=req.query.id
-    let result = await MushElement.update({ [field]: moment(val,"YYYY-MM-DD HH:mm:ss") },{where: {id: id}});
-     result = await MushElement.findOne({where: {id: id},attributes:[field]});
-    console.log(result)
+    let result = await db.mushElement.update({ [field]: moment(val,"YYYY-MM-DD HH:mm:ss") },{where: {id: id}});
+     result = await db.mushElement.findOne({where: {id: id},attributes:[field]});
+    //console.log(result)
     res.status(200).json({result:JSON.parse(JSON.stringify(result))})
 
 })
 
 
 router.get('/csv',async (req,res)=>{
-    let mushElements=await MushElement.findAll()
+    let mushElements=await db.mushElement.findAll()
     const csv = await converter.json2csv(mushElements);
     res.set('Content-Type', 'application/octet-stream');
     res.attachment('filename.csv');
@@ -716,9 +686,9 @@ router.get('/csv',async (req,res)=>{
 }) 
 
 router.get('/csvLotto',async (req,res)=>{
-    console.log(req.query)
+    //console.log(req.query)
     let {relatedId,filterCategory}=req.query
-    let mushElements=await MushElement.findAll({where:{relatedId:relatedId,type:filterCategory},attributes:["element_code","createdAt"]})
+    let mushElements=await db.mushElement.findAll({where:{relatedId:relatedId,type:filterCategory},attributes:["element_code","createdAt"]})
     mushElements=JSON.parse(JSON.stringify(mushElements))
     let csvObj=[]
     for (let i = 0; i < mushElements.length; i++) {
@@ -737,9 +707,9 @@ router.get('/csvLotto',async (req,res)=>{
 // Creazione QR code
 router.get('/getQrElement',async  (req, res) => {
     let elementCode=req.query.elementCode
-    let element=await MushElement.findOne({where:{element_code:elementCode}})
+    let element=await db.mushElement.findOne({where:{element_code:elementCode}})
     //console.log(JSON.parse(JSON.stringify(element)))
-    console.log(element )
+    //console.log(element )
     let string="/mushElement/mushElementLanding?elementCode="+elementCode
     let url=await QRCode.toDataURL(string)
     let textDAta = generateSync(elementCode,{
@@ -762,7 +732,7 @@ router.get('/getQrElement',async  (req, res) => {
 router.get('/mushElementLanding',async (req,res)=>{
     let elementCode=req.query.elementCode?req.query.elementCode:false
     if (elementCode){
-        let mushElement=await MushElement.findOne({where:{element_code:elementCode}})
+        let mushElement=await db.mushElement.findOne({where:{element_code:elementCode}})
         res.render("management/mushElementLanding",{mushElement:mushElement})
     } else {
                 res.status(422).json()
