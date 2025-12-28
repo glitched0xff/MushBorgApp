@@ -28,7 +28,7 @@
             <div class="small-box bg-info">
               <div class="inner">
                 <h3><%= nInoculum%></h3>
-                <p>Elementi inoculi</p>
+                <p><%= __('ElementiInoculi_Ds') %></p>
               </div>
               <div class="icon">
                 <i class="fas fa-microscope"></i>
@@ -42,7 +42,7 @@
             <div class="small-box bg-success">
               <div class="inner">
                 <h3><%= nSpawn%></h3>
-                <p>Elementi spawn</p>
+                <p><%= __('ElementiSpawn_Ds') %></p>
               </div>
               <div class="icon">
                 <i class="fas fa-share-alt"></i>
@@ -57,7 +57,7 @@
             <div class="small-box bg-warning">
               <div class="inner">
                 <h3><%= nCultivation%></h3>
-                <p>Elementi coltivazione</p>
+                <p><%= __('ElementiColtivo_Ds') %></p>
               </div>
               <div class="icon">
                 <i class="lni lni-mushroom-1"></i>
@@ -74,7 +74,7 @@
                 <% } else { %>
                   <%=  harvests[0].harvest.toString().replace(".", ",")%> g
                 <% } %></h3>
-                <p>Raccolto settimanale: <%=  harvests[0].week %></p>
+                <p><%= __('raccoltoMensile') %>: <%=  harvests[0].week %></p>
               </div>
               <div class="icon">
                 <i class="fas fa-weight"></i>
@@ -90,7 +90,7 @@
                 <% } else { %>
                   <%=  harvests[1].harvest.toString().replace(".", ",")%> g
                 <% } %></h3>
-                <p>Raccolto mensile: <%=  harvests[1].month %></p>
+                <p><%= __('raccoltoMensile') %>: <%=  harvests[1].month %></p>
               </div>
               <div class="icon">
                 <i class="fas fa-weight"></i>
@@ -106,7 +106,7 @@
                 <% } else { %>
                   <%=  harvests[2].harvest.toString().replace(".", ",")%> g
                 <% } %></h3>
-                <p>Raccolto annuale <%=  harvests[2].year %></p>
+                <p><%= __('raccoltoAnnuale') %> <%=  harvests[2].year %></p>
               </div>
               <div class="icon">
                 <i class="fas fa-weight"></i>
@@ -207,7 +207,7 @@
               <div class="card-header">
                 <h3 class="card-title">
                   <i class="fas fa-chart-pie mr-1"></i>
-                  Telemetria
+                   <%= __('telemetria_Ds') %>
                 </h3>
                 <div class="card-tools">
                   

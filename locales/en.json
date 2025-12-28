@@ -1,0 +1,9 @@
+{
+  "telemetria_Ds": "Telemetry",
+  "ElementiInoculi_Ds":"Inoculum elements",
+  "ElementiSpawn_Ds":"Spawn elements",
+  "ElementiColtivo_Ds":"Cultivation elements",
+  "raccoltoSettimanale_Ds":"Weekly harvest",
+  "raccoltoMensile":"Monthly harvest",
+  "raccoltoAnnuale":"Annual harvest"
+}

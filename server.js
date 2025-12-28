@@ -9,9 +9,23 @@ const bodyParser = require('body-parser');
 const app = express();
 const cors = require("cors");
 var path = require("path");
+const i18n = require('i18n');
 require('dotenv').config()
 const mqtt = require("mqtt");
 
+// Configure multilingual
+i18n.configure({
+  locales: ['it', 'en'],
+  directory: path.join(__dirname, 'locales'),
+  defaultLocale: 'en',
+  queryParameter: 'lang',     // ?lang=en
+  cookie: 'lang',
+  autoReload: true,
+  updateFiles: false,
+  syncFiles: false
+});
+
+app.use(i18n.init);
 
 //
 // Middleware
