@@ -44,6 +44,10 @@
 
   `git pull`
 
+- Aggiorna la struttura del DB (N.B. i dati presenti nel db sono dati utilizzati durante lo sviluppo e potrebbero non essere sensati)
+
+    `mariadb -u mushborg -p mushborg < dbBkup/NOME_FILE_AGGIORNATO.sql`
+
 - Riavvi PM2
 
     `pm2 restart 0`    
