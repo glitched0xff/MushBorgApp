@@ -20,13 +20,17 @@ module.exports = (sequelize, Sequelize) => {
       ip:{type: Sequelize.STRING},
       url:{type: Sequelize.STRING},
       temp:{type: Sequelize.INTEGER},
-      hum:{type: Sequelize.INTEGER},
-      light:{type: Sequelize.INTEGER},
+      hume:{type: Sequelize.INTEGER},
+      hums:{type: Sequelize.INTEGER},
+      ligh:{type: Sequelize.INTEGER},
       co2:{type: Sequelize.INTEGER},
-
+      levl:{type: Sequelize.INTEGER},
+      wind:{type: Sequelize.INTEGER},
+      type:{type:Sequelize.STRING},
       cronString:{
         type: Sequelize.STRING
       },
+      active:{type:Sequelize.INTEGER},
       note: {
         type: Sequelize.BOOLEAN
       }

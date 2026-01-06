@@ -11,19 +11,28 @@ module.exports = (sequelize, Sequelize) => {
       temp: {
         type: Sequelize.STRING
       },
-      hum: {
+      hume: {
+        type: Sequelize.STRING
+      },
+      hums: {
         type: Sequelize.STRING
       },
       co2: {
         type: Sequelize.BOOLEAN
       },
+      levl: {
+        type: Sequelize.BOOLEAN
+      },
+      ligh: {
+        type: Sequelize.BOOLEAN
+      },
+      wind: {
+        type: Sequelize.BOOLEAN
+      },
+      battery:{
+        type: Sequelize.BOOLEAN
+      },
       status:{
-        type: Sequelize.BOOLEAN
-      },
-      flag01:{
-        type: Sequelize.BOOLEAN
-      },
-      flag02:{
         type: Sequelize.BOOLEAN
       },
       deviceId:{
@@ -41,6 +50,10 @@ module.exports = (sequelize, Sequelize) => {
     });
     SensorData.associate = (models) => {
       SensorData.belongsTo(models.device, {foreignKey: "deviceId"});
+       SensorData.belongsTo(models.associateSensor, {
+    foreignKey: 'deviceId',
+    targetKey: 'deviceId'
+  });
     }
     return SensorData;
   };

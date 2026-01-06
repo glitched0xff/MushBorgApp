@@ -58,7 +58,7 @@ router.get('/',async (req, res) => {
     let storage=await db.storage.findAll({include:{model:db.device,
                                                   include:{model:db.sensorData,
                                                   attributes: [
-                                                        "id","hum","co2","status","flag01","flag02","createdAt","temp",
+                                                        "id","hume","co2","status","createdAt","temp",
                                                         [fn('date_format', col('createdAt'), '%d-%m-%y %hh:%mm'), 'createdAtFormatted']
                                                     ],
                                                   order:[ [ 'createdAt', 'DESC' ]],

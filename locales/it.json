@@ -5,5 +5,9 @@
   "ElementiColtivo_Ds":"Elementi coltivazione",
   "raccoltoSettimanale_Ds":"Raccolto settimanale",
   "raccoltoMensile":"Raccolto mensile",
-  "raccoltoAnnuale":"Raccolto annuale"
+  "raccoltoAnnuale":"Raccolto annuale",
+  "posizione":"Posizione",
+  "description":"Descrizione",
+  "creatoIl":"Data creazione",
+  "device_AggiungiDevice":"Aggiungi device"
 }

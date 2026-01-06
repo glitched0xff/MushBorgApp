@@ -22,7 +22,7 @@
                 <div class="card">
                   <div class="card-header">
                     <h3 class="card-title">Device
-                      <button type="button" class="btn btn-primary btn-xs mx-3"  data-toggle="modal" data-target="#editDevice_Mdl"><i class="fa fa-plus" aria-hidden="true"></i> Aggiungi device</button>
+                      <button type="button" class="btn btn-primary btn-xs mx-3"  data-toggle="modal" data-target="#editDevice_Mdl"><i class="fa fa-plus" aria-hidden="true"></i> <%= __('device_AggiungiDevice') %></button>
 
                   
                       
@@ -88,16 +88,6 @@
     
                     <div class="card-tools">
                       <input type="text" name="datetimes"  id="daterange" />
-                       <!--<div class="input-group input-group-sm" style="width: 150px;">
-                        
-                        <input type="text" name="table_search" class="form-control float-right" placeholder="Search"> 
-    
-                        <div class="input-group-append">
-                          <button type="submit" class="btn btn-default">
-                            <i class="fas fa-search"></i>
-                          </button>
-                        </div>
-                      </div>-->
                     </div>
                   </div>
                   
@@ -107,23 +97,29 @@
                         <tr>
                           <th>ID</th>
                           <th>Device</th>
-                          <th>Posizione</th>
-                          <th>Descrizione</th>
+                          <th><%= __('posizione') %></th>
+                          <th><%= __('description') %></th>
                           <th>Note</th>
-                          <th>Creato il</th>
+                          <th><%= __('creatoIl') %></th>
                           <th></th>
                         </tr>
                       </thead>
                       <tbody id="telemetry_Tbl">
-                        <% devices.forEach(function(dt){ %>
+                        <% devices.forEach(function(dt){ 
+                          let associato="Non associato"
+                          let associatoClass="text-danger"
+                          if ((dt.actN)||(dt.allN)||(dt.sensorN)){
+                              associato="Associato"
+                              associatoClass="text-success"
+                          }%>
                             <tr>
                                 <td><%= dt.id %></td>
                                 <td><%= dt.cod_device %></td>
-                                <td><%= dt.storage.name_storage %></td>
                                 <td><%= dt.descrizione %></td>
                                 <td><%= dt.posizione %></td>
-                                <td><%= dt.note %></td>
+                                <td class="<%= associatoClass%>"><%= associato %></td>
                                 <td><%= dt.createdAt %></td>
+                                <td></td>
                                 <td>
                                     <button type="button" class="btn  btn-warning btn-xs editDevice" idDevice="<%= dt.id %>"><i class="fa fa-pen"></i></button>
                                     <button type="button" class="btn  btn-danger btn-xs deleteDevice" idDevice="<%= dt.id %>"><i class="fas fa-trash-alt"></i></button>

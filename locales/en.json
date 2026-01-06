@@ -5,5 +5,10 @@
   "ElementiColtivo_Ds":"Cultivation elements",
   "raccoltoSettimanale_Ds":"Weekly harvest",
   "raccoltoMensile":"Monthly harvest",
-  "raccoltoAnnuale":"Annual harvest"
+  "raccoltoAnnuale":"Annual harvest",
+  "posizione":"Position",
+  "description":"Description",
+  "creatoIl":"Create date",
+  "device_AggiungiDevice":"New device"
+
 }

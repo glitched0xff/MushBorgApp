@@ -11,7 +11,10 @@ const cors = require("cors");
 var path = require("path");
 const i18n = require('i18n');
 require('dotenv').config()
-const mqtt = require("mqtt");
+
+// soket
+const http = require('http');
+const initSocket = require("./socketServer.js");
 
 // Configure multilingual
 i18n.configure({
@@ -112,25 +115,15 @@ app.use('/statistic', statistic);
 let print = require('./routes/print.js');
 app.use('/print', print);
 const sensorData=require("./controllers/sensorData.controller.js")
-// Connessione server mqtt in locale e storing dei messaggi
-// TODO: Controllo della provenienza del messaggio tramite il topic, l'indirizzo del topic deve essere un cod_sensore approvato e registrato
-  // let clientMQTT = mqtt.connect("mqtt://127.0.0.1"); 
-  // clientMQTT.on('connect', () => {
-  //     console.log('Connected')
-  //     clientMQTT.subscribe("#", () => {
-  //       console.log(`Subscribe to topic #`)
-  //     })
-  //     clientMQTT.on('message', (topic, payload) => {
-  //         sensorData.create(topic,payload)
-  //       })
-  //   })
 
 
 // Start server
 const PORT = process.env.PORT || 3000;
 const SENSOR_ENABLE=process.env.SENSOR_ENABLE
 //require("./routes/user.route.js")(app);
-app.listen(PORT,async () => {
+const server = http.createServer(app);
+const io = initSocket(server);
+server.listen(PORT,async () => {
 
   // Connessione al db
 const db = require("./models");
@@ -141,10 +134,8 @@ db.sequelize.sync()
   .catch((err) => {
     console.log("Failed to sync db: " + err.message);
   });
-
-
-  if (SENSOR_ENABLE=="true"){
-    await sensorData.setCron()
-  }else{console.log("# ATTENZIONE: SENSORI ACQUISIZIONE DATI DISABILITATI")}
+  // if (SENSOR_ENABLE=="true"){
+  //   await sensorData.setCron()
+  // }else{console.log("# ATTENZIONE: SENSORI ACQUISIZIONE DATI DISABILITATI")}
   console.log(`Server is running on port ${PORT}.`);
 })

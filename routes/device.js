@@ -10,11 +10,17 @@ db.device.associate(db)
 
 
 router.get('/',async  (req, res) => {
-  let data=await db.device.findAll({include:{model:db.storage,required: true}})
+  let data=await db.device.findAll()
   let storageDD=await dropDownGenerator('storage')
   data=JSON.parse(JSON.stringify(data))
   for (let i = 0; i < data.length; i++) {
           data[i].createdAt=moment(data[i].createdAt).format("DD-MM-YY HH:mm")
+          let sensorN=await db.associateSensor.count({where:{deviceId:data[i].id}})
+          let actN=await db.associateActuator.count({where:{sensorId:data[i].id}})
+          let allN= await db.associateAllarm.count({where:{sensorId:data[i].id}})
+          data[i].sensorN=sensorN
+          data[i].actN=actN
+          data[i].allN=allN
         }
   res.render("device",{devices:data,storageDD})
 });
