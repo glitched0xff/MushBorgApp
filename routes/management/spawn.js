@@ -268,8 +268,16 @@ router.post('/newSpawn', async(req,res) => {
                 
                 nrContiner=parseInt(data.n_container)
                 for (let i = 0; i < nrContiner; i++) {
-                     let codeGen=await codeGenerator(data.createLot,species_code,strainSubcode,recipeSubCode,type,nrContiner,duplicateCodeIndex,i)
-                    let element_code=codeGen.element_code
+                    //  let codeGen=await codeGenerator(data.createLot,species_code,strainSubcode,recipeSubCode,type,nrContiner,duplicateCodeIndex,i)
+                    // let element_code=codeGen.element_code
+                     let codeLotto= result.code_propagation.slice(0,-2)
+                    let seriale=0
+                    if (i<=9){
+                        seriale="0"+i
+                    }else{
+                        seriale=i
+                    }
+                    let element_code=codeLotto+seriale
                     await db.mushElement.create({
                         element_code:element_code,
                         relatedId:result.id,
