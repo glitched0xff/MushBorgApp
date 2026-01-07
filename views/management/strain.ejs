@@ -724,13 +724,12 @@ $(document).ready(async function () {
         for (let i = 0; i < serilizedForm.length; i++) {
           let specId={}
           if(serilizedForm[i].name=="species"){
-            serilizedForm[i].value=strainSpecies
-          }
-          if(serilizedForm[i].name=="species_code"){
-            specId.value=serilizedForm[i].value.split("|")[1]
-            serilizedForm.push(specId)
-            serilizedForm[i].value=serilizedForm[i].value.split("|")[0]
+            console.log(serilizedForm[i])
             specId.name="speciesId"
+            specId.value=serilizedForm[i].value.split("|")[1]
+            console.log(specId)
+            serilizedForm.push(specId)
+            serilizedForm[i].value=strainSpecies
             
           }
           stringVal+=serilizedForm[i].name+"="+serilizedForm[i].value
@@ -738,7 +737,7 @@ $(document).ready(async function () {
             stringVal+="&"
           }
         }
-
+        console.log(serilizedForm)
         $("#species_Fld").val(strainSpecies)
         console.log(stringVal)
         if (idStrain==""){

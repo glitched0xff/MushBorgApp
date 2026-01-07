@@ -77,6 +77,8 @@ let strains=await Strain.findAll({attributes: [ "id",
 
 router.post('/newStrain', async(req,res) => {
     let data=req.body
+    console.log("-----")
+    console.log(data)
     delete data.idStrain
     let code=await generateStrainCode(data.species_code,data.buyed,data.sub_code)
     data.code_strain=code
