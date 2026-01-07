@@ -694,7 +694,7 @@ router.get('/csvLotto',async (req,res)=>{
     for (let i = 0; i < mushElements.length; i++) {
         let elem=mushElements[i]
         csvObj.push({
-            element_code:elem.load_date,
+            element_code:elem.element_code,
             createAt:moment( elem.createAt).format("DD-MM-YY HH:mm"),
             qrCode:"/mushElement/mushElementLanding?elementCode="+elem.element_code
         })
