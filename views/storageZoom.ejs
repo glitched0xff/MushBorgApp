@@ -1,0 +1,939 @@
+<%- include ('header') %>
+<%- include ('navbar') %>
+<%- include ('sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="storage-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione magazzini
+            <!-- <button class="btn btn-xs btn-primary" id="modStorage_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca storage</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newStorage_Btn"><i class="fas fa-plus"></i> Nuova storage</button> -->
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco storage</button>
+            </h1>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+        
+              <!-- Sensori -->
+               <div class="card w-100" id="sensor_Crd" >
+              <div class="row m-3">
+                <h3>Sensori 
+                  <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#sensor_Mdl">
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i> Associa sensore
+                  </button>
+                  
+                </h3>
+                <div class="row w-100" id="sensor_Wrp">
+                 </div>
+        
+              </div>
+              </div>
+              <!-- Attuatori -->
+            <div class="card w-100" id="actuator_Crd" >
+              <div class="row m-3">
+                <h3>Attuatori
+                  <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#actuator_Mdl">
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i> Associa attuatore
+                  </button>
+                </h3>
+                <div class="row w-100" id="actuator_Wrp">
+                  
+                </div>
+              </div>
+              </div>
+               <!-- Allarmi -->
+            <div class="card w-100" id="allarm_Crd" >
+              <div class="row m-3">
+                <h3>Allarmi
+                  <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#allarm_Mdl">
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i> Crea allarme
+                  </button>
+                </h3>
+                <div class="row w-100" id="allarm_Wrp">
+                  
+                </div>
+              </div>
+              </div>
+              
+          </div>
+      </div>
+    </section>
+    
+  </div>
+</div>
+
+
+
+<!-- Modal Sensori-->
+<div class="modal fade" id="sensor_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Aggiungi sensore</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <form id="sensor_Frm" class="p-3">
+
+              <div class="row m-2">
+                <%- include('./include/ejsForm',
+                { classTxt: "sensorText",
+                    classField: "sensorForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"sensor_storageId"
+                    },
+                    { type:"startRow"},
+                    
+                    {
+                      type:"select",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"sensor_deviceId",
+                      label:"sensore",
+                      firstField:"Seleziona sensore",
+                      required:true, 
+                      option:activeSensorDD
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"sensor_fieldName",
+                      label:"sensore",
+                      firstField:"Seleziona campo",
+                      required:true, 
+                      disabled:true, 
+                      option:""
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"sensor_valueName",
+                      label:"Nome Valore",
+                      required:true
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"sensor_label",
+                      label:"Etichetta",
+                      required:true, 
+                    },
+                    
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"sensor_icon",
+                      label:"Icona",
+                      placeholder:"es: fa-thermometer-half",
+                      required:true, 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"sensor_postChr",
+                      placeholder:"es:C°/%",
+                      label:"Carattere udm",
+                      required:true,
+                      maxlength:3
+                    },
+
+                    
+                     { type:"endRow"},
+                    ]  
+                }) %>
+              </div>
+                <div class="row w-100"  id="strain_Frm_Btn">
+                  <button class="btn btn-xs btn-primary mx-1" id="saveSensor_Btn" > <i class="fas fa-pen"></i> Salva sensore </button>
+                  <button class="btn btn-xs btn-secondary mx-1" id="abortSensor_Btn"  > <i class="fas fa-pen"></i> Annulla  </button>
+                </div>
+            </form>
+         
+      </div>
+     
+    </div>
+  </div>
+</div>
+  
+<!-- Modal allarmi -->
+<div class="modal fade" id="allarm_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Aggiungi sensore</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+         <form>
+
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="inUse">In Use</label>
+        <select class="form-control" id="inUse" name="inUse">
+          <option value="1">Sì</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+
+      <div class="form-group col-md-8">
+        <label for="valueName">Value Name</label>
+        <input type="text" class="form-control" id="valueName" name="valueName">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="sensorId">Sensor ID</label>
+        <input type="number" class="form-control" id="sensorId" name="sensorId">
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="switch">Switch</label>
+        <select class="form-control" id="switch" name="switch">
+          <option value="1">On</option>
+          <option value="0">Off</option>
+        </select>
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="threshold">Threshold</label>
+        <input type="number" step="any" class="form-control" id="threshold" name="threshold">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="operator">Operator</label>
+      <input type="text" class="form-control" id="operator" name="operator" placeholder="es: >, <, =">
+    </div>
+
+    <div class="form-group">
+      <label for="topicMqtt">MQTT Topic</label>
+      <input type="text" class="form-control" id="topicMqtt" name="topicMqtt">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="label">Label</label>
+        <input type="text" class="form-control" id="label" name="label">
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="icon">Icon</label>
+        <input type="text" class="form-control" id="icon" name="icon" placeholder="es: fa fa-bell">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="postChr">Post Character</label>
+        <input type="text" class="form-control" id="postChr" name="postChr">
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="textColor">Text Color</label>
+        <input type="color" class="form-control" id="textColor" name="textColor">
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="bgcolor">Background Color</label>
+        <input type="color" class="form-control" id="bgcolor" name="bgcolor">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="storageId">Storage ID</label>
+        <input type="text" class="form-control" id="storageId" name="storageId">
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="referenceSensorId">Reference Sensor ID</label>
+        <input type="number" class="form-control" id="referenceSensorId" name="referenceSensorId">
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="referenceField">Reference Field</label>
+        <input type="text" class="form-control" id="referenceField" name="referenceField">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="sendMsg">Send Message</label>
+        <input type="text" class="form-control" id="sendMsg" name="sendMsg">
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="sendMail">Send Mail</label>
+        <input type="text" class="form-control" id="sendMail" name="sendMail">
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="sendAllert">Send Alert</label>
+        <input type="text" class="form-control" id="sendAllert" name="sendAllert">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="version">Version</label>
+        <input type="number" class="form-control" id="version" name="version">
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="active">Active</label>
+        <select class="form-control" id="active" name="active">
+          <option value="1">Sì</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salva</button>
+
+  </form>
+      </div>
+     
+    </div>
+  </div>
+</div>
+<!-- Modal attuatori -->
+<div class="modal fade" id="actuator_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Aggiungi attuatore</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <form id="actuator_Frm" class="">
+
+              <div class="row m-2">
+                <%- include('./include/ejsForm',
+                { classTxt: "actuatorText",
+                    classField: "actuatorForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"actuator_storageId"
+                    },
+                    { type:"startRow"},
+                    
+                    {
+                      type:"select",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_sensorId",
+                      label:"Attuatore",
+                      firstField:"Seleziona attuatore",
+                      required:true, 
+                      option:activeActuatorDD
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_switch",
+                      label:"Seleziona valore da inviare",
+                      firstField:"Seleziona campo",
+                      required:true, 
+                      option:[{val:1,txt:"ON"},{val:0,txt:"OFF"}]
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_topicMqtt",
+                      label:"Topic MQTT",
+                      required:true
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_payloadMqtt",
+                      label:"Payload MQTT",
+                      placeholder:"{\"relay\":1}",
+                      required:true
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_referenceSensorId",
+                      label:"Sensore di referimento",
+                      firstField:"Seleziona sensore",
+                      required:true, 
+                      option:activeSensorDD
+                    },
+                    {
+                      type:"select",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_referenceField",
+                      label:"Campo di riferimento",
+                      firstField:"Seleziona campo",
+                      required:true, 
+                      disabled:true, 
+                      option:activeActuatorDD
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_valueName",
+                      label:"Nome Valore",
+                      required:true
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_label",
+                      label:"Etichetta",
+                      required:true, 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_postChr",
+                      placeholder:"es:°C/%",
+                      label:"Carattere udm",
+                      required:true,
+                      maxlength:3
+                    },
+                     { type:"endRow"},
+                     { type:"startRow"},
+                     {
+                      type:"checkbox",
+                      classBox:"col-md-12 col-sm-12",
+                      fieldName:"actuator_flagClock",
+                      label:"Attuatore temporizzato",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_timeOn",
+                      placeholder:"es: 08:00",
+                      label:"Orario accensione",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_timeOff",
+                      placeholder:"es. 19:00",
+                      label:"Orario spegnimento",
+                    },
+                     { type:"endRow"},
+                    { type:"startRow"},
+
+                     {
+                      type:"checkbox",
+                      classBox:"col-md-12 col-sm-12",
+                      fieldName:"actuator_flagInterval",
+                      label:"Attuatore valori",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_valMin",
+                      placeholder:"es: 13",
+                      label:"Valore minimo",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-6 col-sm-6",
+                      fieldName:"actuator_valMax",
+                      placeholder:"es. 16",
+                      label:"Valore massimo",
+                    },
+                     { type:"endRow"},
+                    ]  
+                }) %>
+              </div>
+                <div class="row w-100"  id="strain_Frm_Btn">
+                  <button class="btn btn-xs btn-primary mx-1" id="saveActuator_Btn" > <i class="fas fa-pen"></i> Salva attuatore </button>
+                  <button class="btn btn-xs btn-secondary mx-1" id="abortActuator_Btn"  > <i class="fas fa-pen"></i> Annulla  </button>
+                </div>
+            </form>
+
+  
+      </div>
+     
+    </div>
+  </div>
+</div>
+
+<!-- Modal edit sensor -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="editDevice_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit devices</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <div class="row" id="editMenuSensor_Wrp" style="display: none;">
+          <div class="col-6 mx-auto">
+            <div class="btn-group-vertical col mx-auto">
+                <button class="btn btn-xs btn-danger" id="unlinkSensor_Btn"> Dissocia sensore</button>
+                <button class="btn btn-xs btn-secondary" disabled> Modifica sensore</button>
+                <button class="btn btn-xs btn-secondary" disabled> Crea grafico</button>
+            </div>
+          </div>
+        </div>
+        <div class="row" id="editMenuActuator_Wrp" style="display: none;">
+          <div class="col-6 mx-auto">
+            <div class="btn-group-vertical col mx-auto">
+                <button class="btn btn-xs btn-danger" id="unlinkActuator_Btn"> Dissocia attuatore</button>
+                <button class="btn btn-xs btn-secondary" disabled> Modifica attuatore</button>
+                <button class="btn btn-xs btn-secondary" disabled> Crea attuatore</button>
+            </div>
+          </div>
+        </div>
+        <div class="row" id="editMenuAllarm_Wrp" style="display: none;">
+          <div class="col-6 mx-auto">
+            <div class="btn-group-vertical col mx-auto">
+                <button class="btn btn-xs btn-danger" id="unlinkAllarm_Btn"> Dissocia allarme</button>
+                <button class="btn btn-xs btn-secondary" disabled> Modifica allarme</button>
+                <button class="btn btn-xs btn-secondary" disabled> Crea allarme</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include ('footer') %>
+  <%- include ('jsLoad') %>
+  <script>
+    const socket = io('http://localhost:3000');
+
+    let storageData = '<%- JSON.stringify(storageData) %>'
+    storageData=JSON.parse(storageData)
+    let idStorage=storageData.id
+    let checkSensorValue,checkStatusAllarm,checkStatusActuattors
+    let timerRefresh=2000
+    let editDevicesId=0
+   
+    socket.on('storage:'+storageData.id, data => {
+      console.log("socket")
+      console.log(data);
+      associateActuators()
+      associateAllarms()
+      associateSensors ()
+    });
+  
+     async function drawShowStorage(id) {
+      $("#tableStorage_Crd").hide();
+
+      await $.ajax({
+        type: "GET",
+        url: "/storage/getOneStorage?storageId="+id,
+        success: function (response) {
+          console.log(response)
+          storageData=response.storage
+          let html=""
+          
+          if(storageData.rawmaterial==1){
+            $("#rawmaterial_Btn").show();
+          }
+          if(storageData.strain==1){
+            $("#strain_Btn").show();
+          }
+          if(storageData.container==1){
+            $("#container_Btn").show();
+          }
+          if(storageData.spawn==1){
+            $("#spawn_Btn").show();
+          }
+          if(storageData.mushElement==1){
+            $("#mushElement_Btn").show();
+          }
+          if(storageData.propagation==1){
+            $("#propagation_Btn").show();
+          }
+          
+        }
+      });
+      $("#showStorage_Crd").show();
+      $("#backToMain_Btn").show()
+      
+    }
+   
+    async function drawItemTable(id,endPoint,fields,label,title,topic){
+      let html=`
+      <h3>${title}</h3> 
+      <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>`
+      for (let i = 0; i < label.length; i++) {
+        const elem = label[i];
+        html+=`<th scope="col">${elem}</th>`
+      }
+      html+=`</tr>
+            </thead>
+            <tbody>`
+                  
+       await $.ajax({
+          type: "GET",
+          url: "/storage/"+ endPoint +"?storageId="+id,
+          success: function (response) {
+            console.log(response)
+            let data=response.item
+            for (let i = 0; i < data.length; i++) {
+              const elem = data[i];
+              html+=`<tr>
+              <td scope="row">
+                <button type="button" name="" id="showChildBtn_${elem.id}" 
+                  class="btn btn-primary btn-xs showChild_btn" style="width:25px"
+                  topic="${topic}">
+                    <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                </button></td>`
+                for (let y = 0; y < fields.length; y++) {
+                  const fld = fields[y];
+                  html+=`<td>${elem[fld]}</td>`
+                }
+               html+=`</tr>`
+            }
+            
+          }
+        });
+        html+="</tbody></table>"
+               console.log(html)
+
+        $("#itemTable").html(html)
+      }
+    
+      async function associateActuators(){
+       await $.ajax({
+        type: "GET",
+        url: "/storage/getActuatorsStorages?storageId="+storageData.id,
+        success: function (response) {
+          let actuators=response.actuators
+          //console.log(actuators)
+          let html=""
+          actuators.forEach(act => {
+            if(act.flagInterval==1){
+              let calloutColor="callout-info"
+              if(act.inUse==1){
+                calloutColor="callout-success"
+              }
+              if(act.inUse==0){
+                //calloutColor="callout-grey"
+              }
+              html+=`<div class="callout col-12  ${calloutColor}">
+                  <h5>${act.label} <small style="font-size:12px">${act.topicMqtt}</small></h5>
+                    <div class="row">
+                      <div class="col-3">Val min: ${act.valMin}</div>
+                      <div class="col-3">Val max: ${act.valMax}</div>
+                      <div class="col-6 text-right">
+                    <a href="#" class="text-gray editActuator" editdeviceid="${act.id}"><i class="fas fa-ellipsis-h "></i></a>
+                    </div>
+                      </div></div>`
+            }
+            
+          });
+          $("#actuator_Wrp").html(html)
+        }})
+    }
+    async function associateAllarms(){
+       await $.ajax({
+        type: "GET",
+        url: "/storage/getAllarmStorages?storageId="+storageData.id,
+        success: function (response) {
+          let allarms=response.allarm
+          console.log(response)
+          let html=""
+          allarms.forEach(all => {
+            if(all.inUse==1){
+                all.bgcolor="bg-danger"
+                $(document).Toasts('create', {
+                    title: 'Toast Title',
+                    body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.',
+                    class:"bg-gradient-danger"
+                  })
+              }
+              html+=`<div class="info-box col-lg-3 mx-2">
+                  <span class="info-box-icon  ${all.bgcolor}" style="b"><i class="${all.icon} text-white"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">
+                    <div class="row">
+                    <div class="col-9">
+                    ${all.label} </div>
+                    <div class="col-3 text-right">
+                    <a  class="text-gray editAllarm" editdeviceid="${all.id}"><i class="fas fa-ellipsis-h "></i></a>
+                    </div>
+                    </div>
+                  </span>
+                  <span class="info-box-number p-0 m-0" style="font-size: 26px;"> ${all.postChr}</span>
+                </div>
+              </div>`
+          });
+           $("#allarm_Wrp").html(html)
+        }})
+    }
+    async function associateSensors(){
+       await $.ajax({
+        type: "GET",
+        url: "/storage/getSensorsStorages?storageId="+storageData.id,
+        success: function (response) {
+          let sensors=response.sensors
+          console.log(sensors)
+          let html=""
+          sensors.forEach(sens => {
+              let val=sens.sensorData[0]?sens.sensorData[0][sens.fieldName]:0
+              html+=`<div class="info-box col-lg-3 col-sm-12  mx-2">
+                  <span class="info-box-icon  ${sens.bgcolor}" style="b"><i class="${sens.icon} text-white"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">
+                    
+                    <div class="row">
+                    <div class="col-9">
+                    ${sens.label} </div>
+                    <div class="col-3 text-right">
+                    <a href="#" class="text-gray editSensor" editDeviceId="${sens.id}"><i class="fas fa-ellipsis-h "></i></a>
+                    </div> 
+                    </div>
+                  </span>
+                  <span class="info-box-number p-0 m-0" style="font-size: 26px;">${val} ${sens.postChr}</span>
+                  
+                </div>
+              </div>`
+          });
+           $("#sensor_Wrp").html(html)
+        }})
+    }
+    
+    $(document).ready(async function () {
+      $("#sensor_storageId_Fld").val(storageData.id)
+      $("#actuator_storageId_Fld").val(storageData.id)
+      //  checkSensorValue=setInterval(associateSensors,timerRefresh)
+      //  checkStatusActuattors=setInterval(associateActuators,timerRefresh+timerRefresh)
+      //  checkStatusAllarm=setInterval(associateAllarms,timerRefresh+timerRefresh)
+    
+        await drawShowStorage(storageData.id)
+        await associateActuators()
+        await associateSensors()
+        await associateAllarms()
+     
+        /** Gestione sensori */
+      $("#sensor_deviceId_Fld").change(function (e) { 
+        e.preventDefault();
+        let deviceId=$(this).val()
+        $.ajax({
+          type: "GET",
+          url: "/device/getOneDevice?deviceId="+deviceId,
+          success: function (response) {
+            console.log(response)
+            let html=""
+            if (response.device.temp==1){
+              html+=`<option value="temp">Temperatura - temp</option>`
+            }
+            if (response.device.hume==1){
+              html+=`<option value="hume">Umidità ambientale - hume</option>`
+            }
+            if (response.device.hums==1){
+              html+=`<option value="hums">Umidità terreno - hums</option>`
+            }
+            if (response.device.co2==1){
+              html+=`<option value="co2">Livello Co2 - co2</option>`
+            }
+            if (response.device.ligh==1){
+              html+=`<option value="ligh">Illuminazione - ligh</option>`
+            }
+            if (response.device.levl==1){
+              html+=`<option value="levl">Livello contenitore - levl</option>`
+            }
+            if (response.device.wind==1){
+              html+=`<option value="wind">Velocità del vento - wind</option>`
+            }
+            $("#sensor_fieldName_Fld").prop('disabled', false).html(html);
+          }
+        });
+      });
+      
+      $("#saveSensor_Btn").click(function (e) { 
+        e.preventDefault();
+        if(checkForm("sensor_Frm")){
+          if(confirm("Confermi l'associazione del sensore allo storage?")){
+            $.ajax({
+              type: "POST",
+              url: "/storage/associateSensorStorage",
+              data: $("#sensor_Frm").serialize(),
+              success: async function (response) {
+                await associateSensors()
+                $("#sensor_Mdl").modal('hide')
+                resetForm("sensor_Frm")
+              }
+            });
+          }
+        }
+      });
+      $(".editSensor").click(function(e){
+        e.preventDefault()
+        editDevicesId=$(this).attr("editDeviceId")
+        $("#editDevice_Mdl").modal("show")
+        $("#editMenuSensor_Wrp").show()
+        $("#editMenuActuator_Wrp").hide()
+        $("#editMenuAllarm_Wrp").hide()
+      })
+      $("#unlinkSensor_Btn").click(function (e) { 
+        e.preventDefault();
+        if(confirm("Confermi di voler scollegare il sensore dallo storage?")){
+          $.ajax({
+          type: "DELETE",
+          url: "/storage/unlinkSensor?idSens="+editDevicesId,
+          success: function (response) {
+            associateSensors()
+            $("#editDevice_Mdl").modal("hide")
+          }
+        });
+        }
+        
+      });
+
+
+
+      /** Gestione attuatori */
+      $("#actuator_sensorId_Fld").change(function (e) { 
+        e.preventDefault();
+        let codeDevice=$('#actuator_sensorId_Fld option:selected').text().trim();
+        let topic="mushborg/"+codeDevice+"/switch"
+        $("#actuator_topicMqtt_Fld").val(topic)
+      });
+
+      $("#actuator_referenceSensorId_Fld").change(function (e) { 
+        e.preventDefault();
+         e.preventDefault();
+        let deviceId=$(this).val()
+        $.ajax({
+          type: "GET",
+          url: "/device/getOneDevice?deviceId="+deviceId,
+          success: function (response) {
+            console.log(response)
+            let html=""
+            if (response.device.temp==1){
+              html+=`<option value="temp">Temperatura - temp</option>`
+            }
+            if (response.device.hume==1){
+              html+=`<option value="hume">Umidità ambientale - hume</option>`
+            }
+            if (response.device.hums==1){
+              html+=`<option value="hums">Umidità terreno - hums</option>`
+            }
+            if (response.device.co2==1){
+              html+=`<option value="co2">Livello Co2 - co2</option>`
+            }
+            if (response.device.ligh==1){
+              html+=`<option value="ligh">Illuminazione - ligh</option>`
+            }
+            if (response.device.levl==1){
+              html+=`<option value="levl">Livello contenitore - levl</option>`
+            }
+            if (response.device.wind==1){
+              html+=`<option value="wind">Velocità del vento - wind</option>`
+            }
+            $("#actuator_referenceField_Fld").prop('disabled', false).html(html);
+          }
+        });
+       
+      });
+      $("#saveActuator_Btn").click(function (e) { 
+        e.preventDefault();
+        if(checkForm("actuator_Frm")){
+          if(confirm("Confermi l'associazione dell'attuatore allo storage?")){
+            $.ajax({
+              type: "POST",
+              url: "/storage/associateActuatorStorage",
+              data: $("#actuator_Frm").serialize(),
+              success: async function (response) {
+                await associateActuators()
+                resetForm("actuator_Frm")
+                $("#actuator_Mdl").modal("hide")
+              }
+            });
+          }
+        }
+      });
+      $(".editActuator").click(function(e){
+        e.preventDefault()
+        editDevicesId=$(this).attr("editDeviceId")
+        $("#editDevice_Mdl").modal("show")
+        $("#editMenuSensor_Wrp").hide()
+        $("#editMenuActuator_Wrp").show()
+        $("#editMenuAllarm_Wrp").hide()
+      })
+      $("#unlinkActuator_Btn").click(function (e) { 
+        e.preventDefault();
+        if(confirm("Confermi di voler scollegare l'attuatore dallo storage?")){
+        $.ajax({
+          type: "DELETE",
+          url: "/storage/unlinkActuator?idAct="+editDevicesId,
+          success: function (response) {
+            associateActuators()
+            $("#editDevice_Mdl").modal("hide")
+          }
+        });
+        }
+      });
+
+      /** Gestione allarmi */
+      $(".editAllarm").click(function(e){
+        e.preventDefault()
+        editDevicesId=$(this).attr("editDeviceId")
+        $("#editDevice_Mdl").modal("show")
+        $("#editMenuSensor_Wrp").hide()
+        $("#editMenuActuator_Wrp").hide()
+        $("#editMenuAllarm_Wrp").show()
+      })
+      $("#unlinkAllarm_Btn").click(function (e) { 
+       e.preventDefault();
+       if(confirm("Confermi di voler eliminare l'allarme dallo storage?")){
+        $.ajax({
+          type: "DELETE",
+          url: "/storage/unlinkAllarm?idAll="+editDevicesId,
+          success: function (response) {
+            associateAllarms()
+            $("#editDevice_Mdl").modal("hide")
+          }
+        });
+        }
+      });
+
+      /** Utility */
+      $("#backToMain_Btn").click(function (e) { 
+        e.preventDefault();
+         window.location='/storage'
+      });
+    
+      // Load item
+      $("#rawmaterial_Btn").click(function (e) { 
+        e.preventDefault();
+        drawItemTable(idStorage,"getRawMaterial",["id"],["id"],"Materiali","rawMaterial")
+      });
+
+      $("#mushElement_Btn").click(function (e) { 
+        e.preventDefault();
+        drawItemTable(idStorage,"getMushElement",["id","element_code"],["id","element_code"],"Mush Element","mushElement")
+      });
+    });
+
+
+  </script>
+  <%- include ('closeTag') %>
+  

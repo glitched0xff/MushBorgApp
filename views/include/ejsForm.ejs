@@ -19,6 +19,8 @@ form.forEach(el => { %>
             <div class="form-group">
               <input type="text" tp="textField"
                     class="form-control form-control-sm form-control-minimal"
+                    <% if (el.placeholder){ %> placeholder =" <%=el.placeholder %>" <% } %>
+
                     <% if (el.step){ %> step =" <%=el.step %>" <% } %>
                     <% if (el.required){ %> required <% } %>
                     <% if (el.readonly){ %> readonly <% } %>
@@ -51,6 +53,34 @@ form.forEach(el => { %>
                         <% if (el.step){ %> step ="<%=el.step %>" <% } %>
                         <% if (el.max){ %> max ="<%=el.max %>" <% } %>
                         <% if (el.min){ %> min ="<%=el.min %>" <% } %>
+                        <% if (el.required){ %> required <% } %>
+                        <% if (el.disabled) {%> disabled <% } %>
+                        <% if (el.readonly){ %> readonly <% } %>
+                        <% if (el.setValue){ %> value ="<%=el.setValue %>" <% } %>
+                        id="<%= el.fieldName %>_Fld"  
+                        name="<%= el.fieldName %>">
+                    <% if (el.help) {%>
+                        <p class="help-block small"><%= help %></p>
+                        <% }%>
+                </div>
+              </dd>
+              <dd id="<%= el.fieldName %>_Show" class="<%= classTxt %>"></dd>
+            </dl>
+          </div>
+        <% } %>
+    <%#  COLOR TEMPLATE%>  
+    <% if (el.type=="color") {%>
+        <div class="<%= el.classBox %>"
+            <% if (el.hidden){%>
+                style="display:none"
+            <% } %>
+            id="<%= el.fieldName %>_Wrp">    
+            <dl>
+              <dt><%= el.label %></dt>
+              <dd class="<%= classField %>">
+                <div class="form-group">
+                  <input type="color" tp="textField"
+                        class="form-control form-control-sm form-control-minimal"
                         <% if (el.required){ %> required <% } %>
                         <% if (el.disabled) {%> disabled <% } %>
                         <% if (el.readonly){ %> readonly <% } %>

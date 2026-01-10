@@ -18,23 +18,19 @@
         </div>
       </div>
     </div>
-
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-        <div class="row">
-          
-            <div class="col-12"  id="tableStorage_Crd" style="display: none;">
+          <div class="row">
+              <div class="col-12"  id="tableStorage_Crd" style="display: none;">
                 <div class="card">
                   <div class="card-header">
-                    <h3 class="card-title">Responsive Hover Table</h3>
-    
+                    <h3 class="card-title">Eleenco magazzini</h3>
                     <div class="card-tools">
                       <input type="text" name="datetimes"  id="daterange" />
                     
                     </div>
                   </div>
-                  
                   <div class="card-body table-responsive p-0">
                     <table class="table table-hover text-nowrap">
                       <thead>
@@ -66,77 +62,17 @@
                       </tbody>
                     </table>
                   </div>
-                  
-                  
                 </div>
-                
-              </div>
-              <!-- Attuatori -->
-            <div class="card w-100" id="actuator_Crd" >
-              <div class="row m-3">
-                <h3>Attuatori</h3>
-                <div class="row w-100" id="actuator_Wrp">
-                  
-                </div>
-              </div>
-              </div>
-               <!-- Allarmi -->
-            <div class="card w-100" id="allarm_Crd" >
-              <div class="row m-3">
-                <h3>Allarmi</h3>
-                <div class="row w-100" id="allarm_Wrp">
-                  
-                </div>
-              </div>
-              </div>
-              <!-- Sensori -->
-               <div class="card w-100" id="sensor_Crd" >
-              <div class="row m-3">
-                <h3>Sensori</h3>
-                <div class="row w-100" id="sensor_Wrp">
-                  
-                  
-              <!-- <div class="row m-3">
-                <div class="row">
-                  <div class="col mx-auto">
-                    <button type="button" class="btn btn-primary btn-xs" id="rawmaterial_Btn" >rawmaterial_Btn</button>
-                  </div>
-                  <div class="col mx-auto">
-                    <button type="button" class="btn btn-primary btn-xs" id="strain_Btn" >strain_Btn</button>
-                  </div>
-                  <div class="col mx-auto">
-                    <button type="button" class="btn btn-primary btn-xs" id="container_Btn" >container_Btn</button>
-                  </div>
-                  <div class="col mx-auto">
-                    <button type="button" class="btn btn-primary btn-xs" id="spawn_Btn" >spawn_Btn</button>
-                  </div>
-                  <div class="col mx-auto">
-                    <button type="button" class="btn btn-primary btn-xs" id="mushElement_Btn" >mushElement_Btn</button>
-                  </div>
-                  <div class="col mx-auto">
-                    <button type="button" class="btn btn-primary btn-xs" id="propagation_Btn" >propagation_Btn</button>
-                  </div>
-
-                </div>
-                <div class="col-12">
-
-                </div>
-                <div class="col-12" id="itemTable">
-
-                </div>
-              </div> -->
-            </div>
-        
-              </div>
               </div>
           </div>
       </div>
     </section>
-    
   </div>
 </div>
-  
-  <%- include ('footer') %>
+
+
+
+<%- include ('footer') %>
   <%- include ('jsLoad') %>
   <script>
     const socket = io('http://localhost:3000');
@@ -145,229 +81,24 @@
     let storageData=JSON.parse(storages)
     let redirectId= <%- JSON.stringify( redirectId) %>
     let idStorage=redirectId
-    let checkSensorValue,checkStatusAllarm,checkStatusActuattors
-    let timerRefresh=2000
-
-   
-    socket.on('storage:'+storageData.id, data => {
-      console.log(data);
-      associateActuators()
-      associateAllarms()
-      associateSensors ()
-    });
-    function drawTable() {
+    
+   function drawTable() {
       $("#tableStorage_Crd").show();
       $("#showStorage_Crd").hide();
       $("#backToMain_Btn").hide()
 
     }
-    async function drawShowStorage(id) {
-      $("#tableStorage_Crd").hide();
 
-      await $.ajax({
-        type: "GET",
-        url: "/storage/getOneStorage?storageId="+id,
-        success: function (response) {
-          console.log(response)
-          storageData=response.storage
-          let html=""
-          
-          if(storageData.rawmaterial==1){
-            $("#rawmaterial_Btn").show();
-          }
-          if(storageData.strain==1){
-            $("#strain_Btn").show();
-          }
-          if(storageData.container==1){
-            $("#container_Btn").show();
-          }
-          if(storageData.spawn==1){
-            $("#spawn_Btn").show();
-          }
-          if(storageData.mushElement==1){
-            $("#mushElement_Btn").show();
-          }
-          if(storageData.propagation==1){
-            $("#propagation_Btn").show();
-          }
-          
-        }
-      });
-      $("#showStorage_Crd").show();
-      $("#backToMain_Btn").show()
-      
-    }
-    async function drawItemTable(id,endPoint,fields,label,title,topic){
-      let html=`
-      <h3>${title}</h3> 
-      <table class="table table-sm">
-                <thead>
-                  <tr>
-                    <th scope="col">#</th>`
-      for (let i = 0; i < label.length; i++) {
-        const elem = label[i];
-        html+=`<th scope="col">${elem}</th>`
-      }
-      html+=`</tr>
-            </thead>
-            <tbody>`
-                  
-       await $.ajax({
-          type: "GET",
-          url: "/storage/"+ endPoint +"?storageId="+id,
-          success: function (response) {
-            console.log(response)
-            let data=response.item
-            for (let i = 0; i < data.length; i++) {
-              const elem = data[i];
-              html+=`<tr>
-              <td scope="row">
-                <button type="button" name="" id="showChildBtn_${elem.id}" 
-                  class="btn btn-primary btn-xs showChild_btn" style="width:25px"
-                  topic="${topic}">
-                    <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
-                </button></td>`
-                for (let y = 0; y < fields.length; y++) {
-                  const fld = fields[y];
-                  html+=`<td>${elem[fld]}</td>`
-                }
-               html+=`</tr>`
-            }
-            
-          }
-        });
-        html+="</tbody></table>"
-               console.log(html)
-
-        $("#itemTable").html(html)
-      }
-    
-      async function associateActuators(){
-       await $.ajax({
-        type: "GET",
-        url: "/storage/getActuatorsStorages?storageId="+storageData.id,
-        success: function (response) {
-          let actuators=response.actuators
-          //console.log(actuators)
-          let html=""
-          actuators.forEach(act => {
-            if(act.flagInterval==1){
-              let calloutColor="callout-info"
-              if(act.inUse==1){
-                calloutColor="callout-success"
-              }
-              if(act.inUse==0){
-                //calloutColor="callout-grey"
-              }
-              html+=`<div class="callout col-12  ${calloutColor}">
-                  <h5>${act.label}</h5>
-                    <div class="row">
-                      <div class="col-3">Val min: ${act.valMin}</div>
-                      <div class="col-3">Val max: ${act.valMax}</div>
-                      </div></div>`
-            }
-            
-          });
-          $("#actuator_Wrp").html(html)
-        }})
-    }
-    async function associateAllarms(){
-       await $.ajax({
-        type: "GET",
-        url: "/storage/getAllarmStorages?storageId="+storageData.id,
-        success: function (response) {
-          let allarms=response.allarm
-          console.log(response)
-          let html=""
-          allarms.forEach(all => {
-            if(all.inUse==1){
-                all.bgcolor="bg-danger"
-                $(document).Toasts('create', {
-                    title: 'Toast Title',
-                    body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.',
-                    class:"bg-gradient-danger"
-                  })
-              }
-              html+=`<div class="info-box col-3 mx-2">
-                  <span class="info-box-icon  ${all.bgcolor}" style="b"><i class="${all.icon} text-white"></i></span>
-                <div class="info-box-content">
-                  <span class="info-box-text">
-                    <div class="row">
-                    <div class="col-9">
-                    ${all.label} </div>
-                    
-                    </div>
-                  </span>
-                  <span class="info-box-number p-0 m-0" style="font-size: 26px;"> ${all.postChr}</span>
-                </div>
-              </div>`
-          });
-           $("#allarm_Wrp").html(html)
-        }})
-    }
-    async function associateSensors(){
-       await $.ajax({
-        type: "GET",
-        url: "/storage/getSensorsStorages?storageId="+storageData.id,
-        success: function (response) {
-          let sensors=response.sensors
-         // console.log(sensors)
-          let html=""
-          sensors.forEach(sens => {
-              let val=sens.sensorData[0][sens.fieldName]
-              html+=`<div class="info-box col-3 mx-2">
-                  <span class="info-box-icon  ${sens.bgcolor}" style="b"><i class="${sens.icon} text-white"></i></span>
-                <div class="info-box-content">
-                  <span class="info-box-text">
-                    <div class="row">
-                    <div class="col-9">
-                    ${sens.label} </div>
-                    <div class="col-3 text-right">
-                    <button class="btn btn-xs btn-dark"><i class="fas fa-chart-line"></i></button> 
-                    </div> 
-                    </div>
-                  </span>
-                  <span class="info-box-number p-0 m-0" style="font-size: 26px;">${val} ${sens.postChr}</span>
-                </div>
-              </div>`
-          });
-           $("#sensor_Wrp").html(html)
-        }})
-    }
-    
     $(document).ready(async function () {
     
-      //  checkSensorValue=setInterval(associateSensors,timerRefresh)
-      //  checkStatusActuattors=setInterval(associateActuators,timerRefresh+timerRefresh)
-      //  checkStatusAllarm=setInterval(associateAllarms,timerRefresh+timerRefresh)
-      if(redirectId){
-        await drawShowStorage(redirectId)
-        await associateActuators()
-        await associateSensors()
-        await associateAllarms()
-      }else{
         await drawTable()
-      }
+        
       $(document).on("click",".showStorage", function (e) { 
         e.preventDefault();
         let id=$(this).attr("id").split("_")[1]
-         window.location='/storage?redirectId='+id
-      });
-      $("#backToMain_Btn").click(function (e) { 
-        e.preventDefault();
-         window.location='/storage'
+         window.location='storage/storageZoom?storageId='+id
       });
     
-      // Load item
-      $("#rawmaterial_Btn").click(function (e) { 
-        e.preventDefault();
-        drawItemTable(idStorage,"getRawMaterial",["id"],["id"],"Materiali","rawMaterial")
-      });
-
-      $("#mushElement_Btn").click(function (e) { 
-        e.preventDefault();
-        drawItemTable(idStorage,"getMushElement",["id","element_code"],["id","element_code"],"Mush Element","mushElement")
-      });
     });
 
 

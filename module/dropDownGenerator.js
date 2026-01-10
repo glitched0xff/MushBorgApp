@@ -12,6 +12,9 @@ module.exports=async (nameDD,filter=false)=>{
         case "device":
             queryResult=await db.device.findAll()
             break;
+        case "selectDevice":
+            queryResult=await db.device.findAll(filter)
+            break;
         case "container":
             queryResult=await db.container.findAll({
                     where: {
@@ -79,6 +82,10 @@ module.exports=async (nameDD,filter=false)=>{
                 case "device":
                     obj={val:el.id,txt:el.cod_device}
                 break;
+                case "selectDevice":
+                    obj={val:el.id,txt:el.cod_device}
+                break;
+                
                 case "container":
                     obj={val:el.id,txt:el.code_container+" - "+el.container_name}
                 break;

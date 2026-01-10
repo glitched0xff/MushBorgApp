@@ -3,7 +3,8 @@ const router = express.Router();
 const Device = require("../controllers/device.controller");
 const moment=require("moment")
 const db = require("../models");
-const dropDownGenerator=require('../module/dropDownGenerator')
+const dropDownGenerator=require('../module/dropDownGenerator');
+const { where } = require('sequelize');
 
 db.storage.associate(db)
 db.device.associate(db)
@@ -61,6 +62,16 @@ router.get('/testDevice',async (req,res)=>{
     
   }else{
     res.status(422).json()
+  }
+})
+
+router.get('/getOneDevice',async (req,res)=>{
+  let deviceId=req.query.deviceId?req.query.deviceId:null
+  if(deviceId!=null){
+    let device=await db.device.findOne({where:{id:deviceId}})
+    res.status(200).json({device:device})
+  }else{
+    res.status(422)
   }
 })
 

@@ -1,12 +1,29 @@
 const express = require('express');
 const router = express.Router();
 const db = require("../models");
+const dropDownGenerator= require("../module/dropDownGenerator")
+
 const Storage = db.storage;
 
 router.get('/',async  (req, res) => {
     let redirectId=req.query.redirectId?req.query.redirectId:null
     const storages=await Storage.findAll()
   res.render("storage",{storages:storages,redirectId:redirectId})
+});
+
+router.get('/storageZoom',async  (req, res) => {
+    let storageId=req.query.storageId?req.query.storageId:null
+    if(storageId!=null){
+        const storageData=await Storage.findOne({where:{id:storageId}})
+        const activeSensorDD=await dropDownGenerator("selectDevice",{where:{active:1,type:"S"}})
+        const activeActuatorDD=await dropDownGenerator("selectDevice",{where:{active:1,type:"R"}})
+        res.render("storageZoom",{storageData:storageData,
+                                  activeSensorDD:activeSensorDD,
+                                  activeActuatorDD:activeActuatorDD})
+    }
+    else{
+        res.redirect('/storage');
+    }
 });
 
 router.get('/getOneStorage',async (req,res)=>{
@@ -31,11 +48,43 @@ router.get('/getMushElement',async (req,res)=>{
 })
 
 /** Actuators */
+router.post('/associateActuatorStorage',async (req,res)=>{
+   // console.log(req.body)
+    db.associateActuator.create({
+         storageId:req.body.actuator_storageId,
+        sensorId:req.body.actuator_sensorId,
+        switch:req.body.actuator_switch,
+        topicMqtt:req.body.actuator_topicMqtt,
+        payloadMqtt:req.body.actuator_payloadMqtt,
+        referenceSensorId:req.body.actuator_referenceSensorId,
+        referenceField:req.body.actuator_referenceField,
+        valueName:req.body.actuator_valueName,
+        label:req.body.actuator_label,
+        postChr:req.body.actuator_postChr,
+        timeOn:req.body.actuator_timeOn,
+        timeOff:req.body.actuator_timeOff,
+        flagInterval:req.body.actuator_flagInterval,
+        valMin:req.body.actuator_valMin,
+        valMax:req.body.actuator_valMax
+    })
+})
 router.get('/getActuatorsStorages',async (req,res)=>{
     let storageId=req.query.storageId?req.query.storageId:null
     let actuators= await db.associateActuator.findAll({where:{storageId:storageId,active:1}})
     res.status(200).json({actuators:actuators})
-
+})
+router.delete('/unlinkActuator',async (req,res)=>{
+    let idAct=req.query.idAct?req.query.idAct:null
+    if(idAct!=null){
+        console.log(idAct)
+        let linkData= await db.associateActuator.findOne({where:{id:idAct}})
+        linkData=JSON.parse(JSON.stringify(linkData))
+        await db.associateActuator.destroy({where:{id:idAct}})
+        await db.device.update({storageId:null},{where:{id:linkData.deviceId}})
+        res.status(200).json({result:result})
+    }else{
+        res.status(422)
+    }
 })
 /** Allarm */
 router.get('/getAllarmStorages',async (req,res)=>{
@@ -43,8 +92,54 @@ router.get('/getAllarmStorages',async (req,res)=>{
     let allarm= await db.associateAllarm.findAll({where:{storageId:storageId,active:1}})
     res.status(200).json({allarm:allarm})
 })
-
+router.delete('/unlinkAllarm',async (req,res)=>{
+    let idAll=req.query.idAll?req.query.idAll:null
+    if(idAll!=null){
+        await db.associateAllarm.destroy({where:{id:idAll}})
+        .then(result=>{
+            res.status(200).json({result:result})
+        })
+    }else{
+        res.status(422)
+    }
+})
 /** Sensors */
+router.delete('/unlinkSensor',async (req,res)=>{
+    let idSens=req.query.idSens?req.query.idSens:null
+    if(idSens!=null){
+        let linkData= await db.associateSensor.findOne({where:{id:idSens}})
+        await db.associateSensor.destroy({where:{id:idSens}})
+        .then(async result=>{
+            await db.device.update({storageId:null},{where:{id:linkData.deviceId}})
+            res.status(200).json({result:result})
+        })
+        
+    }else{
+        res.status(422)
+    }
+})
+router.post('/associateSensorStorage',async (req,res)=>{
+    console.log(req.body)
+    await db.associateSensor.create({
+        storageId:req.body.sensor_storageId,
+        deviceId:req.body.sensor_deviceId,
+        fieldName:req.body.sensor_fieldName,
+        valueName:req.body.sensor_valueName,
+        label:req.body.sensor_label,
+        icon:req.body.sensor_icon,
+        postChr:req.body.sensor_postChr,
+        bgcolor:"bg-primary",
+        textColor:"text-white",
+        active:1,
+        version:1
+    }).then(result=>{
+        res.status(200).json({result:result})
+    }).catch(err=>{
+        console.log(err)
+        res.status(422)
+    })
+})
+
 router.get('/getSensorsStorages',async (req,res)=>{
     let storageId=req.query.storageId?req.query.storageId:null
     let sensors= await db.associateSensor.findAll({where:{storageId:storageId,active:1},
