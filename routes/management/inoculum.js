@@ -167,15 +167,15 @@ router.post('/newInoculum', async(req,res) => {
             for (let i = 0; i < nrContiner; i++) {
                 // let codeGen=await codeGenerator(data.createLot,species_code,strainSubcode,recipeSubCode,type,nrContiner,duplicateCodeIndex,i)
                 // let element_code=codeGen.element_code
-                     let codeLotto= result.code_propagation.slice(0,-2)
+                     let codeLotto= result.code_inoculum.slice(0,-2)
 
-                let seriale=0
+                let serial=0
                     if (i<=9){
-                        seriale="0"+i
+                        serial="0"+i
                     }else{
-                        seriale=i
+                        serial=i
                     }
-                    let element_code=codeLotto+seriale
+                    let element_code=codeLotto+serial
                 await db.mushElement.create({
                     element_code:element_code,
                     relatedId:result.id,
