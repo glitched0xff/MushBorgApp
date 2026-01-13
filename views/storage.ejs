@@ -201,7 +201,7 @@
       $(document).on("click",".showStorage", function (e) { 
         e.preventDefault();
         let id=$(this).attr("id").split("_")[1]
-         window.location='storage/storageZoom?storageId='+id
+         window.location='/storage/storageZoom?storageId='+id
       });
 
       $("#newStorage_Btn").click(function (e) { 
