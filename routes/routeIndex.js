@@ -85,6 +85,22 @@ router.get('/',async (req, res) => {
                           config});
 });
 
+router.get('/getStoragesData',async (req,res)=>{
+ await db.storage.findAll({include:[{model:db.associateActuator},
+                                    {model:db.associateAllarm},                                                      
+                                    {model:db.associateSensor,
+                                      include:{model:db.sensorData,
+                                              attributes: ["id","hume","co2","hums","levl","ligh","wind","pwrQ","status","createdAt","temp",
+                                      [fn('date_format', col('createdAt'), '%d-%m-%y %hh:%mm'), 'createdAtFormatted']]
+                                      ,order:[ [ 'createdAt', 'DESC' ]],limit:1}}
+                                                                  ]})
+                        .then(result=>{
+                            res.status(200).json({result:result})
+                        }).catch(err=>{
+                          console.log(err)
+                          res.status(422)
+                        })
+})
 router.get('/logout', (req, res) => {
   res.send('logout');
 });

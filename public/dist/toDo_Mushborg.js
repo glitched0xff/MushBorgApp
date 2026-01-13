@@ -95,6 +95,7 @@ async function drawTodoList(eseguito=0){
                     <h5><i class="icon fas fa-ban"></i> Alert!</h5>
                     Non sono presenti elementi in questa sezione
                   </div>`
+                  html=""
         }
         $("#todo_Tbl").html(html)
         // Config to-do.list come sortable

@@ -10,12 +10,7 @@
           <div class="col-sm-6">
             <h1 class="m-0">Dashboard</h1>
           </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Dashboard v1</li>
-            </ol>
-          </div>
+          
         </div>
       </div>
     </div>
@@ -74,7 +69,7 @@
                 <% } else { %>
                   <%=  harvests[0].harvest.toString().replace(".", ",")%> g
                 <% } %></h3>
-                <p><%= __('raccoltoMensile') %>: <%=  harvests[0].week %></p>
+                <p><%= __('raccoltoSettimanale_Ds') %>: <%=  harvests[0].week %></p>
               </div>
               <div class="icon">
                 <i class="fas fa-weight"></i>
@@ -214,64 +209,13 @@
                 </div>
               </div>
               <div class="card-body">
-                <div class="row w-100">
-                  <% storage.forEach (elem => {
-                    if (elem.showInHome==1){%>
-                    <div class="card col-6">
-                      <div class="card-body">
-                        <h4 class="card-title ">
-                          <span class="text-bold">
-                           
-                            <%= elem.code_storage %> 
-                            <a href="/storage?redirectId=<%= elem.id %>">
-                            <i class="fa fa-link fa-xs" aria-hidden="true"></i>
-                            </a>
-                          </span>
-                          <br>
-                        <span class="small"><%= elem.name_storage %>
-                            <br>Last update: 
-                          </span>
-                      </h4>
-                        <p class="card-text">
-                          <% elem.associateSensors.forEach (sens => {%>
-                            <div class="row w-100">
-                              <div class="col-md-2">
-                                <span class="<%= sens.bgcolor %>"><i class="<%= sens.icon%>" aria-hidden="true"></i><%</span>
-                              </div>
-                              </div>
-                          <% }) %>
-
-
-                                                              <small style="font-size: 10px;">&#128994;</small>
-                                    <small style="font-size: 10px;">&#128308;</small>
-                                <small style="font-size: 18px;">&#10754;</small>
-
-                          <div class="row w-100">
-                      
-                                <div class="col-4">
-                                  <div class="h1 col-12 text-center"></div>
-                                  <div class="mx-auto w-100 small text-center">Temperatura</div>
-                                  </div>
-                           
-                                <div class="col-4">
-                                  <div class="h1 col-12 text-center"></div>
-                                  <div class="mx-auto w-100 small text-center">Umidità</div>
-                                  </div>
-                           
-                            </div>
-                        </p>
-                      </div>
-                    </div>
-                  <% }}) %>
+                <div class="row w-100" id="storageData_Wrp">
+                  
                 </div>
               </div>
             </div>
           </section>
-          <!-- /.Left col -->
-
-          <!-- right col -->
         </div>
-        <!-- /.row (main row) -->
       </div>
     </section>
     
@@ -282,10 +226,103 @@
   <!-- Mushborg todo Function function -->
   <script src="/dist/toDo_Mushborg.js"></script> 
   <script>
+    const socket = io('http://localhost:3000');
+
   let storage=<%- JSON.stringify(storage) %> 
- console.log(storage)
-    $(document).ready(function () {
+
+  console.log(storage)
+
+    async function updateData() {
+      $.ajax({
+        type: "GET",
+        url: "/getStoragesData",
+        success: function (response) {
+          let storage=response.result
+          console.log(storage)
+        
+      let html=""
+      storage.forEach (elem => {
+      if (elem.showInHome==1){
+        html+=`<div class="card col-md-6 col-sm-12 mx-auto">
+                        <h4 class="card-title p-2">
+                            <span class="text-bold">
+                              ${elem.code_storage} <span class="small">${elem.name_storage}</span>
+                              <a href="/storage/storageZoom?storageId=${elem.id}">
+                              <i class="fa fa-link fa-xs" aria-hidden="true"></i>
+                              </a>
+                              <div class="small">Last update: </div>
+                            </span>
+                        </h4>
+                        <div class="card-body p-1 row">`
+        if (elem.associateSensors.length>0){
+            html+=`<div class="row w-100">`
+              elem.associateSensors.forEach (sens => {
+                html+=`<div class=" col-md-6 col-sm-12 my-1 mx-auto text-center">
+                                    <div  class="btn  ${sens.bgcolor} " style="width: 200px;" >
+                                      <span class="small text-center w-100">${ sens.label }</span>
+                                  <span class="w-100"><i class="${ sens.icon} mx-2 fa-10px" aria-hidden="true"></i>
+                                    ${ sens.sensorData[0][sens.fieldName] } ${ sens.postChr }</span> 
+                                      </div>
+                                </div>`
+              })
+              html+="</div>"
+          }
+        if (elem.associateSensors.length>0){
+          html+=`<div class="col-md-6 col-sm-12">
+                <ul class="">
+                  <div>Attuatori</div>`
+          elem.associateActuators.forEach (act => {
+            html+="<li>"
+              if (act.inUse==1){
+              html+=`<span class="badge badge-success col-2">ON</span>`
+              } else {
+              html+=`<span class="badge badge-secondary  col-2">OFF</span>`
+              }
+              html+=`<span class="small text-center w-100 col-6"> ${act.label}`
+              if(act.flagClock==1){
+                html+=`(dalle: ${act.timeOn} alle: ${act.timeOff})`
+              }
+              if(act.flagInterval==1){
+              html+=`(min: ${act.valMin} max: ${act.valMax})`
+              }
+              html+="</li>"
+          })
+              html+="</ul></div>"
+        }
+        if (elem.associateAllarms.length>0){      
+            html+=`<div class="col-md-6 col-sm-12"><ul><div>Allarmi</div>`
+              elem.associateAllarms.forEach (all => {
+                html+="<li>"
+                  if (all.inUse==1){
+                    html+=`<span class="badge badge-danger col-2""><i class="fa fa-bell" aria-hidden="true"></i></span>`
+                  } else {
+                    html+=`<span class="badge badge-success col-2""><i class="fa fa-bell" aria-hidden="true"></i></span>`
+                  }
+                  html+=`<span class="small text-center w-100"> ${all.label}
+                  ( ${all.referenceField} ${all.operator}${all.threshold})</span>`
+                  html+="</li>"  
+                    })
+              html+="</ul></div>"
+        }
+        html+="</div></div>"
+        $("#storageData_Wrp").html(html)
+        }
+      })
+    }
+      });
+    }
+  
+
+    $(document).ready(async function () {
+      await updateData()
+      socket.on('data', data => {
+        console.log("socket")
+        console.log(data);
+        updateData()
+      });
+
       drawTodoList()
+      updateData()
     });
   </script>
  <%- include ('closeTag') %>
