@@ -26,6 +26,39 @@ router.get('/storageZoom',async  (req, res) => {
     }
 });
 
+router.post('/newStorage',async (req,res)=>{
+    console.log(req.body)
+    await db.storage.create({
+        name_storage:req.body.name_storage,
+        code_storage:req.body.code_storage,
+        data_storage:req.body.data_storage,
+        note:req.body.note,
+        rawmaterial:req.body.rawmaterial?req.body.rawmaterial:0,
+        inoculum:req.body.inoculum?req.body.inoculum:0,
+        spawn:req.body.spawn?req.body.spawn:0,
+        propagation:req.body.propagation?req.body.propagation:0,
+        container:req.body.container?req.body.container:0,
+        mushElement:0,
+        strain:0
+    }).then(result=>{
+        res.status(200).json(result)
+    }).catch(err=>{
+        console.log(err)
+    })
+})
+
+router.delete('/deleteStorage',async (req,res)=>{
+    let idStorage=req.query.idStorage?req.query.idStorage:false
+    if (idStorage){
+     await db.storage.destroy({where:{id:idStorage}})
+     .then(result=>{
+             res.status(200).json(result)
+         }).catch(err=>{
+             console.log(err)
+         })
+    }
+})
+
 router.get('/getOneStorage',async (req,res)=>{
     let storageId=req.query.storageId?req.query.storageId:null
     const storage=await Storage.findOne({where:{id:storageId},
@@ -49,7 +82,7 @@ router.get('/getMushElement',async (req,res)=>{
 
 /** Actuators */
 router.post('/associateActuatorStorage',async (req,res)=>{
-   // console.log(req.body)
+    console.log(req.body)
     db.associateActuator.create({
          storageId:req.body.actuator_storageId,
         sensorId:req.body.actuator_sensorId,
@@ -61,12 +94,13 @@ router.post('/associateActuatorStorage',async (req,res)=>{
         valueName:req.body.actuator_valueName,
         label:req.body.actuator_label,
         postChr:req.body.actuator_postChr,
+        flagTimer:req.body.actuator_flagInterval,
         timeOn:req.body.actuator_timeOn,
         timeOff:req.body.actuator_timeOff,
         flagInterval:req.body.actuator_flagInterval,
         valMin:req.body.actuator_valMin,
         valMax:req.body.actuator_valMax
-    })
+    }).catch(err=>{console.log(err)})
 })
 router.get('/getActuatorsStorages',async (req,res)=>{
     let storageId=req.query.storageId?req.query.storageId:null
@@ -139,7 +173,6 @@ router.post('/associateSensorStorage',async (req,res)=>{
         res.status(422)
     })
 })
-
 router.get('/getSensorsStorages',async (req,res)=>{
     let storageId=req.query.storageId?req.query.storageId:null
     let sensors= await db.associateSensor.findAll({where:{storageId:storageId,active:1},

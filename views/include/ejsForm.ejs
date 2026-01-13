@@ -224,7 +224,7 @@ form.forEach(el => { %>
     <% } %>
     <%# TITLE TEMPLATE %>
     <% if (el.type=="title") {%>
-    <span class="col-12 text-bold border-bottom border-top"> <%= el.title %> </span>
+    <span class="col-12 text-bold border-bottom border-top <% if (el.class) {%> <%= el.class %> <% } %>"> <%= el.title %> </span>
     <% } %>
     <%# STARTROW TEMPLATE %>
     <% if (el.type=="startRow") {%>

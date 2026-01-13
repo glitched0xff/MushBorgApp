@@ -9,8 +9,8 @@
         <div class="row mb-2">
           <div class="col-sm-6">
             <h1 class="m-0">Gestione magazzini
-            <!-- <button class="btn btn-xs btn-primary" id="modStorage_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca storage</button>
-              <button type="button" class="btn btn-xs btn-primary" id="newStorage_Btn"><i class="fas fa-plus"></i> Nuova storage</button> -->
+            <!-- <button class="btn btn-xs btn-primary" id="modStorage_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca storage</button> -->
+              <button type="button" class="btn btn-xs btn-primary" id="newStorage_Btn"><i class="fas fa-plus"></i> Nuova storage</button>
               <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco storage</button>
             </h1>
           </div>
@@ -22,7 +22,7 @@
     <section class="content">
       <div class="container-fluid">
           <div class="row">
-              <div class="col-12"  id="tableStorage_Crd" style="display: none;">
+              <div class="col-12"  id="tableStorage_Crd" >
                 <div class="card">
                   <div class="card-header">
                     <h3 class="card-title">Eleenco magazzini</h3>
@@ -51,6 +51,10 @@
                                       class="btn btn-primary btn-xs showStorage" style="width:25px">
                                         <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
                                     </button>
+                                    <button type="button" name="" idStorage="<%= dt.id %>" 
+                                      class="btn btn-danger btn-xs deleteStorage" style="width:25px">
+                                        <i class="fa fa-minus fa-sm" aria-hidden="true"></i>
+                                    </button>
                                 </td>
                                 <td style="width: 80px;"><%= dt.id %></td>
                                 <td><%= dt.code_storage %></td>
@@ -64,6 +68,115 @@
                   </div>
                 </div>
               </div>
+              <div class="col-12" id="newStorage_Crd" style="display: none;">
+                <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Nuovo magazzino</h3>
+                </div>
+                  <div class="card-body  p-0">
+                    <div class="row">
+                <div class="col">
+              <form id="storage_FRM" class="p-3">
+                <div class="row w-100">
+                    <div class="col">
+
+                <!-- <div class="row border-bottom mb-2 pb-2 font-weight-bold w-100">
+                  Elemento <span id="storageCode" class="mx-1"></span> 
+                  <button class="btn btn-xs btn-primary mx-1" id="backToMain_Btn"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco storagei</button>
+                  <button class="btn btn-xs btn-primary mx-1" id="modStorage_Btn"> <i class="fas fa-pen"></i> Modifica storageo</button>
+                </div> -->
+                
+                <%- include('./include/ejsForm',
+                  { classTxt: "storageText",
+                    classField: "storageForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"idStorage"
+                    },
+                    { type:"startRow"},
+// purchased
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"name_storage",
+                      label:"Nome Storage",
+                      required:true, 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"code_storage",
+                      label:"Codice Storage",
+                      required:true, 
+
+                    },
+                    { type:"endRow"},
+                    
+                     {type:"startRow"},
+                    {
+                      type:"textarea",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"data_storage",
+                      label:"Dati magazzino"
+                    },
+                    {
+                      type:"textarea",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"note",
+                      label:"Note"
+                    },
+                    
+                    { type:"endRow"},
+                     {type:"startRow",class:"mb-2"},
+                     {type:"title",title:"Magazino adibito a:",class:"h4 py-2"},
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"rawmaterial",
+                      label:"Materiali",
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"container",
+                      label:"Contenitori",
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"inoculum",
+                      label:"Inoculi",
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"spawn",
+                      label:"Spawn",
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"propagation",
+                      label:"Elementi di coltivazione",
+                    },
+                    { type:"endRow"}
+                    ]  
+                }) %>
+                </div>
+                </div>
+                </form>
+                
+                <div class="row w-100 m-3">
+                  <button class="btn btn-xs btn-primary mx-1" id="saveNewStorage_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva Storage </button>
+                  <button class="btn btn-xs btn-primary mx-1" id="saveStorage_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva modifica </button>
+                  <button class="btn btn-xs btn-secondary mx-1" id="abortStorage_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Annulla modifica </button>
+                  </div>
+                  </div>
+                </div>
+                  </div>
+                </div>
+              </div>  
           </div>
       </div>
     </section>
@@ -82,23 +195,76 @@
     let redirectId= <%- JSON.stringify( redirectId) %>
     let idStorage=redirectId
     
-   function drawTable() {
-      $("#tableStorage_Crd").show();
-      $("#showStorage_Crd").hide();
-      $("#backToMain_Btn").hide()
-
-    }
-
+ 
     $(document).ready(async function () {
-    
-        await drawTable()
         
       $(document).on("click",".showStorage", function (e) { 
         e.preventDefault();
         let id=$(this).attr("id").split("_")[1]
          window.location='storage/storageZoom?storageId='+id
       });
+
+      $("#newStorage_Btn").click(function (e) { 
+        e.preventDefault();
+        $("#tableStorage_Crd").hide();
+        $("#newStorage_Btn").hide();
+        $("#newStorage_Crd").show();
+        $("#saveNewStorage_Btn").show();
+        $("#abortStorage_Btn").show();
+      });
+
+      $("#abortStorage_Btn").click(function (e) { 
+        e.preventDefault();
+        resetForm("storage_FRM")
+        $("#tableStorage_Crd").show();
+        $("#newStorage_Btn").hide();
+        $("#newStorage_Btn").show();
+
+        $("#newStorage_Crd").hide();
+        $("#saveNewStorage_Btn").hide();
+        $("#abortStorage_Btn").hide();
+      });
+      
+      $("#saveNewStorage_Btn").click(function (e) { 
+        e.preventDefault();
+        let formArr=$("#storage_FRM").serializeArray()
+        let checkItem=false
+        formArr.forEach(elem=>{
+          if ((elem.name=="rawmaterial")||(elem.name=="inoculum")||(elem.name=="spawn")||(elem.name=="propagation")||(elem.name=="container")){
+            checkItem=true
+          }
+        })
+        if (checkItem==false){
+            alert("Seleziona una tipologia di materiale contenuto nello storage")
+            return
+        }
+        if (checkForm("storage_FRM")){
+          if (confirm("Stai inserendo un nuovo storage, continuare?")){
+            $.ajax({
+              type: "POST",
+              url: "/storage/newStorage",
+              data: $("#storage_FRM").serialize(),
+              success: function (response) {
+                window.location="/storage/"
+              }
+            });
+          }
+        }
+      });
     
+
+      $(document).on("click",".deleteStorage", function () {
+        let idStorage=$(this).attr("idStorage")
+        let c=confirm("Stai eleiminando uno storage e con esso tutti gli attuatori, gli allarmi e i sensori colegati, vuoi continuare? (l'eliminazione non elimina i sensori e i dati registati)")
+        if(c){
+        $.ajax({
+          type: "delete",
+          url: "/storage/deleteStorage?idStorage="+idStorage,
+          success: function (response) {
+            window.location="/storage"
+          }
+        });}
+      });
     });
 
 

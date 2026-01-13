@@ -8,7 +8,7 @@
       <div class="storage-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Gestione magazzini
+            <h1 class="m-0"><%= storageData.name_storage%>
             <!-- <button class="btn btn-xs btn-primary" id="modStorage_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca storage</button>
               <button type="button" class="btn btn-xs btn-primary" id="newStorage_Btn"><i class="fas fa-plus"></i> Nuova storage</button> -->
               <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco storage</button>
@@ -625,7 +625,7 @@
         url: "/storage/getActuatorsStorages?storageId="+storageData.id,
         success: function (response) {
           let actuators=response.actuators
-          //console.log(actuators)
+          console.log(actuators)
           let html=""
           actuators.forEach(act => {
             if(act.flagInterval==1){
@@ -641,6 +641,24 @@
                     <div class="row">
                       <div class="col-3">Val min: ${act.valMin}</div>
                       <div class="col-3">Val max: ${act.valMax}</div>
+                      <div class="col-6 text-right">
+                    <a href="#" class="text-gray editActuator" editdeviceid="${act.id}"><i class="fas fa-ellipsis-h "></i></a>
+                    </div>
+                      </div></div>`
+            }
+            if(act.flagClock==1){
+              let calloutColor="callout-info"
+              if(act.inUse==1){
+                calloutColor="callout-success"
+              }
+              if(act.inUse==0){
+                //calloutColor="callout-grey"
+              }
+              html+=`<div class="callout col-12  ${calloutColor}">
+                  <h5>${act.label} <small style="font-size:12px">${act.topicMqtt}</small></h5>
+                    <div class="row">
+                      <div class="col-3">Val min: ${act.timeOn}</div>
+                      <div class="col-3">Val max: ${act.timeOff}</div>
                       <div class="col-6 text-right">
                     <a href="#" class="text-gray editActuator" editdeviceid="${act.id}"><i class="fas fa-ellipsis-h "></i></a>
                     </div>
