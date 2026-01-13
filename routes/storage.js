@@ -27,7 +27,7 @@ router.get('/storageZoom',async  (req, res) => {
 });
 
 router.post('/newStorage',async (req,res)=>{
-    console.log(req.body)
+    //console.log(req.body)
     await db.storage.create({
         name_storage:req.body.name_storage,
         code_storage:req.body.code_storage,
@@ -82,7 +82,7 @@ router.get('/getMushElement',async (req,res)=>{
 
 /** Actuators */
 router.post('/associateActuatorStorage',async (req,res)=>{
-    console.log(req.body)
+    //console.log(req.body)
     db.associateActuator.create({
          storageId:req.body.actuator_storageId,
         sensorId:req.body.actuator_sensorId,
@@ -110,7 +110,7 @@ router.get('/getActuatorsStorages',async (req,res)=>{
 router.delete('/unlinkActuator',async (req,res)=>{
     let idAct=req.query.idAct?req.query.idAct:null
     if(idAct!=null){
-        console.log(idAct)
+        //console.log(idAct)
         let linkData= await db.associateActuator.findOne({where:{id:idAct}})
         linkData=JSON.parse(JSON.stringify(linkData))
         await db.associateActuator.destroy({where:{id:idAct}})
@@ -153,7 +153,7 @@ router.delete('/unlinkSensor',async (req,res)=>{
     }
 })
 router.post('/associateSensorStorage',async (req,res)=>{
-    console.log(req.body)
+    //console.log(req.body)
     await db.associateSensor.create({
         storageId:req.body.sensor_storageId,
         deviceId:req.body.sensor_deviceId,

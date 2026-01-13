@@ -93,7 +93,7 @@ router.get('/getAll',async  (req, res) => {
  */
 router.post('/newInoculum', async(req,res) => {
     let data=req.body
-    console.log(req.body)
+    //console.log(req.body)
     let species_code=data.strainId.split("|")[1]
     let strainSubcode=data.strainId.split("|")[2]
     let recipeSubCode=data.substrateId.split("|")[1]
@@ -359,7 +359,7 @@ router.get('/pdf',async (req,res)=>{
         inoculum.purchased=inoculum.purchased==1?"Sì":"No"
         inoculum.fromSample=inoculum.fromSample===1?"Sì":"No"
         let stElem=sampleTypeDD.find(e=>{return e.val==inoculum.sampleType})
-        console.log(stElem)
+        //console.log(stElem)
         inoculum.sampleType=stElem?stElem.txt:"-"
         try {
             const pdf=await generatePdfReport({inoculum:inoculum,seeds:JSON.parse(JSON.stringify(seeds))},"inoculumReport.ejs")

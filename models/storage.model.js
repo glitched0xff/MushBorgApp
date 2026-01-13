@@ -35,6 +35,9 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER},
       note:{
         type: Sequelize.STRING,
+      },
+      showInHome:{
+        type: Sequelize.INTEGER
       }
     });
     Storage.associate = (models) => {

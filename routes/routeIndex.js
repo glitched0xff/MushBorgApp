@@ -55,14 +55,27 @@ router.get('/',async (req, res) => {
     harvests.push({harvest:harvestYear,year:moment().year()})
 
     
-    let storage=await db.storage.findAll({include:{model:db.device,
-                                                  include:{model:db.sensorData,
-                                                  attributes: [
-                                                        "id","hume","co2","status","createdAt","temp",
-                                                        [fn('date_format', col('createdAt'), '%d-%m-%y %hh:%mm'), 'createdAtFormatted']
-                                                    ],
-                                                  order:[ [ 'createdAt', 'DESC' ]],
-                                                  limit:1}}})
+    // let storage=await db.storage.findAll({include:{model:db.device,
+    //                                               include:{model:db.sensorData,
+    //                                               attributes: [
+    //                                                     "id","hume","co2","status","createdAt","temp",
+    //                                                     [fn('date_format', col('createdAt'), '%d-%m-%y %hh:%mm'), 'createdAtFormatted']
+    //                                                 ],
+    //                                               order:[ [ 'createdAt', 'DESC' ]],
+    //                                               limit:1}}})
+
+      let storage=await db.storage.findAll({include:[
+                                                      {model:db.associateActuator},
+                                                      {model:db.associateAllarm},                                                      
+                                                      {model:db.associateSensor,
+                                                        include:{model:db.sensorData,
+                                                                attributes: ["id","hume","co2","hums","levl","ligh","wind","pwrQ","status","createdAt","temp",
+                                                        [fn('date_format', col('createdAt'), '%d-%m-%y %hh:%mm'), 'createdAtFormatted']]
+                                                        ,order:[ [ 'createdAt', 'DESC' ]],limit:1}}
+                                                                                    ]})
+
+      let c=JSON.parse(JSON.stringify(storage))
+      console.log(c)
      res.render("index", { title: "Express" ,
                            nInoculum,
                            nSpawn,

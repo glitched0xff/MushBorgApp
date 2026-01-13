@@ -215,13 +215,20 @@
               </div>
               <div class="card-body">
                 <div class="row w-100">
-                  <% storage.forEach (elem => {
-                    if (elem.showInHome==1){%>
+                  <% storage.forEach (elem => {%>
                     <div class="card col-6">
                       <div class="card-body">
                         <h4 class="card-title ">
                           <span class="text-bold">
-                           
+                            <% if  ((elem.devices[0])&&(elem.devices[0].sensorData[0])){
+                                  if(elem.devices[0].sensorData[0].status==true){%>
+                                    <small style="font-size: 10px;">&#128994;</small>
+                                <% }else{%>
+                                    <small style="font-size: 10px;">&#128308;</small>
+                              <%}} else { %>
+                                <small style="font-size: 18px;">&#10754;</small>
+                              
+                            <% } %>
                             <%= elem.code_storage %> 
                             <a href="/storage?redirectId=<%= elem.id %>">
                             <i class="fa fa-link fa-xs" aria-hidden="true"></i>
@@ -229,40 +236,36 @@
                           </span>
                           <br>
                         <span class="small"><%= elem.name_storage %>
-                            <br>Last update: 
+                           <% if  ((elem.devices[0])&&(elem.devices[0].sensorData[0])){ %>
+                            <br>Last update: <%= elem.devices[0].sensorData[0].dataValues.createdAtFormatted %>
+                            <% } %>
                           </span>
                       </h4>
                         <p class="card-text">
-                          <% elem.associateSensors.forEach (sens => {%>
-                            <div class="row w-100">
-                              <div class="col-md-2">
-                                <span class="<%= sens.bgcolor %>"><i class="<%= sens.icon%>" aria-hidden="true"></i><%</span>
-                              </div>
-                              </div>
-                          <% }) %>
-
-
-                                                              <small style="font-size: 10px;">&#128994;</small>
-                                    <small style="font-size: 10px;">&#128308;</small>
-                                <small style="font-size: 18px;">&#10754;</small>
-
                           <div class="row w-100">
-                      
+                          <% let temp
+                            if ((elem.devices[0])&&(elem.devices[0].temp==1)){
+                              if (elem.devices[0].sensorData[0]){
+                                temp=elem.devices[0].sensorData[0].temp%>
                                 <div class="col-4">
-                                  <div class="h1 col-12 text-center"></div>
+                                  <div class="h1 col-12 text-center"><%= temp%>°</div>
                                   <div class="mx-auto w-100 small text-center">Temperatura</div>
                                   </div>
-                           
+                            <% }} %>
+                            <% let hum
+                            if ((elem.devices[0])&&(elem.devices[0].hum==1)){
+                              if (elem.devices[0].sensorData[0]){
+                                hum=elem.devices[0].sensorData[0].hum%>
                                 <div class="col-4">
-                                  <div class="h1 col-12 text-center"></div>
+                                  <div class="h1 col-12 text-center"><%= hum%>%</div>
                                   <div class="mx-auto w-100 small text-center">Umidità</div>
                                   </div>
-                           
+                            <% }} %>
                             </div>
                         </p>
                       </div>
                     </div>
-                  <% }}) %>
+                  <% }) %>
                 </div>
               </div>
             </div>

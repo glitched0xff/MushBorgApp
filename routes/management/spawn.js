@@ -199,7 +199,7 @@ router.get('/getSpawnCode',async  (req, res) => {
 
 router.post('/newSpawn', async(req,res) => {
     let data=req.body
-    console.log(data)
+    //console.log(data)
     let species_code=data.strainId.split("|")[1]
     let strainSubcode=data.strainId.split("|")[2]
     let recipeSubCode=data.substrateId.split("|")[1]
@@ -358,7 +358,7 @@ router.get('/pdf',async (req,res)=>{
         spawn.purchased=spawn.purchased==1?"Sì":"No"
         
         let seeds=await db.seed.findAll({where:{relatedId:spawn.id,typeDestination:"SPAWN"}})
-        console.log(JSON.parse(JSON.stringify(spawn)))
+        //console.log(JSON.parse(JSON.stringify(spawn)))
         try {
             const pdf=await generatePdfReport({spawn:spawn,seeds:JSON.parse(JSON.stringify(seeds))},"spawnReport.ejs")
             if (getHtml==false){

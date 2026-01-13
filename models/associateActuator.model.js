@@ -31,7 +31,7 @@ module.exports = (sequelize, Sequelize) => {
 });
     AssociateActuator.associate = (models) => {
        AssociateActuator.belongsTo(models.storage, {foreignKey: "storageId"});
-      // AssociateActuator.hasMany(models.sensorData, {foreignKey: "deviceId"});
+      //AssociateActuator.hasMany(models.sensorData, {foreignKey: "deviceId"});
     }
     return AssociateActuator;
   };        
