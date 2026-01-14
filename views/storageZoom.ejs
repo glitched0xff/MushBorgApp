@@ -529,7 +529,7 @@
     let timerRefresh=2000
     let editDevicesId=0
    
-    socket.on('storage:'+storageData.id, data => {
+    socket.on('data', data => {
       console.log("socket")
       console.log(data);
       associateActuators()
