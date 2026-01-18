@@ -18,6 +18,7 @@ const QRCode = require('qrcode')
 const {generateSync}=require("text-to-image")
 const mergeImages = require('merge-base64');
 const { Json } = require('sequelize/lib/utils');
+const heicConverter=require("heic-convert")
 const Op = db.Sequelize.Op;
 
 router.get('/',async  (req, res) => {
@@ -506,7 +507,7 @@ router.post('/newMushElementNote', async(req,res) => {
     let imgMushElementNote=null
     let nomeFile= null
     
-    const array_of_allowed_file_types = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
+    const array_of_allowed_file_types = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif','image/heic'];
     const allowed_file_size = 5;
     let letterElement="" // identifica il postfisso della cartella in base alla tipologia di elemento
     switch (req.query.type) {
@@ -535,10 +536,10 @@ router.post('/newMushElementNote', async(req,res) => {
             uploadError="Il tipo di file non è consentito"
         }
         //console.log(uploadFlag,uploadError)
-        if ((imgMushElementNote.size / (1024 * 1024)) > allowed_file_size) {                  
-             uploadFlag=false
-            uploadError="File troppo grande, dimensione massima 2Mb"
-        }
+        // if ((imgMushElementNote.size / (1024 * 1024)) > allowed_file_size) {                  
+        //      uploadFlag=false
+        //     uploadError="File troppo grande, dimensione massima 2Mb"
+        // }
         if( (uploadFlag)&&(!fs.existsSync(pathToDir))) {
                     fs.mkdirSync(pathToDir);
                     if (fs.existsSync(pathToDir+"/"+nomeFile)) {
@@ -550,11 +551,25 @@ router.post('/newMushElementNote', async(req,res) => {
         
     }
     if(uploadFlag==true){
+        if (imgMushElementNote!=null){
+                if (imgMushElementNote.mimetype=="image/heic"){
+                    const outputBuffer = await heicConverter({
+                            buffer: imgMushElementNote.data, // the HEIC file buffer
+                            format: 'JPEG',      // output format
+                            quality: 1           // the jpeg compression quality, between 0 and 1
+                        });
+                        console.log("BUF")
+                        console.log(outputBuffer)
+                    imgMushElementNote.data=outputBuffer
+                    imgMushElementNote.mimetype = "image/jpeg";
+                    imgMushElementNote.name = imgMushElementNote.name.replace(/\.heic$/i, ".jpg");
+                }
+            }
         await db.mushElementNote.create({
             mushElementId:data.idMushElementNote,
             check_date:data.check_date?moment(data.check_date,"DD-MM-YYYY"):null,
             stato:data.statoMushElementNote,
-            pict:nomeFile,
+            pict:imgMushElementNote.name,
             note:data.noteMushElementNote,
             type:data.filterCategoryNote.trim()
             })
@@ -566,6 +581,18 @@ router.post('/newMushElementNote', async(req,res) => {
             })
             let err=false
             if (imgMushElementNote!=null){
+                // if (imgMushElementNote.mimetype=="image/heic"){
+                //     const outputBuffer = await heicConverter({
+                //             buffer: imgMushElementNote.data, // the HEIC file buffer
+                //             format: 'JPEG',      // output format
+                //             quality: 1           // the jpeg compression quality, between 0 and 1
+                //         });
+                //         console.log("BUF")
+                //         console.log(outputBuffer)
+                //     imgMushElementNote.data=outputBuffer
+                //     imgMushElementNote.mimetype = "image/jpeg";
+                //     imgMushElementNote.name = imgMushElementNote.name.replace(/\.heic$/i, ".jpg");
+                // }
                 const outputPath = path.join(pathToDir, imgMushElementNote.name);
                 let image = await Jimp.read(imgMushElementNote.data)
                 image.resize({

@@ -361,11 +361,26 @@
                       required:true
                     },
                     {
-                      type:"text",
+                      type:"select",
                       classBox:"col-md-6 col-sm-6",
-                      fieldName:"actuator_payloadMqtt",
-                      label:"Payload MQTT",
-                      placeholder:"{\"relay\":1}",
+                      fieldName:"actuator_payloadType",
+                      label:"Formato payload",
+                      option:[{val:"JSON",txt:"JSON"},{val:"PLAINTEXT",txt:"Plain text"}],
+                      required:true
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-12",
+                      fieldName:"actuator_payloadMqttON",
+                      label:"Payload MQTT ON",
+                      required:true
+                    },
+                    
+                     {
+                      type:"text",
+                      classBox:"col-md-12",
+                      fieldName:"actuator_payloadMqttOFF",
+                      label:"Payload MQTT OFF",
                       required:true
                     },
                     {
@@ -802,7 +817,7 @@
           }
         }
       });
-      $(".editSensor").click(function(e){
+      $(document).on("click",".editSensor",function(e){
         e.preventDefault()
         editDevicesId=$(this).attr("editDeviceId")
         $("#editDevice_Mdl").modal("show")
@@ -871,7 +886,7 @@
         });
        
       });
-      $("#saveActuator_Btn").click(function (e) { 
+      $("#saveActuator_Btn").click(async function (e) { 
         e.preventDefault();
         if(checkForm("actuator_Frm")){
           if(confirm("Confermi l'associazione dell'attuatore allo storage?")){
@@ -879,16 +894,16 @@
               type: "POST",
               url: "/storage/associateActuatorStorage",
               data: $("#actuator_Frm").serialize(),
-              success: async function (response) {
-                await associateActuators()
+              success: function (response) {
                 resetForm("actuator_Frm")
                 $("#actuator_Mdl").modal("hide")
               }
             });
+           await associateActuators()
           }
         }
       });
-      $(".editActuator").click(function(e){
+      $(document).on("click",".editActuator",function(e){
         e.preventDefault()
         editDevicesId=$(this).attr("editDeviceId")
         $("#editDevice_Mdl").modal("show")
@@ -897,6 +912,7 @@
         $("#editMenuAllarm_Wrp").hide()
       })
       $("#unlinkActuator_Btn").click(function (e) { 
+        console.log(editDevicesId)
         e.preventDefault();
         if(confirm("Confermi di voler scollegare l'attuatore dallo storage?")){
         $.ajax({
@@ -911,7 +927,7 @@
       });
 
       /** Gestione allarmi */
-      $(".editAllarm").click(function(e){
+      $(document).on("click",".editAllarm", function(e){
         e.preventDefault()
         editDevicesId=$(this).attr("editDeviceId")
         $("#editDevice_Mdl").modal("show")

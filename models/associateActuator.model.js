@@ -12,6 +12,7 @@ module.exports = (sequelize, Sequelize) => {
       sensorId:{ type:Sequelize.INTEGER },
       switch:{ type:Sequelize.INTEGER },
       topicMqtt:{ type:Sequelize.STRING },
+      payloadType:{type:Sequelize.STRING},
       payloadMqttON:{ type:Sequelize.STRING }, 
         payloadMqttOFF:{ type:Sequelize.STRING }, 
       flagInterval:{ type:Sequelize.INTEGER },

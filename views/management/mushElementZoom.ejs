@@ -11,8 +11,8 @@
             <!-- <button class="btn btn-xs btn-primary" id="modMushElement_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca lotto</button>
               <button type="button" class="btn btn-xs btn-primary" id="newMushElement_Btn"><i class="fas fa-plus"></i> Nuova lotto</button> -->
              
-              <!-- <button class="btn btn-xs btn-primary" id="backToMain_Btn"> <i class="fas fa-long-arrow-alt-left"></i> Torna all'elenco</button> -->
-              <button class="btn btn-xs btn-primary"  onclick="history.back()"> <i class="fas fa-long-arrow-alt-left"></i> Torna all'elenco</button>
+              <!-- <button class="btn btn-xs btn-primary" id="backToMain_Btn"> <i class="fas fa-long-arrow-alt-left"></i> Torna all'elenco</button>
+              <button class="btn btn-xs btn-primary"  onclick="history.back()"> <i class="fas fa-long-arrow-alt-left"></i> Torna all'elenco</button> -->
             </h1>
           </div>
           
@@ -1115,7 +1115,7 @@ let letterElement="" // Identifica postfisso della cartella immagini
 const sensorChartCtx = document.getElementById('sensorChart');
 
 
-//Draw Element table
+//Draw Element NOTE table
 async function drawElementNote(idMushElement){
   console.log(idMushElement)
   $.ajax({
@@ -1154,7 +1154,7 @@ async function drawElementNote(idMushElement){
                 <td class="bg-danger text-center" colspan="5"> Non sono presenti note per questo elemento</td>
               </tr>`
       }
-      $("#idMushElementNote_Fld").val(idMushElement)
+      $("#idMushElementNote_Fld").val(mushElement.id)
       $("#mushElementNote_Tblb").html(html)
       $("#mushElementNote_Tbl").show()
       if(mushElement.active==0){
@@ -1164,7 +1164,7 @@ async function drawElementNote(idMushElement){
     }})
 }
 
-//Draw Element table
+//Draw Element HARVEST table
 async function drawElementHarvest(mushElementHarvest){
   // console.log("mushElementHarvest")
   // console.log(mushElementHarvest)
@@ -1500,8 +1500,10 @@ $(document).ready(async function () {
             if (response.error==true){
               alert(response.data)
             }else{
-          window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
-          }
+          drawElementNote(mushElement.id)
+          $("#insertNote_Mdl").modal("hide")
+          resetForm("mushElementNote_Form")
+        }
         },
         error: function(err){
           console.log(err)

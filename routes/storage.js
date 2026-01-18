@@ -88,7 +88,9 @@ router.post('/associateActuatorStorage',async (req,res)=>{
         sensorId:req.body.actuator_sensorId,
         switch:req.body.actuator_switch,
         topicMqtt:req.body.actuator_topicMqtt,
-        payloadMqtt:req.body.actuator_payloadMqtt,
+         payloadType:req.body.actuator_payloadType,
+        payloadMqttON:req.body.actuator_payloadMqttON,
+        payloadMqttOFF:req.body.actuator_payloadMqttOFF,
         referenceSensorId:req.body.actuator_referenceSensorId,
         referenceField:req.body.actuator_referenceField,
         valueName:req.body.actuator_valueName,
@@ -100,7 +102,9 @@ router.post('/associateActuatorStorage',async (req,res)=>{
         flagInterval:req.body.actuator_flagInterval,
         valMin:req.body.actuator_valMin,
         valMax:req.body.actuator_valMax
-    }).catch(err=>{console.log(err)})
+    })
+    .then(result=>{ res.status(200).json(result)})
+    .catch(err=>{console.log(err)})
 })
 router.get('/getActuatorsStorages',async (req,res)=>{
     let storageId=req.query.storageId?req.query.storageId:null
@@ -110,12 +114,15 @@ router.get('/getActuatorsStorages',async (req,res)=>{
 router.delete('/unlinkActuator',async (req,res)=>{
     let idAct=req.query.idAct?req.query.idAct:null
     if(idAct!=null){
-        //console.log(idAct)
+        console.log(idAct)
         let linkData= await db.associateActuator.findOne({where:{id:idAct}})
-        linkData=JSON.parse(JSON.stringify(linkData))
-        await db.associateActuator.destroy({where:{id:idAct}})
-        await db.device.update({storageId:null},{where:{id:linkData.deviceId}})
-        res.status(200).json({result:result})
+        if (linkData!=null){
+            linkData=JSON.parse(JSON.stringify(linkData))
+            console.log(linkData)
+            await db.associateActuator.destroy({where:{id:idAct}})
+            await db.device.update({storageId:null},{where:{id:linkData.sensorId}})
+        }
+        res.status(200).json({result:true})
     }else{
         res.status(422)
     }
