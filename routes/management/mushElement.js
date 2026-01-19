@@ -551,20 +551,20 @@ router.post('/newMushElementNote', async(req,res) => {
         
     }
     if(uploadFlag==true){
-        if (imgMushElementNote!=null){
-                if (imgMushElementNote.mimetype=="image/heic"){
-                    const outputBuffer = await heicConverter({
-                            buffer: imgMushElementNote.data, // the HEIC file buffer
-                            format: 'JPEG',      // output format
-                            quality: 1           // the jpeg compression quality, between 0 and 1
-                        });
-                        console.log("BUF")
-                        console.log(outputBuffer)
-                    imgMushElementNote.data=outputBuffer
-                    imgMushElementNote.mimetype = "image/jpeg";
-                    imgMushElementNote.name = imgMushElementNote.name.replace(/\.heic$/i, ".jpg");
-                }
-            }
+        // if (imgMushElementNote!=null){
+        //         if (imgMushElementNote.mimetype=="image/heic"){
+        //             const outputBuffer = await heicConverter({
+        //                     buffer: imgMushElementNote.data, // the HEIC file buffer
+        //                     format: 'JPEG',      // output format
+        //                     quality: 1           // the jpeg compression quality, between 0 and 1
+        //                 });
+        //                 console.log("BUF")
+        //                 console.log(outputBuffer)
+        //             imgMushElementNote.data=outputBuffer
+        //             imgMushElementNote.mimetype = "image/jpeg";
+        //             imgMushElementNote.name = imgMushElementNote.name.replace(/\.heic$/i, ".jpg");
+        //         }
+        //     }
         await db.mushElementNote.create({
             mushElementId:data.idMushElementNote,
             check_date:data.check_date?moment(data.check_date,"DD-MM-YYYY"):null,
@@ -600,10 +600,7 @@ router.post('/newMushElementNote', async(req,res) => {
                             })
                 image.write(outputPath);
             }
-            return result
-        })
-        .then(result=> {
-            console.log("sendResult")
+            
             res.status(200).json({error:false,data:result})
         })
         .catch(err =>{
