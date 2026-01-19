@@ -600,6 +600,10 @@ router.post('/newMushElementNote', async(req,res) => {
                             })
                 image.write(outputPath);
             }
+            return result
+        })
+        .then(result=> {
+            console.log("sendResult")
             res.status(200).json({error:false,data:result})
         })
         .catch(err =>{
@@ -732,7 +736,7 @@ router.get('/csvLotto',async (req,res)=>{
     res.status(200).send(csv);
 }) 
 // Creazione QR code
-router.get('/getQrElement',async  (req, res) => {
+router.get('/getQrElement',async  (req, res) => {   
     let elementCode=req.query.elementCode
     let element=await db.mushElement.findOne({where:{element_code:elementCode}})
     //console.log(JSON.parse(JSON.stringify(element)))
