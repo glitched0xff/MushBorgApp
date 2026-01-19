@@ -1094,6 +1094,7 @@
     </div>
   </div>
  </div>
+ <!-- Loading -->
 <style>
   #loadingOverlay {
   position: fixed;
@@ -1128,6 +1129,8 @@
 
 <%- include ('../footer') %>
 <%- include ('../jsLoad') %>
+<script src="/dist/js/heic2any.min.js"></script>
+
 <script>  
 
  let mushElement =<%- JSON.stringify(mushElement) %> 
@@ -1145,6 +1148,56 @@ let idSpawn
 let spawnElementTempId=0
 let letterElement="" // Identifica postfisso della cartella immagini
 const sensorChartCtx = document.getElementById('sensorChart');
+
+// Handler Heic and resize
+async function convertAndResizeImage(file, maxSize = 1024) {
+  let blob = file;
+
+  // HEIC → JPG
+  if (
+    file.type.includes("heic") ||
+    file.name.toLowerCase().endsWith(".heic")
+  ) {
+    blob = await heic2any({
+      blob: file,
+      toType: "image/jpeg",
+      quality: 0.9
+    });
+  }
+
+  return new Promise((resolve) => {
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = e => img.src = e.target.result;
+
+    img.onload = () => {
+      let { width, height } = img;
+
+      // calcolo proporzioni
+      if (width > height && width > maxSize) {
+        height = Math.round(height * (maxSize / width));
+        width = maxSize;
+      } else if (height > maxSize) {
+        width = Math.round(width * (maxSize / height));
+        height = maxSize;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (resizedBlob) => resolve(resizedBlob),
+        "image/jpeg",
+        0.8
+      );
+    };
+
+    reader.readAsDataURL(blob);
+  });
+}
 
 
 //Draw Element NOTE table
@@ -1511,16 +1564,45 @@ $(document).ready(async function () {
       $("#insertNote_Mdl").modal("show")
     });
   
-    $("#saveMushElementNote_Btn").click(function (e) { 
-      e.preventDefault();
-      let idMushElement=$("#idMushElementNote_Fld").val()
-      //console.log(idMushElement)
-      let el=document.getElementById("mushElementNote_Form")
-      console.log(el)
-      let formdata = new FormData(document.getElementById("mushElementNote_Form"));
-      for (var [key, value] of formdata.entries()) { 
-          console.log(key, value);
-        }
+    $("#saveMushElementNote_Btn").click(async function (e) {
+  e.preventDefault();
+
+  const form = document.getElementById("mushElementNote_Form");
+  let formdata = new FormData(form);
+
+  let fileKey = null;
+  let file = null;
+
+  for (let [key, value] of formdata.entries()) {
+    if (value instanceof File && value.size > 0) {
+      fileKey = key;
+      file = value;
+      break;
+    }
+  }
+
+  // 🔄 Convert + Resize
+  if (file) {
+    try {
+      const resizedBlob = await convertAndResizeImage(file, 1024);
+
+      const newFile = new File(
+        [resizedBlob],
+        file.name.replace(/\.(heic|png|jpeg)$/i, ".jpg"),
+        { type: "image/jpeg" }
+      );
+
+      formdata.delete(fileKey);
+      formdata.append(fileKey, newFile);
+
+      console.log("Immagine convertita e ridimensionata");
+    } catch (err) {
+      console.error(err);
+      alert("Errore elaborazione immagine");
+      return;
+    }
+  }
+
       $.ajax({
         type: "POST",
         url: "/mushElement/newMushElementNote?type="+filterCategory,
