@@ -667,7 +667,7 @@
                 calloutColor="callout-success"
               }
               if(act.inUse==0){
-                //calloutColor="callout-grey"
+                calloutColor="callout-grey"
               }
               html+=`<div class="callout col-12  ${calloutColor}">
                   <h5>${act.label} <small style="font-size:12px">${act.topicMqtt}</small></h5>
@@ -679,7 +679,6 @@
                     </div>
                       </div></div>`
             }
-            
           });
           $("#actuator_Wrp").html(html)
         }})

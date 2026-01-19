@@ -738,10 +738,11 @@ router.get('/getQrElement',async  (req, res) => {
     //console.log(JSON.parse(JSON.stringify(element)))
     //console.log(element )
     let string="/mushElement/mushElementLanding?elementCode="+elementCode
-    let url=await QRCode.toDataURL(string)
+    let url=await QRCode.toDataURL(string,{ errorCorrectionLevel: 'H',margin: 3})
     let textDAta = generateSync(elementCode,{
-                maxWidth: 164,
+                maxWidth: 188,
                 fontSize: 16,
+                textAlign:'center', 
                 fontFamily: 'Arial',
                 lineHeight: 16,
                 });
