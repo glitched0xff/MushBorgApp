@@ -1528,12 +1528,12 @@ $(document).ready(async function () {
         processData: false,
         contentType: false,
         beforeSend: function () {
+          console.log("before")
           $("#loadingOverlay").fadeIn(200);
         },
-        complete: function () {
-          $("#loadingOverlay").fadeOut(200);
-        },
+        
         success: async function (response) {
+          console.log("Response")
           console.log(response)
             if (response.error==true){
               alert(response.data)
@@ -1545,6 +1545,10 @@ $(document).ready(async function () {
         },
         error: function(err){
           console.log(err)
+        },
+        complete: function () {
+          console.log("Completato Upload")
+          $("#loadingOverlay").fadeOut(200);
         }
       });
     });
