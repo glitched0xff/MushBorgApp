@@ -1094,6 +1094,38 @@
     </div>
   </div>
  </div>
+<style>
+  #loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid #ddd;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+ <div id="loadingOverlay" style="display:none;">
+  <div class="spinner"></div>
+</div>
+
 <%- include ('../footer') %>
 <%- include ('../jsLoad') %>
 <script>  
@@ -1495,15 +1527,21 @@ $(document).ready(async function () {
         data: formdata,
         processData: false,
         contentType: false,
+        beforeSend: function () {
+          $("#loadingOverlay").fadeIn(200);
+        },
+        complete: function () {
+          $("#loadingOverlay").fadeOut(200);
+        },
         success: async function (response) {
           console.log(response)
             if (response.error==true){
               alert(response.data)
             }else{
-          drawElementNote(mushElement.id)
-          $("#insertNote_Mdl").modal("hide")
-          resetForm("mushElementNote_Form")
-        }
+            drawElementNote(mushElement.id)
+            $("#insertNote_Mdl").modal("hide")
+            resetForm("mushElementNote_Form")
+          }
         },
         error: function(err){
           console.log(err)

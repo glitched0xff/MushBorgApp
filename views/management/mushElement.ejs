@@ -33,7 +33,7 @@
                         <th>Stage</th>
                         <th>Tot note</th>
                         <th>Tot raccolto</th>
-                        <th>Contenitori</th>
+                        <!-- <th>Contenitori</th> -->
                         <th>Creato il</th>
                     </tr>
                 </thead>
@@ -197,7 +197,7 @@ async function  drawTable (){
                                 <td>${stage} </td>
                                 <td>${el.totalNote}</td>
                                 <td>${el.totalHarvestWeight?el.totalHarvestWeight:"0"} g</td>
-                                <td>${el.qt}</td>
+                                
                                 <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
                             </tr>`
                 

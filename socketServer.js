@@ -14,7 +14,7 @@ module.exports = function initSocket(server) {
         console.log(data)
     })
     socket.on('data', data => {
-      console.log('📩 MQTT event from MDC', JSON.stringify(data));
+       // console.log('📩 MQTT event from MDC', JSON.stringify(data));
       // broadcast to all browsers
       io.emit('storage:'+data.storageId, data);
       io.emit('data', data);
