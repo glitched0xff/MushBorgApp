@@ -474,12 +474,48 @@ $(document).ready(async function () {
       $(this).hide()
     });
     $("#saveMushElementNote_Btn").click(function (e) { 
-      e.preventDefault();
-      let idMushElement=$("#idMushElementNote_Fld").val()
-      //console.log(idMushElement)
-      let el=document.getElementById("mushElementNote_Form")
-      console.log(el)
-      let formdata = new FormData(document.getElementById("mushElementNote_Form"))
+      
+          e.preventDefault();
+
+      const form = document.getElementById("mushElementNote_Form");
+      let formdata = new FormData(form);
+
+      let fileKey = null;
+      let file = null;
+
+      for (let [key, value] of formdata.entries()) {
+        if (value instanceof File && value.size > 0) {
+          fileKey = key;
+          file = value;
+          break;
+        }
+      }
+
+      // 🔄 Convert + Resize
+      if (file) {
+        try {
+          const resizedBlob = await convertAndResizeImage(file, 1024);
+          const baseName = file.name
+            .replace(/\.[^/.]+$/, "")   // rimuove estensione
+            .replace(/\s+/g, "_");      // spazi → _
+
+          const newFile = new File(
+            [resizedBlob],
+            baseName + ".jpg",
+            { type: "image/jpeg" }
+          );
+
+          formdata.delete(fileKey);
+          formdata.append(fileKey, newFile);
+
+          console.log("Immagine convertita e ridimensionata");
+        } catch (err) {
+          console.error(err);
+          alert("Errore elaborazione immagine");
+          return;
+        }
+      }
+
       $.ajax({
         type: "POST",
         url: "/mushElement/newMushElementNote?type="+filterCategory,
