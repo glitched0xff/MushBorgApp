@@ -509,20 +509,22 @@ router.post('/newMushElementNote', async(req,res) => {
     
     const array_of_allowed_file_types = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif','image/heic'];
     const allowed_file_size = 5;
-    let letterElement="" // identifica il postfisso della cartella in base alla tipologia di elemento
-    switch (req.query.type) {
-        case "INOCULUM":
-            letterElement="_I"
-            break;
-        case "SPAWN":
-            letterElement="_S"
-            break;
-        case "CULTIVATION":
-            letterElement="_C"
-            break;
+    // Deprecated use element_code and not id
+    // let letterElement="" // identifica il postfisso della cartella in base alla tipologia di elemento
+    // switch (req.query.type) {
+    //     case "INOCULUM":
+    //         letterElement="_I"
+    //         break;
+    //     case "SPAWN":
+    //         letterElement="_S"
+    //         break;
+    //     case "CULTIVATION":
+    //         letterElement="_C"
+    //         break;
         
-    }
-    const dirname=data.idMushElementNote+letterElement
+    // }
+    let mushElementCode= await db.mushElement.findOne({where:{id:data.idMushElementNote}})
+    const dirname=mushElementCode.element_code
     const pathToDir = path.join(__dirname, "../../public/imgMushEleNote",dirname);
     let uploadFlag=true
     let uploadError=""
@@ -624,15 +626,19 @@ router.delete('/deleteMushElementNote',async  (req, res) => {
     //console.log("delete")
     //console.log(req.query)
     if (mushElementNoteId!=false){
+
         let elemData=await db.mushElementNote.findOne({where:{id:mushElementNoteId}})
+        let mushElementCode= await db.mushElement.findOne({where:{id:elemData.mushElementId}})
+        console.log(JSON.parse(JSON.stringify(mushElementCode)))
+        const dirname=mushElementCode.element_code
         //console.log(JSON.parse(JSON.stringify(elemData)))
         if (elemData.pict){
-             const pathToDir = path.join(__dirname, "../../public/imgMushEleNote",elemData.mushElementId.toString(),elemData.pict);
+             const pathToDir = path.join(__dirname, "../../public/imgMushEleNote",dirname,elemData.pict);
             fs.unlink(pathToDir, (err) => {
                     if (err) {
                         console.error(`Error removing file: ${err}`);
                         return;
-                    }console.log(`File "../../public/imgMushEleNote/${elemData.mushElementId.toString()}" has been successfully removed.`);
+                    }console.log(`File "../../public/imgMushEleNote/${dirname}" has been successfully removed.`);
                     });
         }
         let result=await db.mushElementNote.destroy({where:{id:mushElementNoteId}})

@@ -564,7 +564,7 @@ $(document).ready(async function () {
       console.log(mushElementNotes.length)
       console.log(nota)
       
-      let imgUrl="/imgMushEleNote/"+mushElement.id+"_"+pathLetter+"/"+nota.pict
+      let imgUrl="/imgMushEleNote/"+mushElement.element_code+"/"+nota.pict
       $("#note_Img").attr('src', imgUrl);
       $("#dataNote").html(moment(nota.check_date).format("DD-MM-YY"))
       $("#statoNote").html(nota.stato)
