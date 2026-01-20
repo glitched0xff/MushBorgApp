@@ -68,6 +68,14 @@
                       <dd id="substrate_info_Show" class="elementText"><%#mushElement.substrate_info%></dd>
                     </dl>
                   </div> -->
+                   <% if((filterCategory=="SPAWN")&&(mushElement.stage==2)){ %>
+                  <div class="col-md-2 col-sm-6">
+                    <dl>
+                      <dt>Stage </dt>
+                      <dd id="stage_Show" class="elementText"> <%= mushElement.stageDesc %></dd>
+                    </dl>
+                  </div>
+                  <% }  %>
                   <% if(filterCategory=="CULTIVATION"){ %>
                   <div class="col-md-2 col-sm-6">
                     <dl>
