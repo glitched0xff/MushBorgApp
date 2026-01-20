@@ -121,7 +121,7 @@ Creiamo un utente diverso da root per la gestione del database.
 
 L'utente ha tutti i privilegi.
 
-`GRANT ALL ON *.* TO 'mushborg_admin'@'localhost' IDENTIFIED BY 'mushborg0x0' WITH GRANT OPTION;`
+`GRANT ALL ON *.* TO 'mushborg'@'localhost' IDENTIFIED BY 'mushborg0x0' WITH GRANT OPTION;`
 
 Aggiorno i provilegi
 
@@ -170,7 +170,7 @@ Installo Nodemon (gestione del debug)
 
 #### Edit file .env per connessione al db
 
-Di defualt username e password sono quelli indicati precedentemente
+Di default username e password sono quelli indicati precedentemente
 
 `nano .env`
 
@@ -195,7 +195,7 @@ Copiare il file di configurazione e modifica per il reverse forwarding
 
 ```
 cd /etc/nginx/sites-available/
-sudo cp defualt default.orig
+sudo cp default default.orig
 sudo nano default
 ```
 
@@ -327,7 +327,7 @@ Creiamo un utente diverso da root per la gestione del database.
 
 L'utente ha tutti i privilegi.
 
-`GRANT ALL ON *.* TO 'mushborg_admin'@'localhost' IDENTIFIED BY 'mushborg0x0' WITH GRANT OPTION;`
+`GRANT ALL ON *.* TO 'mushborg'@'localhost' IDENTIFIED BY 'mushborg0x0' WITH GRANT OPTION;`
 
 Aggiorno i provilegi
 
@@ -376,7 +376,7 @@ Installo Nodemon (gestione del debug)
 
 #### Edit file .env per connessione al db
 
-Di defualt username e password sono quelli indicati precedentemente
+Di default username e password sono quelli indicati precedentemente
 
 `nano .env`
 

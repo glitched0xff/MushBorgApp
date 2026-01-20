@@ -339,7 +339,7 @@ function drawHarvestTable(limit=0) {
   }
 
 // Note table
-function drawNoteTable(limit=0){
+function drawNoteTable(limit=10){
   $.ajax({
     type: "GET",
     url: "/mushElement/getMushElementNote?idElement="+mushElement.id+"&filterCategoryNote="+mushElement.type,
@@ -501,16 +501,13 @@ $(document).ready(async function () {
           const baseName = file.name
             .replace(/\.[^/.]+$/, "")   // rimuove estensione
             .replace(/\s+/g, "_");      // spazi → _
-
           const newFile = new File(
             [resizedBlob],
             baseName + ".jpg",
             { type: "image/jpeg" }
           );
-
           formdata.delete(fileKey);
           formdata.append(fileKey, newFile);
-
           console.log("Immagine convertita e ridimensionata");
         } catch (err) {
           console.error(err);
@@ -518,7 +515,6 @@ $(document).ready(async function () {
           return;
         }
       }
-
       $.ajax({
         type: "POST",
         url: "/mushElement/newMushElementNote?type="+filterCategory,
@@ -529,12 +525,11 @@ $(document).ready(async function () {
           console.log("before")
           $("#loadingOverlay").fadeIn(200);
         },
-        
         success: async function (response) {
-          drawNoteTable(limitListNote)
+          await drawNoteTable(limitListNote)
+          resetForm("mushElementNote_Form")
           $("#insertNote_Btn").show()
         },
-
         complete: function () {
           console.log("Completato Upload")
           $("#loadingOverlay").fadeOut(200);
