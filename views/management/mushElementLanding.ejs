@@ -23,6 +23,15 @@
           <div class="card w-100" id="">
             <div class="row m-3">
               <h4 class="mx-auto"><%= mushElement.element_code %></h4>
+              <% if (mushElement.active==0){%>
+              <div class="col-12 text-center">
+                <i class="fa fa-times-circle text-danger" aria-hidden="true"></i> 
+                  <span class="small">
+                  Elimianto:<%= mushElement.pick_date %>  <%= mushElement.pick_reason %> 
+                  </span>
+              </div>
+              <% } %>
+              
                 <div class="row w-100 mt-3">
                   <!--Raccolto  -->
                   <div class="col-12 mx-auto my-2">
@@ -30,7 +39,11 @@
                     <div class="card-header"  >
                       <h3 class="card-title">Raccolto (<span id="countHarvest"></span>) </h3>
                       <div class="card-tools">
-                        <button class="btn btn-xs btn-primary mx-1" id="insertHarvest_Btn"> <i class="fas fa-plus"></i> Inserisci raccolto</button>
+                        <button class="btn btn-xs btn-primary mx-1" id="insertHarvest_Btn"
+                        <% if (mushElement.active==0){%>
+                          disabled
+                        <% } %>
+                        > <i class="fas fa-plus"></i> Inserisci raccolto</button>
                         <!-- <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button> -->
                       </div>
                     </div>
@@ -112,7 +125,11 @@
                       <h3 class="card-title">Note (<span id="countNote"></span>) </h3>
                         
                       <div class="card-tools">
-                        <button class="btn btn-xs btn-primary mx-1" id="insertNote_Btn"> <i class="fas fa-plus"></i> Inserisci nota</button>
+                        <button class="btn btn-xs btn-primary mx-1" id="insertNote_Btn"
+                        <% if (mushElement.active==0){%>
+                          disabled
+                        <% } %>
+                        > <i class="fas fa-plus"></i> Inserisci nota</button>
 <!--                       
                           <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button> -->
                       </div>
@@ -222,9 +239,7 @@
                   </div>
                     </div>
                   </div>
-
-
-<div class="col-12 mx-auto my-2">
+                  <div class="col-12 mx-auto my-2">
                   <% if (mushElement.type=="CULTIVATION"){
                       if(mushElement.stage==1){%>
                     <button type="button" name="" id="fructElement_Btn" class="btn btn-success btn-block"> 
@@ -240,7 +255,11 @@
                     </a>
                   </div>
                   <div class="col-12 mx-auto my-2">
-                    <button type="button" name="" id="" class="btn btn-danger btn-block">Pick elemento
+                    <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-block"
+                    <% if (mushElement.active==0){%>
+                    disabled
+                    <% } %>
+                    >Pick elemento
                       <i class="fa fa-minus-circle" aria-hidden="true"></i>
                     </button>
                   </div>
@@ -250,6 +269,81 @@
           </div>
       </div>
   </section>
+</div>
+<!-- Pick modal -->
+<div class="modal fade" id="pick_Mdl" tabindex="-1" aria-labelledby="pick_MdlLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pick_MdlLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="pick_Frm">
+          <input type="hidden" name="idMushElement" value="<%= mushElement.id %>">
+          <div class="row w-100">
+                    <div class="col-6">
+                      <dl>
+                        <dt>Data prelievo*</dt>
+                        <dd id="pick_date_Edit" class="elementText">
+                          <div class="col" id="pickDate_Fld" >
+                            <div class="form-group">
+                              <div class="input-group date" id="pickDate_DT" data-target-input="nearest">
+                                <input type="text" class="form-control datetimepicker-input form-control-sm form-control-minimal" data-target="#pickDate_DT " 
+                                        name="pickDate" id="pickDate" value="" required>
+                                <div class="input-group-append" data-target="#pickDate_DT " data-toggle="datetimepicker">
+                                  <div class="input-group-text  form-control-sm form-control-minimal"><i class="fa fa-calendar"></i></div>
+                                </div>
+                              </div>
+                            </div>
+                          </dd>
+                      </dl>
+                    </div>
+                    <div class="col-6">
+                      <dl>
+                        <dt>Motivo prelievo*</dt>
+                        <dd id="pick_reason_Edit" class="elementText"> 
+                          <div class="form-group">
+                            <select  class="form-control form-control-sm form-control-minimal" id="ppickReason" name="pickReason" required>
+                              <option value="">--</option>
+                            <% for (let i = 0; i < pickReasonDD.length; i++) {%>
+                              <option value="<%=pickReasonDD[i].val %>"><%= pickReasonDD[i].txt%></option>
+                            <%} %>
+                            </select>
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                  <div class="row w-100">
+                    <div class="col">
+                      <div class="form-group">
+                      <label for="">Note prelievo</label>
+                      <textarea class="form-control" name="pickNote" id="pickNote" rows="3"></textarea>
+                    </div>
+                    </div>
+                    
+                </div>
+                <div class="row w-100">
+                  <div class="col">
+                    <div class="form-check form-check-inline text-danger">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="deleteElem" id="deleteElem" value="1"> Vuoi eliminare definitivamente l'elemento?
+                    </label>
+                  </div>
+                  </div>
+                </div>
+                <div class="row w-100 mt-2">
+                  <div class="alert alert-danger w-100" role="alert">
+                    Dopo il prelievo l'elemento non sarà più modificabile.
+                  </div>
+                  <button type="button" class="btn btn-primary btn-xs" id="pickDelete_Btn">Salva prelievo</button>
+                </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
  <!-- Loading -->
 <style>
@@ -311,9 +405,13 @@ function drawHarvestTable(limit=0) {
           for (let i = 0; i < harvest.length; i++) {
             const hv = harvest[i];
             total+=hv.harvest_weight
+            let disable
+            if (mushElement.active==0){
+              disable="disabled"
+            }
              html+=`<tr>
               <td>
-                <button type="button" name="" id="${hv.id}" 
+                <button type="button" name="" id="${hv.id}" ${disable}
               class="btn btn-danger btn-xs delMushElementHarvest" style="width:25px"
               idMushElementHarvest="${hv.id}" idMushElement="${hv.mushElementId}">
                 <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
@@ -353,9 +451,13 @@ function drawNoteTable(limit=10){
             if(notaTxt.length>30){
               notaTxt=notaTxt.slice(0,20)
             }
+            let disable
+            if (mushElement.active==0){
+              disable="disabled"
+            }
              html+=`<tr>
               <td>
-                <button type="button" name="" id="${nt.id}" 
+                <button type="button" name="" id="${nt.id}" ${disable}
               class="btn btn-danger btn-xs delMushElementNote" style="width:25px"
               idMushElementNote="${nt.id}" idMushElement="${nt.mushElementId}">
                 <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
@@ -386,7 +488,9 @@ $(document).ready(async function () {
   $('#harvest_date_DT').datetimepicker('date', new Date())
   $('#check_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY",autoclose:true})
   $('#check_date_DT').datetimepicker('date', new Date())
-  
+  $('#pickDate_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+  $('#pickDate_DT').datetimepicker('date', new Date())
+
   switch (mushElement.type) {
     case "INOCULUM":
       pathLetter="I"
@@ -571,6 +675,39 @@ $(document).ready(async function () {
       $("#nota").html(nota.note)
       $("#noteZoom_Wrp").show()
       $("#mushElementNote_Tbl_Wrp").hide();
+    });
+
+    /** Picke elemento */
+     $("#delElement_Btn").click(function (e) { 
+      e.preventDefault();
+      $('#pick_Mdl').modal('show')
+    });
+    $("#pickDelete_Btn").click(function (e) { 
+      e.preventDefault();
+
+      if (checkForm("pick_Frm")){
+        let deleteFlag=$("#deleteElem").is(":checked");
+        console.log(deleteFlag)
+        console.log("--")
+        if (confirm("Vuoi continuare?")){
+          $.ajax({
+            type: "PUT",
+            url: "/mushElement/pickElement",
+            data: $("#pick_Frm").serialize(),
+            success: function (response) {
+              if (deleteFlag==true){
+                window.location.replace("/mushElement/"); 
+              }else{
+                window.location.replace("/mushElement/mushElementLanding?elementCode="+mushElement.element_code ); 
+              }
+            }
+          });
+        } else {
+          $('#pick_Mdl').modal('hide')
+        }
+      }else{
+        alert("Compila i dati obbligatori")
+      }
     });
 
     /** Utility */

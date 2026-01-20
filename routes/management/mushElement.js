@@ -766,9 +766,25 @@ router.get('/getQrElement',async  (req, res) => {
 // Landing page qr code
 router.get('/mushElementLanding',async (req,res)=>{
     let elementCode=req.query.elementCode?req.query.elementCode:false
+    
     if (elementCode){
+        
         let mushElement=await db.mushElement.findOne({where:{element_code:elementCode}})
-        res.render("management/mushElementLanding",{mushElement:mushElement})
+        let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
+
+        let pickReasonDesc
+        mushElement=JSON.parse(JSON.stringify(mushElement))
+        pickReasonDD.forEach(el => {
+                if (el.val===parseInt(mushElement.pick_reason)){
+                    pickReasonDesc=el.txt
+                }
+            });
+            console.log(mushElement.pick_reason)
+            console.log(pickReasonDesc)
+        mushElement.pick_date=mushElement.pick_date?moment(mushElement.pick_date).format("DD-MM-YY"):null
+        mushElement.pick_reason=pickReasonDesc
+
+        res.render("management/mushElementLanding",{mushElement:mushElement,pickReasonDD:pickReasonDD})
     } else {
                 res.status(422).json()
             }
