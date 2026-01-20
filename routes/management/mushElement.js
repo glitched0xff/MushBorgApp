@@ -59,12 +59,12 @@ router.get('/getAll',async  (req, res) => {
 });
 
 router.put('/updateMushElement', async(req,res) => {
-    //console.log(req.body)
+    console.log(req.body)
     let idMushElement=req.body.idMushElement?req.body.idMushElement:false
     let data=req.body
     if (idMushElement!=false){
         await db.mushElement.update({
-            pick_date:data.pick_date?data.pick_date:null,
+            pick_date:data.pick_date?moment(data.pick_date,"DD-MM-YYYY"):null,
             pick_reason:data.pick_reason?data.pick_reason:null,
             stato:data.stato,
             qt:data.qtElem,
@@ -402,7 +402,7 @@ router.put('/modMushElement', async(req,res) => {
 
 
 router.put('/pickElement', async(req,res) => {
-    //console.log(req.body)
+console.log(req.body)
     let idMushElement=req.body.idMushElement?req.body.idMushElement:false
     let data=req.body
     if (idMushElement!=false){
@@ -419,7 +419,7 @@ router.put('/pickElement', async(req,res) => {
             }) 
         } else {
             await db.mushElement.update({
-                pick_date:moment(data.pickDate,"DD-MM-YY hh:mm:ss").format("YYYY-MM-DD hh:mm:ss"),
+                pick_date:data.pickDate?moment(data.pickDate,"DD/MM/YY hh:mm:ss").format("YYYY-MM-DD hh:mm:ss"):null,
                 pick_reason:data.pickReason,
                 active:0
             },{where:{id:idMushElement}})

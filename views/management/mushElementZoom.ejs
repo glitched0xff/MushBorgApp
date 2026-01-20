@@ -1361,18 +1361,18 @@ $(document).ready(async function () {
     tableMushElement=$('#mushElement_Tbl').DataTable({responsive: true,order: [[5, 'desc']]})
     $('#dt_start_DT').datetimepicker({locale: 'it', format:"DD-MM-YYYY"})
     $('#dt_end_DT').datetimepicker({locale: 'it', format:"DD-MM-YYYY"})
-    $('#pick_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $('#check_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY",autoclose:true})
     $('#setExpectedMatDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $('#setRealMatDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $('#setExpectedFructDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $('#setRealFructDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $('#harvest_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#pickDate_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     
     $('#harvest_date_DT').datetimepicker('date', new Date())
     $('#check_date_DT').datetimepicker('date', new Date())
     $('#pickDate_DT').datetimepicker('date', new Date())
-
+    
 
      $("#dt_start_Fl").on("dp.change", function (e) {
            let data=$('#dt_start_Fl').val()
