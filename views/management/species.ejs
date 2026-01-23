@@ -79,6 +79,38 @@
                       maxlength:3,
                     },
                      { type:"endRow"},
+                     { type:"startRow"},
+                     {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"synonyms",
+                      label:"Nome comune/sinonimo",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"habitat",
+                      label:"Habitat",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"substrate",
+                      label:"Substrato ideale",
+                      required:true, 
+                    },
+                     { type:"endRow"},
+                     { type:"startRow"},
+                     
+                      {
+                        type:"textarea",
+                        classBox:"col-md-2 col-sm-6",
+                        fieldName:"longDesc",
+                        label:"Descrizione",
+                        col:10,
+                        row:6
+                      },
+                     { type:"endRow"},
                     ]  
                 }) %>
               </div>
@@ -401,7 +433,7 @@ async function drawShowSpecies(redirectId) {
             }
         //---- Form //
         $("#showSpecies_Crd").show()
-        $("#parameter_Crd").show();
+        //$("#parameter_Crd").show();
         $(".lotti_Crd").show();
         $("#newSpecies_Crd").hide()
         $("#tableSpecies_Crd").hide()
@@ -467,7 +499,7 @@ $(document).ready(async function () {
     $("#newSpecies_Btn").click(function (e) { 
       e.preventDefault();
       $("#showSpecies_Crd").show()
-        $("#parameter_Crd").show();
+      //  $("#parameter_Crd").show();
         $("#newSpecies_Crd").hide()
         $("#tableSpecies_Crd").hide()
         $("#newSpecies_Btn").hide()
