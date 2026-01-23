@@ -1,0 +1,74 @@
+<%- include ('header') %>
+<%- include ('navbar') %>
+<%- include ('sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="storage-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Set drop down</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+        <div class="card w-100" id="showStorage_Crd" >
+            <div class="row w-100 p-2" id="">
+              <div class="col-3" id="listDD">
+                
+              </div>
+              <div class="col-9" id="">
+
+              </div>
+            </div>
+        </div>
+
+        
+      </div>
+      </div>
+    </section>
+    
+  </div>
+  
+
+  <%- include ('footer') %>
+  <%- include ('jsLoad') %>
+  <script>
+  //let harvests= <%# JSON.stringify( harvests) %>
+  let listDD
+  async function drawDDList(){
+    listDD=await $.get("/setting/listDD");
+    const grouped = listDD.reduce((acc, r) => {
+      (acc[r.ddMenu] ||= []).push(r);
+      return acc;
+    }, {});
+    let html =""
+    let navlistHtml=""  
+    let tabContent=""
+    navlistHtml+=`<div class="btn-group" role="group" aria-label="Basic example">`
+    Object.entries(grouped).forEach(([ddMenu, records]) => {
+      
+                  
+                
+        if(ddMenu!=undefined){
+          navlistHtml+=`<button type="button" class="btn btn-xs btn-secondary showDD"con>${ddMenu}</button>`
+        }
+    });
+    navlistHtml="</div>"
+    $("#listDD").html(navlistHtml)
+  }
+
+    $(document).ready(async function () {
+       drawDDList()
+
+    });
+
+  </script>
+  <%- include ('closeTag') %>
+  

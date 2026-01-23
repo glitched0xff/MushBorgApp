@@ -72,8 +72,19 @@ router.get('/checkWeigth',async (req,res)=>{
 
 })
 
+/**
+ * @api {get} /statistic/getWeigthGraph Elenco reparti
+ * @apiDescription Restituisce un grafico linea basato su Json inviato
+ * @apiName getWeigthGraph
+ * @apiGroup statistic
+ * @apiParam {String} JSON stringify ([xAxis:number/string,val:Number])
+ * @apiParam {String} order  if set to reverse API reverse the order of Json
+ * @apiSuccess {String} renderGraph Html rendered graph
+ * @apiVersion 1.0.0
+ */
 router.get('/getWeigthGraph',async (req,res)=>{
     let dataArray=req.query.dataArray?JSON.parse(req.query.dataArray):false
+    dataArray=req.query.order=="reverse"?dataArray.reverse():dataArray
     if(dataArray!=false){
       let renderGraph=await ejs.renderFile(path.join(__dirname, "../views/include/chartJs.ejs"), {
         dataArray: dataArray

@@ -396,8 +396,8 @@
 let mushElement =<%- JSON.stringify(mushElement) %>
 let mushElementNotes=[]
 let filterCategory=mushElement.type
-let limitListHarvest=3
-let limitListNote=3
+let limitListHarvest=5
+let limitListNote=5
 let pathLetter
 
 // Harvest table
@@ -671,13 +671,14 @@ $(document).ready(async function () {
       e.preventDefault();
       let idNote=$(this).attr("idNote")
       let nota=mushElementNotes[idNote]
-      console.log(mushElementNotes)
-      console.log(idNote)
-      console.log(mushElementNotes.length)
-      console.log(nota)
       
-      let imgUrl="/imgMushEleNote/"+mushElement.element_code+"/"+nota.pict
-      $("#note_Img").attr('src', imgUrl);
+      if (nota.pict){
+        let imgUrl=nota.pict?"/imgMushEleNote/"+mushElement.element_code+"/"+nota.pict:null
+        $("#note_Img").attr('src', imgUrl).show();
+      } else {
+        $("#note_Img").hide()
+      }
+
       $("#dataNote").html(moment(nota.check_date).format("DD-MM-YY"))
       $("#statoNote").html(nota.stato)
       $("#nota").html(nota.note)

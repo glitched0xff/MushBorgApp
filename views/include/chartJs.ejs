@@ -1,7 +1,7 @@
 <div class="chart-wrapper">
   <canvas id="dataArrayChart"></canvas>
 </div>
-
+<%- JSON.stringify(dataArray) %>;
 <script>
   (function () {
     // 🔹 dati ricevuti da Node
@@ -10,9 +10,7 @@
     // 🔹 elaborazione lato client
     const labels = rawData.map(item => item.xAxis);
     const values = rawData.map(item => item.val);
-
     const ctx = document.getElementById('dataArrayChart').getContext('2d');
-
     new Chart(ctx, {
       type: 'line',
       data: {

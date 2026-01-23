@@ -114,6 +114,8 @@ let statistic = require('./routes/statistic.js');
 app.use('/statistic', statistic);
 let print = require('./routes/print.js');
 app.use('/print', print);
+let setting = require('./routes/setting.js');
+app.use('/setting', setting);
 const sensorData=require("./controllers/sensorData.controller.js")
 
 

@@ -25,25 +25,18 @@
           
                     
             <div class="card w-100" id="showStorage_Crd" >
-              <div class="row w-100">
-                <div class="col-3 ml-auto mt-1">
-                  <table>
-                    <tr>
-                      <td style="width: 50%;">Intervallo raccolti</td>
-                      <td>
-                  <input type="text" class="form-control mb-2 mr-sm-2" id="intervalData" name="intervalData" value="">
-
-                      </td>
-                    </tr>
-                  </table>
+              <div class="row w-100 p-2">
+                <div class="col-md-2 col-sm-3 text-center pt-2 h5">
+                  Intervallo raccolti 
+                </div>
+                <div class="col-md-2 col-sm-9">
+                  <input type="text" class="form-control mb-2 mr-sm-2 col" id="intervalData" name="intervalData" value="">
                   
-                
-                
+                </div>
+                <div class="col pt-2 h5 ">
+                  Peso totale per periodo rif: <span id="totalWeight_SPN">10799g</span>
+                </div>
               </div>
-              </div>
-              
-            
-
               <div class="row m-3">
                 <div class="accordion w-100" id="accordionRaccolto">
                 <% harvests.forEach ((elem,index) => {
@@ -134,10 +127,12 @@
   let arrayTotalWeight= <%- JSON.stringify( arrayTotalWeight) %>
   let fromDate=<%-fromDate  %>
   let toDate=<%- toDate %>
-
   let totalDay=[]
+
+  // Weight per day and total in period
     function getTotalPerDayArray(harvests){
       let totalDay=[]
+      let totalWeight=0
       for (let i = 0; i < harvests.length; i++) {
         const elem = harvests[i];
         let wDay=0
@@ -146,12 +141,15 @@
           const el = elem[y];
           wDay=wDay+el.total_harvest_weight
           dt=el.day
+          
         }
         totalDay.push({val:wDay,xAxis:moment(dt,"YYYY-MM-DD").format("DD-MM-YY")})
+        totalWeight+=wDay
       }
+      $("#totalWeight_SPN").html(totalWeight+"g")
       return totalDay
     }
-
+    
     $(document).ready(async function () {
         console.log(fromDate,toDate)
         console.log(moment(fromDate).format("DD-MM"),moment(toDate).format("DD-MM"))
@@ -172,10 +170,12 @@
       });
 
       $("#createGraph").click(async function (e) { 
+        let ttDayGrph=totalDay
+        console.log(ttDayGrph)
         e.preventDefault();
         $.ajax({
           type: "get",
-          url: "/statistic/getWeigthGraph?dataArray="+JSON.stringify(totalDay.reverse()),
+          url: "/statistic/getWeigthGraph?dataArray="+JSON.stringify(ttDayGrph)+"&order=reverse",
           success: function (response) {
             $("#graph_Wrp").html(response)
             $("#graph_Mdl").modal("show")
