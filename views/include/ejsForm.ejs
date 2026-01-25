@@ -222,6 +222,18 @@ form.forEach(el => { %>
             $('#fieldName').datetimepicker({icons: {time: "fa fa-clock"},locale: 'it',sideBySide:true});
         </script>%>
     <% } %>
+    <%# TextEditor %>
+    <% if (el.type=="textEditor") {%>
+        <div class="<%= el.classBox %>">
+            <dl>
+                <dt><%= el.label %></dt>
+                <dd class="<%= classField %>">
+                    <div id="<%= el.fieldName %>_Fld "></div>
+                </dd>
+                <dd id="<%= el.fieldName %>_Show" class="<%= classTxt %>"></dd>
+            </dl>
+        </div>
+         <% } %>
     <%# TITLE TEMPLATE %>
     <% if (el.type=="title") {%>
     <span class="col-12 text-bold border-bottom border-top <% if (el.class) {%> <%= el.class %> <% } %>"> <%= el.title %> </span>

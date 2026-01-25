@@ -102,13 +102,19 @@
                      { type:"endRow"},
                      { type:"startRow"},
                      
+                      // {
+                      //   type:"textarea",
+                      //   classBox:"col-12",
+                      //   fieldName:"longDesc",
+                      //   label:"Descrizione",
+                      //   col:10,
+                      //   row:6
+                      // },
                       {
-                        type:"textarea",
+                        type:"textEditor",
                         classBox:"col-12",
                         fieldName:"longDesc",
-                        label:"Descrizione",
-                        col:10,
-                        row:6
+                        label:"Descrizione"
                       },
                      { type:"endRow"},
                     ]  
@@ -120,6 +126,8 @@
                 </div>
             </form>
           </div>
+          
+    
           <!-- Dati coltivazione -->
            <div class="card w-100 " style="display: none;" id="parameter_Crd"><!-- collapsed-card -->
             <div class="card-header">
@@ -342,7 +350,7 @@
 let redirectId= <%- JSON.stringify( redirectId) %>
 let specieId
 let importParam
-let speciesData
+let speciesData=""
 
 async function  drawTable (){
   await $.ajax({
@@ -460,17 +468,29 @@ async function drawTableStrain(params) {
 
 $(document).ready(async function () {
   // init 
+  
+
+
    if (redirectId!=null){
       await drawShowSpecies(redirectId)
       $("#idSpecies_Fld").val(redirectId);
       $("#idSpeciesParameter_Fld").val(redirectId);
       $("#pdfSpecies_Btn").show();
+      console.log("--")
+      console.log(speciesData.longDesc)
+
+   $('#longDesc_Fld').summernote({
+        tabsize: 2,
+        height: 100
+      })
+      $('#longDesc_Fld').summernote('code', speciesData.longDesc);
     }
     else{
       tableSpecies=$('#strain_Tbl').DataTable({responsive: true,pageLength: 50});
       await drawTable()
       $("#idSpecies_Fld").val("");
       $("#idSpeciesParameter_Fld").val("");
+      
     }
 
     $(document).on("click",".showSpecies", async function(e){
@@ -527,7 +547,8 @@ $(document).ready(async function () {
       
     });
 
-    $("#modSpecie_Btn").click(function (e) { 
+    $("#modSpecies_Btn").click(function (e) { 
+      console.log("test")
       e.preventDefault();
       $(".specieForm").show()
       $(".specieText").hide()
