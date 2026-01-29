@@ -72,7 +72,8 @@ let propagations=await Propagation.findAll({
               include: [{model:db.storage},
                         {model:db.mushElementHarvest}],
                 attributes:["id","element_code"]},
-    ]})
+    ],
+    order:[["createLot","DESC"]]})
 
     propagations=JSON.parse(JSON.stringify(propagations))
     
