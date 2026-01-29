@@ -1,3 +1,9 @@
+/**
+ * Script for list table
+ * V0 - 28.01.2026
+ * Glitched
+ */
+
 const { Sequelize, QueryTypes } = require('sequelize');
 
 // Configurazione della connessione
