@@ -199,12 +199,13 @@ async function  drawTable (){
                                 <td>${stage} </td>
                                 <td>${el.totalNote}</td>
                                 <td>${el.totalHarvestWeight?el.totalHarvestWeight:"0"} g</td>
-                                
-                                <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                                <td data-order="${moment(el.load_date).valueOf()}">${moment(el.load_date).format("DD-MM-YYYY HH:mm")}</td>
                             </tr>`
                 
                 } //${el.substrate.cod_substrate} ${el.substrate.name_substrate}
-                await $('#mushElement_Tbl').DataTable().clear().rows.add($(html)).draw();
+                 tableMushElement.clear()
+                 const $rows = $(html)
+                 tableMushElement.rows.add($rows).draw();
             }
     });
 
@@ -213,10 +214,17 @@ async function  drawTable (){
 
 
 $(document).ready(async function () {
+  //$.fn.dataTable.moment('DD-MM-YYYY HH:mm');
+  //console.log(typeof $.fn.dataTable.moment);
     $('#pickDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
 
   // init   
-    tableMushElement=$('#mushElement_Tbl').DataTable({responsive: true,lengthMenu: [25, 50, 100],pageLength: 50})
+    tableMushElement=$('#mushElement_Tbl').DataTable({responsive: true,
+                                                      lengthMenu: [25, 50, 100],
+                                                      pageLength: 50
+                                                    }) //columnDefs: [
+                                                       // { targets: 7, type: 'datetime-moment' }
+                                                      //]order: [[2, 'asc']]
     await drawTable()
   
   $("#dt_start_DT").on("change.datetimepicker", function (e) {

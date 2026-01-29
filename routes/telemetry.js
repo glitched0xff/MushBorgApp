@@ -34,13 +34,13 @@ router.get('/',async  (req, res) => {
 router.get('/getAllData',async (req, res) => {
   //console.log(req.query)
   let idDevice=req.query.idDevice
-  let dtTo=req.query.dtTo
-  let dtFrom=req.query.dtFrom
+  let dtTo=req.query.dtTo?req.query.dtTo:moment().toDate();
+  let dtFrom=req.query.dtFrom?req.query.dtFrom:moment().startOf('day')
   let deviceData=null
   let where = {
       createdAt: {
-        [Op.gte]: dtFrom,
-        [Op.lte]:dtTo},
+        [Op.gte]: moment(dtFrom),
+        [Op.lte]: moment(dtTo)},
     }
   if (idDevice) {
     where.deviceId = idDevice

@@ -506,7 +506,7 @@
             <div class="btn-group-vertical col mx-auto">
                 <button class="btn btn-xs btn-danger" id="unlinkSensor_Btn"> Dissocia sensore</button>
                 <button class="btn btn-xs btn-secondary" disabled> Modifica sensore</button>
-                <button class="btn btn-xs btn-secondary" disabled> Crea grafico</button>
+                <button class="btn btn-xs btn-secondary createGraphSensor_Btn" disabled> Crea grafico</button>
             </div>
           </div>
         </div>
@@ -532,6 +532,28 @@
     </div>
   </div>
 </div>
+
+<!-- Modal create Graph -->
+ <div class="modal fade" id="createGraphSensor_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        Body
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+ </div>
+ 
 <%- include ('footer') %>
   <%- include ('jsLoad') %>
   <script>
@@ -543,7 +565,7 @@
     let checkSensorValue,checkStatusAllarm,checkStatusActuattors
     let timerRefresh=2000
     let editDevicesId=0
-   
+    let sensorData
     socket.on('data', data => {
       console.log("socket")
       console.log(data);
@@ -724,10 +746,10 @@
         type: "GET",
         url: "/storage/getSensorsStorages?storageId="+storageData.id,
         success: function (response) {
-          let sensors=response.sensors
-          console.log(sensors)
+          sensorData=response.sensors
+          console.log(sensorData)
           let html=""
-          sensors.forEach(sens => {
+          sensorData.forEach(sens => {
               let val=sens.sensorData[0]?sens.sensorData[0][sens.fieldName]:0
               html+=`<div class="info-box col-lg-3 col-sm-12  mx-2">
                   <span class="info-box-icon  ${sens.bgcolor}" style="b"><i class="${sens.icon} text-white"></i></span>
@@ -737,13 +759,23 @@
                     <div class="row">
                     <div class="col-9">
                     ${sens.label} </div>
-                    <div class="col-3 text-right">
-                    <a href="#" class="text-gray editSensor" editDeviceId="${sens.id}"><i class="fas fa-ellipsis-h "></i></a>
-                    </div> 
-                    </div>
+                    
+                    <div class="dropdown">
+                          <a href="#"
+                            class="text-gray dropdown-toggle"
+                            data-toggle="dropdown"
+                            data-boundary="viewport">
+                            <i class="fas fa-ellipsis-h"></i>
+                          </a>  
+                          <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item editSensor_Btn" disabled editDeviceId="${sens.id}" href="#">Modifica</a>
+                            <a class="dropdown-item hystorySensor_Btn" editDeviceId="${sens.id}" href="#">Storico</a>
+                            <a class="dropdown-item text-danger unlinkSensor_Btn" editDeviceId="${sens.id}" href="#">Dissocia sensore</a>
+                          </div>
+                        </div>  
                   </span>
-                  <span class="info-box-number p-0 m-0" style="font-size: 26px;">${val} ${sens.postChr}</span>
-                  
+                  <span class="info-box-number pl-2 m-0" style="font-size: 26px;">${val} ${sens.postChr}</span>
+                </div>
                 </div>
               </div>`
           });
@@ -763,7 +795,11 @@
         await associateSensors()
         await associateAllarms()
      
-        /** Gestione sensori */
+        /** Gestione sensori 
+         * editSensor_Btn
+hystorySensor_Btn
+unlinkSensor_Btn
+        */
       $("#sensor_deviceId_Fld").change(function (e) { 
         e.preventDefault();
         let deviceId=$(this).val()
@@ -816,16 +852,18 @@
           }
         }
       });
-      $(document).on("click",".editSensor",function(e){
+      $(document).on("click",".editSensor_Btn",function(e){
         e.preventDefault()
+        console.log("editSensor")
         editDevicesId=$(this).attr("editDeviceId")
         $("#editDevice_Mdl").modal("show")
-        $("#editMenuSensor_Wrp").show()
-        $("#editMenuActuator_Wrp").hide()
-        $("#editMenuAllarm_Wrp").hide()
+        $("#sensorText").show()
+        $("#sensorForm").hide()
       })
-      $("#unlinkSensor_Btn").click(function (e) { 
+      $(document).on("click",".unlinkSensor_Btn",function(e){
         e.preventDefault();
+        let editDevicesId=$(this).attr("editDeviceId")
+        console.log(editDevicesId)
         if(confirm("Confermi di voler scollegare il sensore dallo storage?")){
           $.ajax({
           type: "DELETE",
@@ -838,8 +876,21 @@
         }
         
       });
-
-
+      $(document).on("click",".hystorySensor_Btn",function(e){
+        e.preventDefault();
+        let editDevicesId=$(this).attr("editDeviceId")
+        const dtFrom = moment().startOf('day').toDate();
+      const dtTo = moment().toDate();
+      
+        let telemetry= $.get("/telemetry/getAllData?idDevice="+editDevicesId)
+        $.ajax({
+          type: "GET",
+          url: "/telemetry/getAllData?idDevice="+editDevicesId,
+          success: function (response) {
+            console.log(response)
+          }
+        });
+      })
 
       /** Gestione attuatori */
       $("#actuator_sensorId_Fld").change(function (e) { 
@@ -905,7 +956,7 @@
       $(document).on("click",".editActuator",function(e){
         e.preventDefault()
         editDevicesId=$(this).attr("editDeviceId")
-        $("#editDevice_Mdl").modal("show")
+        $("#sensor_Mdl").modal("show")
         $("#editMenuSensor_Wrp").hide()
         $("#editMenuActuator_Wrp").show()
         $("#editMenuAllarm_Wrp").hide()

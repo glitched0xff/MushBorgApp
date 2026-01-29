@@ -257,11 +257,17 @@
         if (elem.associateSensors.length>0){
             html+=`<div class="row w-100">`
               elem.associateSensors.forEach (sens => {
+                console.log(sens)
                 html+=`<div class=" col-md-6 col-sm-12 my-1 mx-auto text-center">
                                     <div  class="btn  ${sens.bgcolor} " style="width: 200px;" >
                                       <span class="small text-center w-100">${ sens.label }</span>
-                                  <span class="w-100"><i class="${ sens.icon} mx-2 fa-10px" aria-hidden="true"></i>
-                                    ${ sens.sensorData[0][sens.fieldName] } ${ sens.postChr }</span> 
+                                  <span class="w-100"><i class="${ sens.icon} mx-2 fa-10px" aria-hidden="true"></i>`
+                                    if(sens.sensorData[0]){
+                                      html+=`${ sens.sensorData[0][sens.fieldName]} ${ sens.postChr }`
+                                    }else{
+                                      html+=`N/D`
+                                    }
+                                    html+=`</span> 
                                       </div>
                                 </div>`
               })

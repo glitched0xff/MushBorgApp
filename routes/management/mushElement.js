@@ -44,7 +44,7 @@ router.get('/getAll',async  (req, res) => {
                     [fn("COUNT", col("mushElementNotes.id")), "totalNote"]]
         },
         group: ["mushElement.id"] // serve il group by per fare l’aggregazione
-        },{ order:[['id', 'ASC']]})
+        },{ order:[['load_date', 'ASC']]})
     }else{
         mushElements=await db.mushElement.findAll({
         include: [{model: db.mushElementNote,attributes:[]},{model: db.mushElementHarvest,attributes:[]}],
@@ -53,7 +53,7 @@ router.get('/getAll',async  (req, res) => {
                     [fn("COUNT", col("mushElementNotes.id")), "totalNote"]]
         },
         group: ["mushElement.id"] // serve il group by per fare l’aggregazione
-        },{ order:['id', 'ASC']})
+        },{ order:['load_date', 'ASC']})
     }
     res.status(200).json({mushElements:mushElements})
 });
@@ -418,13 +418,24 @@ console.log(req.body)
                 res.status(422).json({message:err}) 
             }) 
         } else {
+            
             await db.mushElement.update({
                 pick_date:data.pickDate?moment(data.pickDate,"DD/MM/YY hh:mm:ss").format("YYYY-MM-DD hh:mm:ss"):null,
                 pick_reason:data.pickReason,
                 active:0
             },{where:{id:idMushElement}})
             .then(async result=>{
-                await db.diaryNote.create({nota:`Pick dell'elemento ${mushElement.element_code} motivazione: ${data.pickReason}`,tag:"",area:""}) 
+                let pickReasonDesc=""
+                let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
+                pickReasonDD=JSON.parse(JSON.stringify(pickReasonDD))
+                console.log(pickReasonDD)
+                pickReasonDD.forEach(el => {
+                    if (el.val===parseInt(data.pickReason)){
+                        pickReasonDesc=el.txt
+                    }
+                });
+                console.log(pickReasonDesc)
+                await db.diaryNote.create({nota:`Pick dell'elemento ${mushElement.element_code} motivazione: ${pickReasonDesc}`,tag:"",area:""}) 
                 res.status(200).json({message:"ok"})
             })
             .catch(err =>{

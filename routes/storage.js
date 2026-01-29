@@ -109,6 +109,13 @@ router.post('/associateActuatorStorage',async (req,res)=>{
 router.get('/getActuatorsStorages',async (req,res)=>{
     let storageId=req.query.storageId?req.query.storageId:null
     let actuators= await db.associateActuator.findAll({where:{storageId:storageId,active:1}})
+    actuators=JSON.parse(JSON.stringify(actuators))
+    for (let i = 0; i < actuators.length; i++) {
+        const act = actuators[i];
+        let cod_device= await db.device.findOne({where:{id:act.deviceId}})
+        console.log(act)
+        actuators[i].cod_device=cod_device
+    }
     res.status(200).json({actuators:actuators})
 })
 router.delete('/unlinkActuator',async (req,res)=>{

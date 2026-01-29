@@ -1,10 +1,12 @@
 # VM Mushborg
 
-| File    | Sha256 | Rilascio | Deprecato |
-| -------- | ------- | --------- | ------------ |
-| [Mushborg0.1a.ova](https://app.box.com/s/rw2a63fi5pslsautpa5yylq8qjbmtfrp)  | afdbb3c81ffa63326150549f2a246329fb0d1e40     | 23-12-2025|
-|| Aggiunta campo speciesId a a tabella Strain - Configutato hostname mushborg.local - Fix sync errato .env - Aggiunta area statistiche in Tools->Statistiche Controllo peso (controlla il peso totale di funghi raccolti in un intervallo di tempo)|
-| ~~MushborgV0_19-12-25.ova~~  | 6e1f1ad32ea79126c3fabf4aad3c0db6fd7e83ad     | 19-12-2025| V
+| File    | Sha256 | Rilascio |
+| -------- | ------- | --------- |
+ [Mushborg0.2.1.ova](http://217.154.118.233/public/Mushborg0.2.1.ova)  | 65ac3bb2e735db23ede879adce2c686d8766a6912fe25ccec3f22fdfa6f3d425     | 29-01-2026|
+|| Bugfix generale e modifica del db per utilizzo con MushborgDC
+| [Mushborg0.1a.ova](https://app.box.com/s/rw2a63fi5pslsautpa5yylq8qjbmtfrp)  | afdbb3c81ffa63326150549f2a246329fb0d1e40     | 23-12-2025
+|| Aggiunta campo speciesId a a tabella Strain - Configutato hostname mushborg.local - Fix sync errato .env - Aggiunta area statistiche in Tools->Statistiche Controllo peso (controlla il peso totale di funghi raccolti in un intervallo di tempo)
+| ~~MushborgV0_19-12-25.ova~~  | 6e1f1ad32ea79126c3fabf4aad3c0db6fd7e83ad     | 19-12-2025
 
  
 
