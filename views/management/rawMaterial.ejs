@@ -306,7 +306,7 @@ async function  drawTable (){
                           </button>
                           <button type="button" name="" id="delete${el.id}" 
                           class="btn btn-danger btn-xs deleteMaterialBtn" style="width: 25px" ${delBtnDisable}
-                          idMaterial="${el.id}" >
+                          idMaterial="${el.id}" materialname="${el.material_name}">
                             <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
                           </button>
                         </td>
@@ -576,7 +576,8 @@ $(document).ready(async function () {
     // delete Raw MAterial
     $(document).on("click",".deleteMaterialBtn", async function(e){
       e.preventDefault();
-      let id=$(this).attr("idMaterial")
+      let id=$(this).attr("idmaterial")
+      console.log(id)
       let materialName=$(this).attr("materialName")
       let c=confirm(`Stai eliminando il materialem ${materialName}, vuoi continuare? `)
       if (c==true){

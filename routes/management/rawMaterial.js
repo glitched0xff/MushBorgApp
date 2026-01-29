@@ -37,7 +37,7 @@ router.get('/',async  (req, res) => {
   
 router.get('/getAll',async  (req, res) => {
 let rawMaterials=await RawMaterial.findAll({
-    logging: console.log,
+    //logging: console.log,
     include: [{
             model: MaterialCategory,
         },{
@@ -67,7 +67,7 @@ router.post('/newRawMaterial', async(req,res) => {
             fornitore:data.fornitore,
             date_storage:data.date_storage,
             quantity:data.quantity,
-            hum_factor:data.hum_factor,
+            hum_factor:parseFloat(data.hum_factor),
             uom:data.uom,
             storageId:data.storageId,
             destination:data.destination,
@@ -121,8 +121,10 @@ router.get('/getOneRawMaterial',async  (req, res) => {
 router.delete('/deleteRawMaterial',async  (req, res) => {
     let idMaterial=req.query.id?req.query.id:false
     if (idMaterial!=false){
-        let checkUse=await SubstrateElement.findAll({where:{id:idMaterial}})
-        if(checkUse.length==0){
+        let checkUse=await SubstrateElement.count({where:{rawMaterialId:idMaterial}})
+        // console.log(idMaterial)
+        // console.log(checkUse)
+        if(checkUse==0){
             let result=await db.rawMaterial.destroy({where:{id:idMaterial}})
             res.status(200).json({checkUse:false,data:result})
         }
