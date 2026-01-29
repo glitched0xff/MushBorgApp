@@ -262,6 +262,23 @@ router.post('/species/newSpecie', async(req,res) => {
         })
 })
 
+router.put('/species/updateSpecie',async  (req, res) => {
+    let specieId=req.body.idSpecies?req.body.idSpecies:false
+    if (specieId!=false){
+    console.log(req.body)
+        result=await db.species.update({
+            description:req.body.description,
+            synonyms:req.body.synonyms,
+            habitat:req.body.habitat,
+            substrate:req.body.substrate,
+            longDesc:req.body.longDesc
+        },{where:{id:specieId}})
+        res.status(200).json({result:result})
+    } else {
+            res.status(522).json()
+        }
+  });
+
 router.delete('/species/deleteSpecie',async  (req, res) => {
     let specieId=req.query.id?req.query.id:false
     if (specieId!=false){

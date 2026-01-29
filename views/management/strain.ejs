@@ -463,9 +463,12 @@
         <div class="form-group">
           <label for=""></label>
           <select class="form-control" name="importParameter_Slc" id="importParameter_Slc">
-            <% strainDD.forEach (el => {%>
+            <% if (strainDD){%>
+              <% strainDD.forEach (el => {%>
               <option value="<%= el.val%>"><%= el.txt%></option>
             <% }) %>
+            <% } %>
+            
           </select>
         </div>
         <div class="col-12" >

@@ -97,25 +97,24 @@
                       classBox:"col-4",
                       fieldName:"substrate",
                       label:"Substrato ideale",
-                      required:true, 
                     },
                      { type:"endRow"},
                      { type:"startRow"},
                      
-                      // {
-                      //   type:"textarea",
-                      //   classBox:"col-12",
-                      //   fieldName:"longDesc",
-                      //   label:"Descrizione",
-                      //   col:10,
-                      //   row:6
-                      // },
                       {
-                        type:"textEditor",
+                        type:"textarea",
                         classBox:"col-12",
                         fieldName:"longDesc",
-                        label:"Descrizione"
+                        label:"Descrizione",
+                        col:10,
+                        row:6
                       },
+                      // {
+                      //   type:"textEditor",
+                      //   classBox:"col-12",
+                      //   fieldName:"longDesc",
+                      //   label:"Descrizione"
+                      // },
                      { type:"endRow"},
                     ]  
                 }) %>
@@ -532,33 +531,55 @@ $(document).ready(async function () {
 
     $("#saveSpecies_Btn").click(function (e) { 
       e.preventDefault();
+      let idSpecie=$("#idSpecies_Fld").val()
       let check=checkForm("specie_Frm")
       if(check){
-        $.ajax({
-          type: "POST",
-          url: "/strain/species/newSpecie",
-          data: $("#specie_Frm").serialize(),
-          success: function (response) {
-            console.log(response)
-            window.location="/strain/species?id="+response.id
-          }
-        });
+        if (idSpecie==""){
+          $.ajax({
+            type: "POST",
+            url: "/strain/species/newSpecie",
+            data: $("#specie_Frm").serialize(),
+            success: function (response) {
+              console.log(response)
+              window.location.reload()
+            }
+          });
+        } else if (parseInt(idSpecie)){
+          $.ajax({
+            type: "PUT",
+            url: "/strain/species/updateSpecie",
+            data: $("#specie_Frm").serialize(),
+            success: function (response) {
+              console.log(response)
+              window.location.reload()
+            }
+          });
+        }
       }
       
     });
 
     $("#modSpecies_Btn").click(function (e) { 
-      console.log("test")
       e.preventDefault();
       $(".specieForm").show()
       $(".specieText").hide()
       $("#specie_Frm_Btn").show();
+      $("#species_name_Fld").prop("disabled", true)
+      $("#shortCode_Fld").prop("disabled", true)
       
     });
 
-    $("#abortSpecie_Btn").click(function (e) { 
+    $("#abortSpecies_Btn").click(function (e) { 
       e.preventDefault();
-      window.location.reload()
+      let idSpecie=$("#idSpecies_Fld").val()
+        if (idSpecie==""){
+          window.location.reload()
+        }
+        else if(parseInt(idSpecie)){
+          $(".specieForm").hide()
+          $(".specieText").show()
+        }
+      //window.location.reload()
     });
 
     $("#backToMain_Btn").click(function (e) { 
