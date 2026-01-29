@@ -446,16 +446,17 @@ $(document).ready(async function () {
         url: "/rawMaterial/newRawMaterial",
         data: $("#rawMaterial_Frm").serialize(),   
         success: async function (response) {
-          $("#rawMaterial_Data").hide()
-          $("#materialCategory_Crd").hide()
-          $("#newRawMaterial_Crd").hide()
-          $("#tableRawMaterial_Crd").show()
-          $("#newRawMaterial_Btn").show()
-          $("#backToMain_Btn").hide()
-          $("#materialCategory_Btn").show()
-          $("#newCategory_Btn").hide()
-          $("#modBtn_Wrp").show()
-          $("#saveBtn_Wrp").hide()
+          window.location.reload()
+          // $("#rawMaterial_Data").hide()
+          // $("#materialCategory_Crd").hide()
+          // $("#newRawMaterial_Crd").hide()
+          // $("#tableRawMaterial_Crd").show()
+          // $("#newRawMaterial_Btn").show()
+          // $("#backToMain_Btn").hide()
+          // $("#materialCategory_Btn").show()
+          // $("#newCategory_Btn").hide()
+          // $("#modBtn_Wrp").show()
+          // $("#saveBtn_Wrp").hide()
         }
       });
     } else{
