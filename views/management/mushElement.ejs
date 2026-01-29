@@ -253,7 +253,8 @@ $(document).ready(async function () {
             url: "/mushElement/pickElement",
             data: $("#pick_Frm").serialize(),
             success: function (response) {
-              window.location.replace("/mushElement/"); 
+              window.location.reload();
+              // window.location.replace("/mushElement/"); 
             }
           });
         } else {
