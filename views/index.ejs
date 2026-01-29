@@ -250,7 +250,7 @@
                               <a href="/storage/storageZoom?storageId=${elem.id}">
                               <i class="fa fa-link fa-xs" aria-hidden="true"></i>
                               </a>
-                              <div class="small">Last update: </div>
+                              
                             </span>
                         </h4>
                         <div class="card-body p-1 row">`
@@ -263,7 +263,7 @@
                                       <span class="small text-center w-100">${ sens.label }</span>
                                   <span class="w-100"><i class="${ sens.icon} mx-2 fa-10px" aria-hidden="true"></i>`
                                     if(sens.sensorData[0]){
-                                      html+=`${ sens.sensorData[0][sens.fieldName]} ${ sens.postChr }`
+                                      html+=`${ sens.sensorData[0][sens.fieldName]} ${ sens.postChr }<br><div class="small">${ moment(sens.createdAt).format("DD-MM-YY hh:mm") } </div>`
                                     }else{
                                       html+=`N/D`
                                     }
