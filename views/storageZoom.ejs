@@ -583,7 +583,7 @@
     let timerRefresh=2000
     let editDevicesId=0
     let sensorData
-    let urlGraph // url completa per i dati del grafico
+    let urlGraph,numPointsGraph,idDeviceGraph,updateGraphTmr // valori per refresh grafico
     socket.on('data', data => {
       console.log("socket")
       console.log(data);
@@ -911,7 +911,7 @@
         }
         }
       });
-      //  checkSensorValue=setInterval(associateSensors,timerRefresh)
+        //checkSensorValue=setInterval(associateSensors,timerRefresh)
       //  checkStatusActuattors=setInterval(associateActuators,timerRefresh+timerRefresh)
       //  checkStatusAllarm=setInterval(associateAllarms,timerRefresh+timerRefresh)
     
@@ -919,11 +919,13 @@
         await associateActuators()
         await associateSensors()
         await associateAllarms()
-     
+        
+        
+
         /** Gestione sensori 
          * editSensor_Btn
-hystorySensor_Btn
-unlinkSensor_Btn
+            hystorySensor_Btn
+            unlinkSensor_Btn
         */
       $("#sensor_deviceId_Fld").change(function (e) { 
         e.preventDefault();
@@ -1023,12 +1025,13 @@ unlinkSensor_Btn
       $(document).on("click",".hystorySensor_Btn",async function(e){
         e.preventDefault();
         const editDevicesId=$(this).attr("editDeviceId")
-        const fieldName=$(this).attr("fieldName")
+        fieldName=$(this).attr("fieldName")
         const dtFrom = moment().startOf('day').toISOString();
         const dtTo = moment().toISOString();
-        const url= "/telemetry/getAllData?idDevice="+editDevicesId+"&dtTo="+dtTo+"&dtFrom="+dtFrom
+        numPointsGraph=50
+        url= "/telemetry/getAllData?idDevice="+editDevicesId+"&dtTo="+dtTo+"&dtFrom="+dtFrom
         $("#createGraphSensor_Mdl").modal("show")
-        await drawGraph(url,fieldName, 50)
+        await drawGraph(url,fieldName, numPointsGraph)
         
       })
 
