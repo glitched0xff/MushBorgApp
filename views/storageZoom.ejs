@@ -574,7 +574,7 @@
   <%- include ('jsLoad') %>
 
   <script>
-    const socket = io('http://localhost:3000');
+    const socket = io();
 
     let storageData = '<%- JSON.stringify(storageData) %>'
     storageData=JSON.parse(storageData)
