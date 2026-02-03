@@ -575,7 +575,9 @@
 
   <script>
     //ATTENZIONE SOLO TEST
-    const socket = io('http://mushborglab.local:3000');
+    //const socket = io('http://mushborglab.local:3000');
+
+    const socket = io('http://localhost');
 
     let storageData = '<%- JSON.stringify(storageData) %>'
     storageData=JSON.parse(storageData)
