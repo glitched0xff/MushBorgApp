@@ -584,7 +584,8 @@
     let timerRefresh=2000
     let editDevicesId=0
     let sensorData
-    let urlGraph,numPointsGraph,idDeviceGraph,updateGraphTmr // valori per refresh grafico
+    let urlGraph,numPointsGraph,idDeviceGraph=""
+    let updateGraphTmr // valori per refresh grafico
     socket.on('data', data => {
       
       associateActuators()
