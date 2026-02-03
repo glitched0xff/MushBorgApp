@@ -314,6 +314,11 @@ router.post('/newSpawn', async(req,res) => {
  */
 router.get('/liveSearch',async (req,res)=>{
     let str=req.query.str
+    let strainFilerterId=req.query.strainFilterId?req.query.strainFilterId:null
+    // let whereSql={element_code:{[Op.like]:str+"%"},active:1,strainId:strainFilerterId}
+    // if (strainFilerterId==null){
+    //     whereSql={element_code:{[Op.like]:str+"%"},active:1}
+    // }
     let list=await db.mushElement.findAll({where:{element_code:{[Op.like]:str+"%"},active:1},
                                             limit:50,
                                         order:[["element_code","DESC"],["type","DESC"]]})
