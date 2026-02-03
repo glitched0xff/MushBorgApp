@@ -263,7 +263,7 @@
                                       <span class="small text-center w-100">${ sens.label }</span>
                                   <span class="w-100"><i class="${ sens.icon} mx-2 fa-10px" aria-hidden="true"></i>`
                                     if(sens.sensorData[0]){
-                                      html+=`${ sens.sensorData[0][sens.fieldName]} ${ sens.postChr }<br><div class="small">${ moment(sens.createdAt).format("DD-MM-YY hh:mm") } </div>`
+                                      html+=`${ sens.sensorData[0][sens.fieldName]} ${ sens.postChr }<br><div class="small">${ sens.sensorData[0].createdAtFormatted } </div>`
                                     }else{
                                       html+=`N/D`
                                     }
