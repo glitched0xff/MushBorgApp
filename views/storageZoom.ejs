@@ -574,6 +574,7 @@
   <%- include ('jsLoad') %>
 
   <script>
+    //ATTENZIONE SOLO TEST
     const socket = io('http://mushborglab.local:3000');
 
     let storageData = '<%- JSON.stringify(storageData) %>'
@@ -585,11 +586,13 @@
     let sensorData
     let urlGraph,numPointsGraph,idDeviceGraph,updateGraphTmr // valori per refresh grafico
     socket.on('data', data => {
-      console.log("socket")
-      console.log(data);
+      
       associateActuators()
       associateAllarms()
       associateSensors ()
+      if((urlGraph!=0)&& (numPointsGraph!=0)&& (idDeviceGraph!=0)){
+        drawGraph(url,fieldName, numPointsGraph)
+      }
     });
   
      async function drawShowStorage(id) {
