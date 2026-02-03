@@ -226,7 +226,7 @@
   <!-- Mushborg todo Function function -->
   <script src="/dist/toDo_Mushborg.js"></script> 
   <script>
-    const socket = io();
+    
 
   let storage=<%- JSON.stringify(storage) %> 
 
@@ -320,6 +320,7 @@
   
 
     $(document).ready(async function () {
+      const socket = io();
       await updateData()
       socket.on('data', data => {
         console.log("socket")

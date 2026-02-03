@@ -574,7 +574,7 @@
   <%- include ('jsLoad') %>
 
   <script>
-    const socket = io();
+    
 
     let storageData = '<%- JSON.stringify(storageData) %>'
     storageData=JSON.parse(storageData)
@@ -584,16 +584,7 @@
     let editDevicesId=0
     let sensorData
     let urlGraph,numPointsGraph,idDeviceGraph="" // valori per refresh grafico
-    socket.on('data', data => {
-      console.log("socket")
-      console.log(data);
-      associateActuators()
-      associateAllarms()
-      associateSensors ()
-      if((urlGraph!="")&& (numPointsGraph!="")&& (idDeviceGraph!="")){
-        drawGraph(url,fieldName, numPointsGraph)
-      }
-    });
+    
   
      async function drawShowStorage(id) {
       $("#tableStorage_Crd").hide();
@@ -844,6 +835,20 @@
 
 
     $(document).ready(async function () {
+      /** socket */
+      const socket = io();
+    
+    socket.on('data', data => {
+      console.log("socket")
+      console.log(data);
+      associateActuators()
+      associateAllarms()
+      associateSensors ()
+      if((urlGraph!="")&& (numPointsGraph!="")&& (idDeviceGraph!="")){
+        drawGraph(url,fieldName, numPointsGraph)
+      }
+    });
+    
       $("#sensor_storageId_Fld").val(storageData.id)
       $("#actuator_storageId_Fld").val(storageData.id)
       const ctx = document.getElementById('chartData').getContext('2d');
