@@ -32,7 +32,7 @@ router.get('/',async  (req, res) => {
 });
 
 router.get('/getAllData',async (req, res) => {
-  //console.log(req.query)
+  console.log(req.query)
   let idDevice=req.query.idDevice
   let dtTo=req.query.dtTo?req.query.dtTo:moment().toDate();
   let dtFrom=req.query.dtFrom?req.query.dtFrom:moment().startOf('day')
@@ -46,14 +46,16 @@ router.get('/getAllData',async (req, res) => {
     where.deviceId = idDevice
     deviceData=await db.device.findOne({where:{id:idDevice}})
   }
+  console.log(where)
   let data=await db.sensorData.findAll({where,
                                        order: [["createdAt", "DESC"]],
                                     }
                                   )
+                                  console.log(data)
     data=JSON.parse(JSON.stringify(data))
-   for (let i = 0; i < data.length; i++) {
-        data[i].createdAtStr=moment(data[i].createdAt).format("DD-MM-YY HH:mm")
-      }
+  //  for (let i = 0; i < data.length; i++) {
+  //       data[i].createdAtStr=moment(data[i].createdAt).format("DD-MM-YY HH:mm")
+  //     }
   res.status(200).json(data);
 });
 

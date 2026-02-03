@@ -544,11 +544,9 @@
           </button>
       </div>
       <div class="modal-body">
-        Body
+        <canvas id="chartData"></canvas>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save</button>
       </div>
     </div>
   </div>
@@ -556,6 +554,7 @@
  
 <%- include ('footer') %>
   <%- include ('jsLoad') %>
+
   <script>
     const socket = io('http://localhost:3000');
 
@@ -768,9 +767,9 @@
                             <i class="fas fa-ellipsis-h"></i>
                           </a>  
                           <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item editSensor_Btn" disabled editDeviceId="${sens.id}" href="#">Modifica</a>
-                            <a class="dropdown-item hystorySensor_Btn" editDeviceId="${sens.id}" href="#">Storico</a>
-                            <a class="dropdown-item text-danger unlinkSensor_Btn" editDeviceId="${sens.id}" href="#">Dissocia sensore</a>
+                            <a class="dropdown-item editSensor_Btn" disabled editDeviceId="${sens.deviceId}" href="#">Modifica</a>
+                            <a class="dropdown-item hystorySensor_Btn" editDeviceId="${sens.deviceId}" href="#">Storico</a>
+                            <a class="dropdown-item text-danger unlinkSensor_Btn" editDeviceId="${sens.deviceId}" href="#">Dissocia sensore</a>
                           </div>
                         </div>  
                   </span>
@@ -783,10 +782,96 @@
         }})
     }
     
+    function sampleMinMaxByTime(data, buckets = 25) {
+      const sorted = [...data].sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+      );
+
+      const startTime = new Date(sorted[0].createdAt).getTime();
+      const endTime = new Date(sorted[sorted.length - 1].createdAt).getTime();
+      const bucketSize = (endTime - startTime) / buckets;
+
+      const result = [];
+
+      for (let i = 0; i < buckets; i++) {
+        const bucketStart = startTime + i * bucketSize;
+        const bucketEnd = bucketStart + bucketSize;
+
+        const bucketData = sorted.filter(d => {
+          const t = new Date(d.createdAt).getTime();
+          return t >= bucketStart && t < bucketEnd;
+        });
+
+        if (bucketData.length > 0) {
+          const temps = bucketData.map(d => d.temp);
+          result.push(
+            {
+              createdAt: new Date(bucketStart).toISOString(),
+              temp: Math.min(...temps)
+            },
+            {
+              createdAt: new Date(bucketEnd).toISOString(),
+              temp: Math.max(...temps)
+            }
+          );
+        }
+      }
+
+      return result;
+    }
+
+
     $(document).ready(async function () {
       $("#sensor_storageId_Fld").val(storageData.id)
       $("#actuator_storageId_Fld").val(storageData.id)
-      //  checkSensorValue=setInterval(associateSensors,timerRefresh)
+      const ctx = document.getElementById('chartData').getContext('2d');
+     const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    datasets: [{
+      label: 'Temperatura',
+      data: [], 
+      borderColor: 'red',
+      borderWidth: 2,
+      pointRadius: 3,
+      fill: false,
+      tension: 0
+    }]
+  },
+  options: {
+    // 1. Rimuovi o imposta a true il parsing se passi stringhe ISO
+    parsing: {
+        xAxisKey: 'x',
+        yAxisKey: 'y'
+    },
+    responsive: true,
+    scales: {
+      x: {
+        type: 'time',
+        time: {
+          // 2. Specifica l'unità per aiutare l'adapter
+          unit: 'minute', 
+          displayFormats: {
+            minute: 'HH:mm'
+          },
+          tooltipFormat: 'yyyy-MM-dd HH:mm:ss'
+        },
+        title: {
+          display: true,
+          text: 'Orario'
+        }
+      },
+      y: {
+        beginAtZero: false,
+        title: {
+          display: true,
+          text: 'Gradi °C'
+        }
+      }
+    }
+  }
+});
+//  checkSensorValue=setInterval(associateSensors,timerRefresh)
       //  checkStatusActuattors=setInterval(associateActuators,timerRefresh+timerRefresh)
       //  checkStatusAllarm=setInterval(associateAllarms,timerRefresh+timerRefresh)
     
@@ -879,16 +964,97 @@ unlinkSensor_Btn
       $(document).on("click",".hystorySensor_Btn",function(e){
         e.preventDefault();
         let editDevicesId=$(this).attr("editDeviceId")
+        console.log(editDevicesId)
         const dtFrom = moment().startOf('day').toDate();
       const dtTo = moment().toDate();
-      
-        let telemetry= $.get("/telemetry/getAllData?idDevice="+editDevicesId)
+        
+      function lttbXY(data, threshold = 50) {
+        if (!Array.isArray(data)) throw new Error('data must be an array');
+        if (data.length <= threshold) return data;
+
+        // sicurezza: ordina per tempo
+        const sorted = [...data].sort(
+          (a, b) => new Date(a.x).getTime() - new Date(b.x).getTime()
+        );
+
+        const sampled = [];
+        const n = sorted.length;
+        const bucketSize = (n - 2) / (threshold - 2);
+
+        let a = 0;
+        sampled.push(sorted[a]); // primo punto
+
+        for (let i = 0; i < threshold - 2; i++) {
+          const rangeStart = Math.floor((i + 1) * bucketSize) + 1;
+          const rangeEnd = Math.floor((i + 2) * bucketSize) + 1;
+
+          const bucket = sorted.slice(rangeStart, rangeEnd);
+
+          // 🔥 fallback se bucket vuoto
+          if (bucket.length === 0) continue;
+
+          let avgX = 0;
+          let avgY = 0;
+          for (const p of bucket) {
+            avgX += new Date(p.x).getTime();
+            avgY += p.y;
+          }
+          avgX /= bucket.length;
+          avgY /= bucket.length;
+
+          let maxArea = -1;
+          let maxPoint = bucket[0];
+
+          const prevStart = Math.floor(i * bucketSize) + 1;
+          const prevEnd = Math.floor((i + 1) * bucketSize) + 1;
+          const range = sorted.slice(prevStart, prevEnd);
+
+          for (const p of range) {
+            const area = Math.abs(
+              (new Date(sorted[a].x).getTime() - avgX) * (p.y - sorted[a].y) -
+              (new Date(sorted[a].x).getTime() - new Date(p.x).getTime()) * (avgY - sorted[a].y)
+            );
+
+            if (area > maxArea) {
+              maxArea = area;
+              maxPoint = p;
+            }
+          }
+
+          sampled.push(maxPoint);
+          a = sorted.indexOf(maxPoint);
+        }
+
+        sampled.push(sorted[n - 1]); // ultimo punto
+
+        // 🔒 forza numero punti
+        return sampled.slice(0, threshold);
+      }
+
+      function extractSeries(records, fieldName) {
+  return records
+    .filter(r => r[fieldName] !== null && r[fieldName] !== undefined)
+    .map(r => ({
+      x: new Date(r.createdAt).toISOString(),
+      y: Number(r[fieldName])
+    }));
+}
+        //let telemetry= $.get("/telemetry/getAllData?idDevice="+editDevicesId)
         $.ajax({
           type: "GET",
           url: "/telemetry/getAllData?idDevice="+editDevicesId,
           success: function (response) {
             console.log(response)
-          }
+            const rawPoints = extractSeries(response, 'temp');
+            const downsampled = lttbXY(rawPoints, 50);
+            chart.data.datasets[0].data = downsampled; // il tuo array
+        
+            chart.update();
+            console.log(chart.data.datasets[0].data.length);
+          
+            $("#createGraphSensor_Mdl").modal("show")
+                  
+            }
         });
       })
 
