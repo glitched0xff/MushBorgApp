@@ -821,7 +821,7 @@
       if(str!=""){
          $.ajax({
         type: "GET",
-        url: "/spawn/liveSearch?str="+str+"&strainFilterId="+data.strainId,
+        url: "/spawn/liveSearch?str="+str+"&strainFilterId="+dataElement.strainId,
         success: function (response) {
           let element=response.list
           inoculiList=element
