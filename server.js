@@ -56,6 +56,7 @@ app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, "public")));
 // ChartJs come modulo
 app.use('/chartJs', express.static(__dirname + '/node_modules/chart.js/dist'));
+app.use('/chartJsZoom', express.static(__dirname + '/node_modules/chartjs-plugin-zoom'));
 app.use('/luxon', express.static(__dirname + '/node_modules/luxon/build/global'));
 // Per l'adapter Moment (aggiungi questa)
 app.use('/plugins/chart.js', express.static(path.join(__dirname, 'node_modules/chartjs-adapter-moment/dist')));

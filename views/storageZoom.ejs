@@ -868,7 +868,24 @@
           text: 'Gradi °C'
         }
       }
+    },
+    plugins: {
+    zoom: {
+      zoom: {
+        wheel: {
+          enabled: true, // Zoom con rotella
+        },
+        pinch: {
+          enabled: true, // Zoom con dita (touch)
+        },
+        mode: 'x', // Zoom solo sull'asse orizzontale (consigliato per serie temporali)
+      },
+      pan: {
+        enabled: true,
+        mode: 'x', // Spostamento solo orizzontale
+      }
     }
+  }
   }
 });
 //  checkSensorValue=setInterval(associateSensors,timerRefresh)
