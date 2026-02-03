@@ -187,12 +187,6 @@
                     {
                       type:"date",
                       classBox:"col-md-3 col-sm-6",
-                      fieldName:"exp_date",
-                      label:"Data scadenza",
-                    },
-                    {
-                      type:"date",
-                      classBox:"col-md-3 col-sm-6",
                       fieldName:"expected_maturation_date",
                       label:"Maturazione prevista",
                     },
@@ -201,6 +195,12 @@
                       classBox:"col-md-3 col-sm-6",
                       fieldName:"expected_fructification_date",
                       label:"Fruttificazione prevista",
+                    },
+                    {
+                      type:"date",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"exp_date",
+                      label:"Data scadenza",
                     },
                     { type:"endRow"},
                     
@@ -575,6 +575,7 @@
           let data=response.propagation
           let seeds=response.seeds
           dataElement=data
+
           // Populate GUI
           for (const [key, value] of Object.entries(data)) {
               if($("#"+key+"_Fld").attr("tp")=="textField"){
@@ -600,16 +601,16 @@
                   $("#purchased_Fld").attr("checked",data.purchased? true : false)
                   break;
                   case "createLot":
-                      $("#createLot_Show").html(moment(data.substrate.exp_date).format("DD-MM-YY"))
+                      $("#createLot_Show").html(moment(data.createLot).format("DD-MM-YY"))
                       break;
                   case "exp_date":
-                    $("#exp_date_Show").html(moment(data.substrate.exp_date).format("DD-MM-YY"))
+                    $("#exp_date_Show").html(moment(data.exp_date).format("DD-MM-YY"))
                     break;
                   case "expected_maturation_date":
-                    $("#expected_maturation_date_Show").html(moment(data.substrate.expected_maturation_date).format("DD-MM-YY"))
+                    $("#expected_maturation_date_Show").html(moment(data.expected_maturation_date).format("DD-MM-YY"))
                     break;
                   case "expected_fructification_date":
-                    $("#expected_fructification_date_Show").html(moment(data.substrate.expected_fructification_date).format("DD-MM-YY"))
+                    $("#expected_fructification_date_Show").html(moment(data.expected_fructification_date).format("DD-MM-YY"))
                   break;
                    case "supplierId":
                       if(data.supplierId){
@@ -820,7 +821,7 @@
       if(str!=""){
          $.ajax({
         type: "GET",
-        url: "/spawn/liveSearch?str="+str,
+        url: "/spawn/liveSearch?str="+str+"&strainFilterId="+data.strainId,
         success: function (response) {
           let element=response.list
           inoculiList=element

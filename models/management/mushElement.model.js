@@ -10,6 +10,9 @@ module.exports = (sequelize, Sequelize) => {
       element_code:{
         type: Sequelize.STRING,
       },
+      strainId:{
+        type:Sequelize.INTEGER,
+      },
       type:{ 
         type: Sequelize.STRING,
       },

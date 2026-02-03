@@ -1,8 +1,9 @@
 const dbConfig = require("../config/db.config.js");
 
 const Sequelize = require("sequelize");
-const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-  host: dbConfig.HOST,
+
+const sequelize = new Sequelize("mushborg", "mushborg", "mushborg0x0", {
+  host: "127.0.0.1",
   dialect: "mariadb",
   //operatorsAliases: false,
   //logging:console.log,
@@ -14,6 +15,21 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     idle: dbConfig.pool.idle,
   }
 });
+
+// const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
+//   host: dbConfig.HOST,
+//   dialect: "mariadb",
+//   //operatorsAliases: false,
+//   //logging:console.log,
+//   database:dbConfig.DB,
+//   logging: false,
+//   pool: {
+//     max: dbConfig.pool.max,
+//     min: dbConfig.pool.min,
+//     acquire: dbConfig.pool.acquire,
+//     idle: dbConfig.pool.idle,
+//   }
+// });
 
 const db = {};
 

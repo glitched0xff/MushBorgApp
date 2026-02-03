@@ -241,7 +241,7 @@
                   </div>
                   <div class="col-12 mx-auto my-2">
                     <% if (mushElement.type=="SPAWN"){
-                      if(mushElement.stage==null){%>
+                      if((mushElement.stage==null)&&&&(mushElement.active==0)){%>
                     <button type="button" name="" id="fructElement_Btn" class="btn btn-success btn-block"> 
                         Metti in fruttificazione <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></button>
                   <% } else if (mushElement.stage==2){ %>
@@ -249,7 +249,7 @@
                   <% }} %>
 
                   <% if (mushElement.type=="CULTIVATION"){
-                      if(mushElement.stage==1){%>
+                      if((mushElement.stage==1)&&(mushElement.active==0)){%>
                     <button type="button" name="" id="fructElement_Btn" class="btn btn-success btn-block"> 
                         Metti in fruttificazione <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></button>
                   <% } else { %>
