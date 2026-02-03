@@ -535,18 +535,36 @@
 
 <!-- Modal create Graph -->
  <div class="modal fade" id="createGraphSensor_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Modal title</h5>
+        <h5 class="modal-title">Grafico</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
       </div>
       <div class="modal-body">
-        <canvas id="chartData"></canvas>
-      </div>
-      <div class="modal-footer">
+        <div class="row">
+          <div class="col"> <button class="btn btn-xs btn-primary" id="btnResetZoom">Reset zoom 
+        </button></div>
+        <div class="col">
+          <div class="form-group">
+            <label for="">Seleziona numero punti</label>
+            <select class="form-control" name="" id="numPointSelect">
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="200">200</option>
+            </select>
+          </div>
+        </div>
+        </div>
+        <div class="row">
+
+        </div>
+       
+
+        <canvas id="chartData" ></canvas>
       </div>
     </div>
   </div>
@@ -565,6 +583,7 @@
     let timerRefresh=2000
     let editDevicesId=0
     let sensorData
+    let urlGraph // url completa per i dati del grafico
     socket.on('data', data => {
       console.log("socket")
       console.log(data);
@@ -768,7 +787,7 @@
                           </a>  
                           <div class="dropdown-menu dropdown-menu-right">
                             <a class="dropdown-item editSensor_Btn" disabled editDeviceId="${sens.deviceId}" href="#">Modifica</a>
-                            <a class="dropdown-item hystorySensor_Btn" editDeviceId="${sens.deviceId}" href="#">Storico</a>
+                            <a class="dropdown-item hystorySensor_Btn" editDeviceId="${sens.deviceId}" fieldName="${sens.fieldName}" href="#">Storico</a>
                             <a class="dropdown-item text-danger unlinkSensor_Btn" editDeviceId="${sens.deviceId}" href="#">Dissocia sensore</a>
                           </div>
                         </div>  
@@ -826,69 +845,73 @@
       $("#actuator_storageId_Fld").val(storageData.id)
       const ctx = document.getElementById('chartData').getContext('2d');
      const chart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    datasets: [{
-      label: 'Temperatura',
-      data: [], 
-      borderColor: 'red',
-      borderWidth: 2,
-      pointRadius: 3,
-      fill: false,
-      tension: 0
-    }]
-  },
-  options: {
-    // 1. Rimuovi o imposta a true il parsing se passi stringhe ISO
-    parsing: {
-        xAxisKey: 'x',
-        yAxisKey: 'y'
-    },
-    responsive: true,
-    scales: {
-      x: {
-        type: 'time',
-        time: {
-          // 2. Specifica l'unità per aiutare l'adapter
-          unit: 'minute', 
-          displayFormats: {
-            minute: 'HH:mm'
+        type: 'line',
+        data: {
+          datasets: [{
+            label: 'Temperatura',
+            data: [], 
+            borderColor: 'red',
+            borderWidth: 2,
+            pointRadius: 3,
+            fill: false,
+            tension: 0
+          }]
+        },
+        options: {
+          // 1. Rimuovi o imposta a true il parsing se passi stringhe ISO
+          parsing: {
+              xAxisKey: 'x',
+              yAxisKey: 'y'
           },
-          tooltipFormat: 'yyyy-MM-dd HH:mm:ss'
-        },
-        title: {
-          display: true,
-          text: 'Orario'
+          animations: {
+              duration: 0 // Niente animazione solo all'apertura
+            
+          },
+          responsive: true,
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                // 2. Specifica l'unità per aiutare l'adapter
+                unit: 'minute', 
+                displayFormats: {
+                  minute: 'HH:mm'
+                },
+                tooltipFormat: 'yyyy-MM-dd HH:mm:ss'
+              },
+              title: {
+                display: true,
+                text: 'Orario'
+              }
+            },
+            y: {
+              beginAtZero: false,
+              title: {
+                display: true,
+                text: 'Gradi °C'
+              }
+            }
+          },
+          plugins: {
+          zoom: {
+            zoom: {
+              wheel: {
+                enabled: true, // Zoom con rotella
+              },
+              pinch: {
+                enabled: true, // Zoom con dita (touch)
+              },
+              mode: 'x', // Zoom solo sull'asse orizzontale (consigliato per serie temporali)
+            },
+            pan: {
+              enabled: true,
+              mode: 'x', // Spostamento solo orizzontale
+            }
+          }
         }
-      },
-      y: {
-        beginAtZero: false,
-        title: {
-          display: true,
-          text: 'Gradi °C'
         }
-      }
-    },
-    plugins: {
-    zoom: {
-      zoom: {
-        wheel: {
-          enabled: true, // Zoom con rotella
-        },
-        pinch: {
-          enabled: true, // Zoom con dita (touch)
-        },
-        mode: 'x', // Zoom solo sull'asse orizzontale (consigliato per serie temporali)
-      },
-      pan: {
-        enabled: true,
-        mode: 'x', // Spostamento solo orizzontale
-      }
-    }
-  }
-  }
-});
-//  checkSensorValue=setInterval(associateSensors,timerRefresh)
+      });
+      //  checkSensorValue=setInterval(associateSensors,timerRefresh)
       //  checkStatusActuattors=setInterval(associateActuators,timerRefresh+timerRefresh)
       //  checkStatusAllarm=setInterval(associateAllarms,timerRefresh+timerRefresh)
     
@@ -978,101 +1001,35 @@ unlinkSensor_Btn
         }
         
       });
-      $(document).on("click",".hystorySensor_Btn",function(e){
-        e.preventDefault();
-        let editDevicesId=$(this).attr("editDeviceId")
-        console.log(editDevicesId)
-        const dtFrom = moment().startOf('day').toDate();
-      const dtTo = moment().toDate();
-        
-      function lttbXY(data, threshold = 50) {
-        if (!Array.isArray(data)) throw new Error('data must be an array');
-        if (data.length <= threshold) return data;
-
-        // sicurezza: ordina per tempo
-        const sorted = [...data].sort(
-          (a, b) => new Date(a.x).getTime() - new Date(b.x).getTime()
-        );
-
-        const sampled = [];
-        const n = sorted.length;
-        const bucketSize = (n - 2) / (threshold - 2);
-
-        let a = 0;
-        sampled.push(sorted[a]); // primo punto
-
-        for (let i = 0; i < threshold - 2; i++) {
-          const rangeStart = Math.floor((i + 1) * bucketSize) + 1;
-          const rangeEnd = Math.floor((i + 2) * bucketSize) + 1;
-
-          const bucket = sorted.slice(rangeStart, rangeEnd);
-
-          // 🔥 fallback se bucket vuoto
-          if (bucket.length === 0) continue;
-
-          let avgX = 0;
-          let avgY = 0;
-          for (const p of bucket) {
-            avgX += new Date(p.x).getTime();
-            avgY += p.y;
-          }
-          avgX /= bucket.length;
-          avgY /= bucket.length;
-
-          let maxArea = -1;
-          let maxPoint = bucket[0];
-
-          const prevStart = Math.floor(i * bucketSize) + 1;
-          const prevEnd = Math.floor((i + 1) * bucketSize) + 1;
-          const range = sorted.slice(prevStart, prevEnd);
-
-          for (const p of range) {
-            const area = Math.abs(
-              (new Date(sorted[a].x).getTime() - avgX) * (p.y - sorted[a].y) -
-              (new Date(sorted[a].x).getTime() - new Date(p.x).getTime()) * (avgY - sorted[a].y)
-            );
-
-            if (area > maxArea) {
-              maxArea = area;
-              maxPoint = p;
-            }
-          }
-
-          sampled.push(maxPoint);
-          a = sorted.indexOf(maxPoint);
-        }
-
-        sampled.push(sorted[n - 1]); // ultimo punto
-
-        // 🔒 forza numero punti
-        return sampled.slice(0, threshold);
-      }
-
-      function extractSeries(records, fieldName) {
-  return records
-    .filter(r => r[fieldName] !== null && r[fieldName] !== undefined)
-    .map(r => ({
-      x: new Date(r.createdAt).toISOString(),
-      y: Number(r[fieldName])
-    }));
-}
-        //let telemetry= $.get("/telemetry/getAllData?idDevice="+editDevicesId)
+      async function drawGraph(url,fieldName,numPoint) {
+        console.log(url,fieldName,numPoint)
         $.ajax({
           type: "GET",
-          url: "/telemetry/getAllData?idDevice="+editDevicesId,
-          success: function (response) {
-            console.log(response)
-            const rawPoints = extractSeries(response, 'temp');
-            const downsampled = lttbXY(rawPoints, 50);
-            chart.data.datasets[0].data = downsampled; // il tuo array
-        
-            chart.update();
-            console.log(chart.data.datasets[0].data.length);
-          
-            $("#createGraphSensor_Mdl").modal("show")
-                  
+          url: url,
+          success: async function (response) {
+            const rawPoints = extractSeries(response, fieldName);
+            const downsampled = lttbXY(rawPoints, numPoint);
+            chart.data.datasets[0].data = downsampled;
+            await chart.update();
             }
         });
+        return
+      }
+      $("#numPointSelect").change(function (e) { 
+        e.preventDefault();
+        let numPoint=$(this).val()
+        console.log(numPoint)
+      });
+      $(document).on("click",".hystorySensor_Btn",async function(e){
+        e.preventDefault();
+        const editDevicesId=$(this).attr("editDeviceId")
+        const fieldName=$(this).attr("fieldName")
+        const dtFrom = moment().startOf('day').toISOString();
+        const dtTo = moment().toISOString();
+        const url= "/telemetry/getAllData?idDevice="+editDevicesId+"&dtTo="+dtTo+"&dtFrom="+dtFrom
+        $("#createGraphSensor_Mdl").modal("show")
+        await drawGraph(url,fieldName, 50)
+        
       })
 
       /** Gestione attuatori */
@@ -1187,7 +1144,9 @@ unlinkSensor_Btn
         e.preventDefault();
          window.location='/storage'
       });
-    
+      $('#btnResetZoom').on('click', function() {
+          chart.resetZoom();
+      });
       // Load item
       $("#rawmaterial_Btn").click(function (e) { 
         e.preventDefault();

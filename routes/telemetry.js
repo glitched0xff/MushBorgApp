@@ -46,12 +46,12 @@ router.get('/getAllData',async (req, res) => {
     where.deviceId = idDevice
     deviceData=await db.device.findOne({where:{id:idDevice}})
   }
-  console.log(where)
+  
   let data=await db.sensorData.findAll({where,
                                        order: [["createdAt", "DESC"]],
                                     }
                                   )
-                                  console.log(data)
+                                  
     data=JSON.parse(JSON.stringify(data))
   //  for (let i = 0; i < data.length; i++) {
   //       data[i].createdAtStr=moment(data[i].createdAt).format("DD-MM-YY HH:mm")
