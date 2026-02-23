@@ -1351,7 +1351,12 @@ $(document).ready(async function () {
         $("#lottoName").html(parentElement.spawn_name)
         $("#lottoCode").html(parentElement.code_spawn)
         $('#lottoExpDate').closest('div').hide();
-        $("#harvest_Crd").hide()
+        if (mushElement.mushElementHarvests.length>0){
+        $("#harvest_Crd").show()
+        }
+        else{
+          $("#harvest_Crd").hide()
+        }
         break;
 
       case "CULTIVATION":
