@@ -1,0 +1,195 @@
+<%- include ('header') %>
+<%- include ('navbar') %>
+<%- include ('sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="storage-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Controllo peso
+            <!-- <button class="btn btn-xs btn-primary" id="modStorage_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca storage</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newStorage_Btn"><i class="fas fa-plus"></i> Nuova storage</button> -->
+              <button class="btn btn-xs btn-primary" id="createGraph" > <i class="fa fa-table" aria-hidden="true"></i> Crea grafico</button>
+            </h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          
+                    
+            <div class="card w-100" id="showStorage_Crd" >
+              <div class="row w-100 p-2">
+                <div class="col-md-2 col-sm-3 text-center pt-2 h5">
+                  Intervallo raccolti 
+                </div>
+                <div class="col-md-2 col-sm-9">
+                  <input type="text" class="form-control mb-2 mr-sm-2 col" id="intervalData" name="intervalData" value="">
+                  
+                </div>
+                <div class="col pt-2 h5 ">
+                  Peso totale per periodo rif: <span id="totalWeight_SPN">10799g</span>
+                </div>
+              </div>
+              <div class="row m-3">
+                <div class="accordion w-100" id="accordionRaccolto">
+                <% harvests.forEach ((elem,index) => {
+                  let total=0%>
+                  <div class="card " >
+                      <button class="btn  btn-block text-left" type="button" 
+                        data-toggle="collapse" data-target="#collapse<%= index %>" 
+                        aria-expanded="true" aria-controls="collapse<%= index %>">
+                  <div class="card-header" id="heading<%= index %>">
+                    <h5 class="mb-0">
+                        Raccolto del <%= elem[0].day %> - Raccolto totale= <%= arrayTotalWeight[index] %> g
+                    </h5>
+                  </div>
+                      </button>
+
+                  <div id="collapse<%= index %>" class="collapse" aria-labelledby="heading<%= index %>" data-parent="#accordionRaccolto" >
+                    <div class="card-body">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Codice elemento</th>
+                        <th>Nome lotto</th>
+                        <th>Codice lotto</th>
+                        <th>Raccolto</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% elem.forEach (el => {%>
+                        <tr>
+                        <td><a href="/propagation?redirectId=<%= el.mushElementData[0].propagation.id%>" target="_blank" rel="noopener noreferrer">
+                          <%= el.mushElementData[0].element_code%></a></td>
+                        <td><%= el.mushElementData[0].propagation.propagation_name%></td>
+                        <td>
+                          <a href="/mushElement/singleMushElement?id=<%= el.mushElementData[0].propagation.id%>&filterCategory=CULTIVATION" target="_blank" rel="noopener noreferrer">
+                          <%= el.mushElementData[0].propagation.code_propagation%></a></td>
+                        <td><%= el.total_harvest_weight%> g 
+                          <% total=total+el.total_harvest_weight%>
+                          </td>
+                      </tr>
+                      <% }) %>
+                      <tfoot>
+                        <tr>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td >Totale : <%= total %> g</td>
+                          </tr>  
+                      </tfoot>
+                    </tbody>
+                  </table>  
+                    </div>
+                  </div>
+                </div>
+                <% }) %>
+              </div>
+            </div>
+        </div>
+        
+      </div>
+      </div>
+    </section>
+    
+  </div>
+  
+  <!-- Modal -->
+<div class="modal fade" id="graph_Mdl" tabindex="-1" aria-labelledby="graph_MdlLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="graph_MdlLabel">Grafico</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col" id="graph_Wrp">
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <%- include ('footer') %>
+  <%- include ('jsLoad') %>
+  <script>
+  let harvests= <%- JSON.stringify( harvests) %>
+  let arrayTotalWeight= <%- JSON.stringify( arrayTotalWeight) %>
+  let fromDate=<%-fromDate  %>
+  let toDate=<%- toDate %>
+  let totalDay=[]
+
+  // Weight per day and total in period
+    function getTotalPerDayArray(harvests){
+      let totalDay=[]
+      let totalWeight=0
+      for (let i = 0; i < harvests.length; i++) {
+        const elem = harvests[i];
+        let wDay=0
+        let dt
+        for (let y = 0; y < elem.length; y++) {
+          const el = elem[y];
+          wDay=wDay+el.total_harvest_weight
+          dt=el.day
+          
+        }
+        totalDay.push({val:wDay,xAxis:moment(dt,"YYYY-MM-DD").format("DD-MM-YY")})
+        totalWeight+=wDay
+      }
+      $("#totalWeight_SPN").html(totalWeight+"g")
+      return totalDay
+    }
+    
+    $(document).ready(async function () {
+        console.log(fromDate,toDate)
+        console.log(moment(fromDate).format("DD-MM"),moment(toDate).format("DD-MM"))
+
+      $('#intervalData').daterangepicker({
+          startDate: moment(fromDate).format("DD-MM"),
+          endDate: moment(toDate).format("DD-MM"),
+          locale: {
+            format: 'DD/MM'
+          }
+        });
+
+      totalDay=getTotalPerDayArray(harvests)
+
+
+      $('#intervalData').on('apply.daterangepicker', function(ev, picker) {
+  
+      });
+
+      $("#createGraph").click(async function (e) { 
+        let ttDayGrph=totalDay
+        console.log(ttDayGrph)
+        e.preventDefault();
+        $.ajax({
+          type: "get",
+          url: "/statistic/getWeigthGraph?dataArray="+JSON.stringify(ttDayGrph)+"&order=reverse",
+          success: function (response) {
+            $("#graph_Wrp").html(response)
+            $("#graph_Mdl").modal("show")
+          }
+        });
+      });
+      $('#intervalData').on('apply.daterangepicker', function(ev, picker) {
+        let fromDate=picker.startDate.format('YYYY-MM-DD')
+        let toDate=picker.endDate.format('YYYY-MM-DD')
+          window.location="/statistic/checkWeigth?fromDate="+fromDate+"&toDate="+toDate
+      });
+
+    });
+
+  </script>
+  <%- include ('closeTag') %>
+  

@@ -10,6 +10,7 @@ router.get('/',async  (req, res) => {
   res.render("statistic")
 });
 
+/** Check weight */
 router.get('/checkWeigth',async (req,res)=>{
   console.log(res.query)
     let fromDate=req.query.fromDate?moment(req.query.fromDate,"YYYY-MM-DD"):moment().subtract(10,"days")
@@ -96,6 +97,37 @@ router.get('/getWeigthGraph',async (req,res)=>{
     
 })
 
+/* Last Note */
+router.get('/lastNote',async (req,res)=>{
+  let fromDate=req.query.fromDate?moment(req.query.fromDate,"YYYY-MM-DD"):moment().subtract(10,"days")
+  let toDate=req.query.toDate?moment(req.query.toDate,"YYYY-MM-DD"):moment()
+  
+})
 
+/* Picked eleemnt list */
+router.get('/pickElementList',async (req,res)=>{
+  let fromDate=req.query.fromDate?moment(req.query.fromDate,"YYYY-MM-DD"):moment().subtract(10,"days")
+  let toDate=req.query.toDate?moment(req.query.toDate,"YYYY-MM-DD"):moment()
+   let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
+  let pickedElement= await db.mushElement.findAll({where:{pick_date: {
+      [Op.gte]: fromDate,
+      [Op.lte]: toDate,
+    }},
+    order:[["pick_date","ASC"]]})
+  pickedElement=JSON.parse(JSON.stringify(pickedElement))
+  let pE=[]
+  for (let i = 0; i < pickedElement.length; i++) {
+    for (let r = 0; r < pickReasonDD.length; r++) {
+      if (pickedElement[i].pick_reason==pickReasonDD[r].val){
+        pickedElement[i].pick_reason_text=pickReasonDD[r].txt
+      }
+    }
+  }
+  res.render("stat_pickElementList",{pickedElement:pickedElement,
+                                     fromDate:fromDate,
+                                     toDate:toDate,
+                                     pickReasonDD:pickReasonDD,
+                                    moment})
+})
 
 module.exports=router;
