@@ -685,7 +685,13 @@ router.delete('/deleteMushElementNote',async  (req, res) => {
 /** Mushroom element harvest */
 router.post('/insertHarvest',async (req,res)=>{
     let data=req.body
-    //console.log(data)
+    console.log(data)
+    let countHarvest=await db.mushElementHarvest.count({where:{id:data.idMushElementHarvest}})
+    console.log(countHarvest)
+    if (countHarvest==0){
+        db.mushElement.update({real_fructification_date:moment(data.harvest_date,"DD-MM-YY")},
+                              {where:{id:data.idMushElementHarvest}})
+    }
     await db.mushElementHarvest.create({mushElementId:data.idMushElementHarvest,
                         harvest_date:moment(data.harvest_date,"DD-MM-YY"),
                         harvest_weight:data.harvest_weight,
@@ -693,6 +699,7 @@ router.post('/insertHarvest',async (req,res)=>{
                     note:data.harvest_note?data.harvest_note:""})
                     .then(async result=>{
                         //console.log(result)
+                        
                         let harvest=await db.mushElementHarvest.findAll({where:{mushElementId:data.idMushElementHarvest,type:data.filterCategoryHarvest},limit: 300})
                         res.status(200).json({harvest:harvest})
                     })

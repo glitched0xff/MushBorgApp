@@ -120,6 +120,14 @@
                       </dl>
                     </div>
                   <% } %>
+                  <% if((filterCategory=="SPAWN")&&(mushElement.stage==2)){ %>
+                    <div class="col-md-2 col-sm-6">
+                      <dl>
+                        <dt>Fruttificazione effettiva:</dt>
+                        <dd id="real_fructification_date_Show" class="elementText"><%= mushElement.real_fructification_date %></dd>
+                      </dl>
+                    </div>
+                  <% } %>
                 </div>
                 <div class="row w-100">
                   <!-- <div class="col-md-2 col-sm-6">
