@@ -25,6 +25,8 @@ router.get('/',async  (req, res) => {
     let searchCode=req.query.searchCode?req.query.searchCode:false
     let filterCategory=req.query.filterCategory?req.query.filterCategory:false
     let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
+    
+    
     res.render("management/mushElement",{searchCode:searchCode,
                                         pickReasonDD:pickReasonDD,
                                         filterCategory:filterCategory})
@@ -153,11 +155,6 @@ router.get('/singleMushElement',async  (req, res) => {
                 break;
         }
         
-            
-            //console.log("***")
-        //console.log(parentElement)
-            //console.log("***")
-
         if (parentElement!=null){
             parentElement=JSON.parse(JSON.stringify(parentElement))
             mushElement=JSON.parse(JSON.stringify(mushElement))
@@ -186,7 +183,7 @@ router.get('/singleMushElement',async  (req, res) => {
             mushElement.pick_reason=mushElement.pick_reason?mushElement.pick_reason:"--"
             mushElement.stage=mushElement.stage
             mushElement.purchased=parentElement.purchased? "Sì" : "No"
-
+            mushElement.storage= await db.storage.findAll({where:{id:mushElement.storageId}})
             switch (filterCategory) {
                 case "INOCULUM":
                     mushElement.substrate_info=parentElement.substrate.name_substrate +" "+parentElement.substrate.recipe_name
@@ -205,16 +202,20 @@ router.get('/singleMushElement',async  (req, res) => {
                     break;
             }
         }}
-       // console.log(JSON.parse(JSON.stringify(parentElement)))
-
-        //console.log(JSON.parse(JSON.stringify(seeds)))
-        //console.log(mushElement)
+        let destination=await db.storage.findAll({where:{id:{
+                                                    [Op.ne]: mushElement.storageId
+                                                }}})
+        let destinationDD=[]
+        destination.forEach(elem => {
+                destinationDD.push({val:elem.id,txt:elem.code_storage+" - "+elem.name_storage})
+            });
         res.render("management/mushElementZoom",{mushElement:mushElement,
                                                     parentElement:parentElement,
                                                     stageDD:stageDD,
                                                     pickReasonDD:pickReasonDD,
                                                     titoloFiltro:titoloFiltro,
                                                     filterCategory:filterCategory,
+                                                    destinationDD:destinationDD,
                                                     seeds:seeds})
     } else {
             res.status(422).json()
@@ -270,6 +271,8 @@ router.get('/getMoviementation',async (req,res)=>{
         let movimentation= await db.movimentation.findAll({where:{relatedId:mushElementId,type:filterCategory}})
         let storages=await db.storage.findAll({include:{model:db.device}})
         let storageStory=[]
+        console.log(JSON.parse(JSON.stringify(movimentation)))
+        console.log(movimentation.length)
         if (movimentation.length==0){
             let to
             let from=mushElement[0].createdAt
@@ -285,7 +288,7 @@ router.get('/getMoviementation',async (req,res)=>{
                 let to
                 let from
                 // gestione ultima movimentazione
-                if (i==movimentation.length-1){
+                if ((i==movimentation.length-1)&&(i>0)){
                     if (mushElement[0].active==1){
                         to=moment().toISOString()
                     }else{
@@ -296,6 +299,7 @@ router.get('/getMoviementation',async (req,res)=>{
                     //console.log(from,to)
                     storageStory.push({storageId:el.to,from:from,to:to})
                 } 
+                // Prima movimentazione
                 else if(i==0){
                     from=mushElement[0].createdAt
                     to=el.createdAt
@@ -449,6 +453,7 @@ console.log(req.body)
     }
 })
 
+/** Prima versione di movimentazione */
 router.put('/movimentazioneElement',async (req,res)=>{
     //console.log(req.body)
     let movimentaAll_Ckb=req.body.movimentaAll_Ckb?req.body.movimentaAll_Ckb:false
@@ -458,7 +463,7 @@ router.put('/movimentazioneElement',async (req,res)=>{
     if (movimentaAll_Ckb=="moveAll"){
         let movimentaAll_Sel=req.body.movimentaAll_Sel
         let movimentaFrom_Sel=req.body.movimentaFrom_Sel
-        let mushElement=await db.mushElement.findAll({where:{relatedId:movimentaIdElement,type:movimentaTypeElement,}})
+        let mushElement=await db.mushElement.findAll({where:{relatedId:movimentaIdElement,type:movimentaTypeElement}})
         for (let i = 0; i < mushElement.length; i++) {
             const elem = mushElement[i];
             let insertMove=await db.mushElement.update({storageId:movimentaAll_Sel},
@@ -470,6 +475,7 @@ router.put('/movimentazioneElement',async (req,res)=>{
             if(insertMove[0]!=0){
                 //console.log(movimentaIdElement,movimentaFrom_Sel,movimentaAll_Sel,movimentaTypeElement)
                 await db.movimentation.create({relatedId:elem.id,
+                                                mushElement:mushElement.element_code,
                                                 from:movimentaFrom_Sel,
                                                 to:movimentaAll_Sel,
                                                 type:movimentaTypeElement})
@@ -488,11 +494,13 @@ router.put('/movimentazioneElement',async (req,res)=>{
         }
     }else{
         let destinationDD=req.body.destinationDD
+        
         for (let i = 0; i < destinationDD.length; i++) {
             const elem = destinationDD[i];
             let idElement=elem.split("|")[1]
             let toStorageId=elem.split("|")[0]
             let fromStorageId=elem.split("|")[2]
+            let mushElement=await db.mushElement.findAll({where:{relatedId:movimentaIdElement,type:movimentaTypeElement}})
             let insertMove=await db.mushElement.update({storageId:toStorageId},
                                                        {where:{
                                                         id:idElement,
@@ -508,6 +516,34 @@ router.put('/movimentazioneElement',async (req,res)=>{
             }
         }
     }
+    res.status(200).json(req.body)
+})
+
+/** Versione movimentazione per singolo elemento */
+router.post('/movimentazioneSingleElement',async (req,res)=>{
+    console.log(req.body)
+    let mushElementCode=req.body.movElementCode
+    let to=req.body.toStorage
+    let from=req.body.fromStorage
+    let movType=req.body.movType
+    let movIdElement=req.body.movIdElement
+    let nMov=await db.movimentation.count({where:{relatedId:movIdElement}})
+    console.log(nMov)
+    // Se l'elemento non ha movimentazioni precedenti
+    let mushElement=await db.mushElement.findOne({where:{id:movIdElement}})
+    if (nMov==0){
+        await db.movimentation.create({relatedId:movIdElement,
+                                    to:mushElement.storageId,
+                                    type:movType,
+                                    mushElement:mushElement.element_code})
+    }
+    await db.mushElement.update({storageId:to},{where:{id:movIdElement}})
+    await db.movimentation.create({relatedId:movIdElement,
+                                    from:from,
+                                    to:to,
+                                    type:movType,
+                                    mushElement:mushElementCode})
+
     res.status(200).json(req.body)
 })
 
@@ -777,12 +813,21 @@ router.get('/mushElementLanding',async (req,res)=>{
                     pickReasonDesc=el.txt
                 }
             });
-            console.log(mushElement.pick_reason)
-            console.log(pickReasonDesc)
         mushElement.pick_date=mushElement.pick_date?moment(mushElement.pick_date).format("DD-MM-YY"):null
         mushElement.pick_reason=pickReasonDesc
+        mushElement.storage= await db.storage.findAll({where:{id:mushElement.storageId}})
 
-        res.render("management/mushElementLanding",{mushElement:mushElement,pickReasonDD:pickReasonDD})
+        let destination=await db.storage.findAll({where:{id:{
+                                                    [Op.ne]: mushElement.storageId
+                                                }}})
+        let destinationDD=[]
+        destination.forEach(elem => {
+                destinationDD.push({val:elem.id,txt:elem.code_storage+" - "+elem.name_storage})
+            });
+
+        res.render("management/mushElementLanding",{mushElement:mushElement,
+                                                    pickReasonDD:pickReasonDD,
+                                                    destinationDD:destinationDD})
     } else {
                 res.status(422).json()
             }

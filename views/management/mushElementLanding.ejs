@@ -239,6 +239,7 @@
                   </div>
                     </div>
                   </div>
+                  <!-- Btn Metti in fruttificazione -->
                   <div class="col-12 mx-auto my-2">
                     <% if ((mushElement.type=="SPAWN")&&(mushElement.active==1)){
                       if(mushElement.stage==null){%>
@@ -256,12 +257,43 @@
                     <div class="col mx-auto h4 text-center">Elemento in fruttificazione</div>
                   <% }} %>
                   </div>
+                  <!-- Btn Movimenta elemento -->
+                  <div class="col-12 mx-auto my-2">
+                    <div class="row m-2 p-2 rounded bg-light border-success" id="movimentation_Wrp" style="display: none; border: solid 1px;">
+                        <h5>Movimenta elemento</h5>
+                           <div class="col-12">
+                              <b>Posizione attuale:</b> <br>
+                              <span class="my-2"><%= mushElement.storage[0].code_storage %> <%= mushElement.storage[0].name_storage%></span>
+                            </div>
+                          <div class="col-12">
+                            <div class="form-group">
+                              <label for="">Destinazione</label>
+                              <form id="movimentation_Frm">
+                              <select class="form-control" name="toStorage" id="toStorage_Fld">
+                                <% destinationDD.forEach (elem => {%>
+                                  <option value="<%= elem.val %>"><%= elem.txt %></option>
+                                <% }) %>
+                              </select>
+                              <button class="btn btn-primary btn-xs mt-2" id="saveMovimentation_Btn">Sposta l'elemento</button>
+                              <input type="hidden" name="movElementCode" value="<%= mushElement.element_code %>">
+                              <input type="hidden" name="fromStorage" value="<%= mushElement.storage[0].id %>">
+                              <input type="hidden" name="movType" value="<%= mushElement.type %>">
+                              <input type="hidden" name="movIdElement" value="<%= mushElement.id %>">
+                              </form>
+                            </div>
+                          </div>
+                     </div>
+                     <button type="button" name="" id="movimentationElement_Btn" class="btn btn-success btn-block"> 
+                      Movimenta l'elemento <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></button>
+                  </div>
+                  <!-- Btn Visualizza dati -->
                   <div class="col-12 mx-auto my-2">
                     <a href="/mushElement/singleMushElement?id=<%= mushElement.id%>&filterCategory=<%= mushElement.type%>">
                       <button type="button" name="" id="" class="btn btn-primary btn-block"> 
                          Dati elemento <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></button>
                     </a>
                   </div>
+                  <!-- Btn Pick elemento -->
                   <div class="col-12 mx-auto my-2">
                     <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-block"
                     <% if (mushElement.active==0){%>
@@ -718,6 +750,31 @@ $(document).ready(async function () {
         alert("Compila i dati obbligatori")
       }
     });
+
+    /** Movimentation */
+    
+    $("#movimentationElement_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#movimentation_Wrp").toggle()
+    });
+
+    $("#saveMovimentation_Btn").click(function (e) { 
+      e.preventDefault();
+      let toStorage=$("#toStorage_Fld option:selected").text();
+      let c=confirm("Procedere con lo spostamento dell'elemento verso il magazzino "+toStorage+" ?")
+      if (c==true){
+        $.ajax({
+          type: "POST",
+          url: "/mushElement/movimentazioneSingleElement",
+          data: $("#movimentation_Frm").serialize(),
+          success: function (response) {
+          window.location.reload();
+            
+          }
+        });
+      }
+    });
+
 
     /** Utility */
     $(document).on("click","#backListNote_Btn", function (e) {

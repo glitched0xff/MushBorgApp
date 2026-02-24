@@ -30,6 +30,7 @@
                 <% if(mushElement.active!=0) { %>
                 
               <button type="button" name="" id="modElement_Btn" class="btn btn-primary btn-xs mx-2">Modifica elemento</button>
+              <button type="button" name="" id="moveElement_Btn" class="btn btn-primary btn-xs mx-2">Sposta elemento</button>
               <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-xs mx-2">Elimina elemento</button>
               
               <% if((filterCategory=="SPAWN")&&(mushElement.stage==null)){ %>
@@ -1109,6 +1110,45 @@
     </div>
   </div>
  </div>
+ <!-- Modal Movimentation -->
+ <div class="modal fade" id="movimentation_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Movimentazione</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <b>Posizione attuale:</b> <br>
+            <span class="my-2"><%= mushElement.storage[0].code_storage %> <%= mushElement.storage[0].name_storage%></span>
+          </div>
+          <div class="col-12">
+            <div class="form-group">
+              <label for="">Destinazione</label>
+              <form id="movimentation_Frm">
+              <select class="form-control" name="toStorage" id="toStorage_Fld">
+                
+                <% destinationDD.forEach (elem => {%>
+                  <option value="<%= elem.val %>"><%= elem.txt %></option>
+                <% }) %>
+              </select>
+              <button class="btn btn-primary btn-xs mt-2" id="saveMovimentation_Btn">Sposta l'elemento</button>
+              <input type="hidden" name="movElementCode" value="<%= mushElement.element_code %>">
+              <input type="hidden" name="fromStorage" value="<%= mushElement.storage[0].id %>">
+              <input type="hidden" name="movType" value="<%= mushElement.type %>">
+              <input type="hidden" name="movIdElement" value="<%= mushElement.id %>">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+ </div>
  <!-- Loading -->
 <style>
   #loadingOverlay {
@@ -1260,6 +1300,7 @@ async function getMovimentation(){
     url: "/mushElement/getMoviementation?id="+mushElement.id+"&filterCategory="+filterCategory,
     success: function (response) {
       console.log(response)
+      console.log("..")
       let storageStory=response.storageStory
       storages=response.storages
       let html=""
@@ -1498,6 +1539,26 @@ $(document).ready(async function () {
       e.preventDefault();
       $('#pick_Mdl').modal('show')
     });
+    $("#moveElement_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#movimentation_Mdl").modal("show")
+    });
+    $("#saveMovimentation_Btn").click(function (e) { 
+      e.preventDefault();
+      let toStorage=$("#toStorage_Fld option:selected").text();
+      let c=confirm("Procedere con lo spostamento dell'elemento verso il magazzino "+toStorage+" ?")
+      if (c==true){
+      $.ajax({
+        type: "POST",
+        url: "/mushElement/movimentazioneSingleElement",
+        data: $("#movimentation_Frm").serialize(),
+        success: function (response) {
+         window.location.reload();
+          
+        }
+      });
+      }
+    });
     $("#pickDelete_Btn").click(function (e) { 
       e.preventDefault();
 
@@ -1673,57 +1734,53 @@ $(document).ready(async function () {
       $("#sensorDataGraph_Mdl").modal("show")
     });
 
-// Are raccolto
-$("#addHarvest_Btn").click(function (e) { 
-  e.preventDefault();
-  $("#insertHarvest_Mdl").modal('show')
-});
-$("#abortHarvest_Btn").click(function (e) { 
-  e.preventDefault();
-  $("#insertHarvest_Mdl").modal('hide')
-});
+    // Are raccolto
+    $("#addHarvest_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#insertHarvest_Mdl").modal('show')
+    });
+    $("#abortHarvest_Btn").click(function (e) { 
+      e.preventDefault();
+      $("#insertHarvest_Mdl").modal('hide')
+    });
 
-$("#saveHarvest_Btn").click(function (e) { 
-  let c=checkForm("mushElementHarvest_Form")
-  e.preventDefault();
-  if(c==true){
-    $.ajax({ 
-    type: "POST",
-    url: "/mushElement/insertHarvest",
-    data: $("#mushElementHarvest_Form").serialize(),
-    success: function (response) {
-      $("#insertHarvest_Mdl").modal("hide")
-      $("#harvest_weight").val("").removeClass("border-danger border-success")
-      drawElementHarvest(response.harvest)
-    }     
-  });
-  }
-  });
-
-$(document).on("click",".delMushElementHarvest", function (e) { 
-  e.preventDefault();
-  let idMushElementHarvest=$(this).attr("idmushelementharvest")
-  let c=confirm("Eliminare il raccolto selezionato?")
-  if(c==true){
-    $.ajax({
-    type: "DELETE",
-    url: "/mushElement/deleteHarvest?idMushElementHarvest="+idMushElementHarvest,
-    success: function (response) {
-      $.ajax({
-        type: "GET",
-        url: "/mushElement/getHarvest?id="+mushElement.id+"&filterCategoryHarvest="+mushElement.type,
+    $("#saveHarvest_Btn").click(function (e) { 
+      let c=checkForm("mushElementHarvest_Form")
+      e.preventDefault();
+      if(c==true){
+        $.ajax({ 
+        type: "POST",
+        url: "/mushElement/insertHarvest",
+        data: $("#mushElementHarvest_Form").serialize(),
         success: function (response) {
+          $("#insertHarvest_Mdl").modal("hide")
+          $("#harvest_weight").val("").removeClass("border-danger border-success")
           drawElementHarvest(response.harvest)
-        }
-      });}
-  });
-  }
-});
+        }     
+      });
+      }
+      });
 
-  // insertHarvest_Mdl
-  // mushElementHarvest_Form
-  // saveHarvest_Btn
-  // abortHarvest_Btn
+    $(document).on("click",".delMushElementHarvest", function (e) { 
+      e.preventDefault();
+      let idMushElementHarvest=$(this).attr("idmushelementharvest")
+      let c=confirm("Eliminare il raccolto selezionato?")
+      if(c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/mushElement/deleteHarvest?idMushElementHarvest="+idMushElementHarvest,
+        success: function (response) {
+          $.ajax({
+            type: "GET",
+            url: "/mushElement/getHarvest?id="+mushElement.id+"&filterCategoryHarvest="+mushElement.type,
+            success: function (response) {
+              drawElementHarvest(response.harvest)
+            }
+          });}
+      });
+      }
+    });
+
 
 // Default
     $("#backToMain_Btn").click(function (e) { 

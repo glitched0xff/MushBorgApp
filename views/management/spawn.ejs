@@ -242,7 +242,7 @@
                         Elementi lotto
                         <button type="button"  data-toggle="modal" 
                 data-target="#movimentazioni_Mdl" 
-                class="btn btn-primary btn-xs mx-2 movimentazioneBtn" type="all"><i class="fas fa-truck-moving"></i> Movimenta elementi</button>
+                class="btn btn-primary btn-xs mx-2 movimentazioneBtn" disabled type="all"><i class="fas fa-truck-moving"></i> Movimenta elementi</button>
                 <button type="button" class="btn btn-primary btn-xs mx-2" id="exportCsv_Btn"><i class="fas fa-file-csv"></i> Esporta csv</button>
                       </div>
                     <table class="table table-sm " id="mushElement_Tbl">
@@ -251,6 +251,7 @@
                           <th></th>
                           <th>Codice elemento</th>
                           <th>Stato elemento</th>
+                          <th>Stage</th>
                           <th>Magazzino</th>
                           <th>Note</th>
                           <th>Data prelievo</th>
@@ -552,12 +553,11 @@ console.log(dt.text());
             $(".spawnText").show()
           }
         });   
-
     }
+
   function drawTableMushElement(data,topic) {
     let html=""
     console.log(data)
-    
     if (data.length>0){
       for (let i = 0; i < data.length; i++) {
         const elem = data[i];
@@ -577,14 +577,13 @@ console.log(dt.text());
                     <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
                 </button>
         </td>
-        <td>${elem.element_code} ${elem.stage}</td>
+        <td>${elem.element_code}</td>
         <td>${elem.stato}</td>
+        <td>${elem.stage==2?"Fruttificazione":"Propagazione"}</td>
         <td>${elem.storage.name_storage}</td>
         <td>${elem.mushElementNotes.length}</td>
         <td>${elem.pick_date?moment(elem.pick_date).format("DD-MM-YYYY"):"-"}</td>
-        
         `
-        
         html+=`</tr>`
       }
       
@@ -595,14 +594,13 @@ console.log(dt.text());
     }
     $("#mushElement_Tblb").html(html).parent().show()
   }
+  
   $(document).ready(async function () {
     $('#exp_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $('#purchased_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $('#expected_maturation_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $("#createLot_DT").datetimepicker({locale: 'it', format:"DD-MM-YY"})
       $("#strainPerc_Fld").val(0)
-    console.log(("#strainPerc_Fld").length)
-   
      if (redirectId!=null){
       await drawShowSpawn(redirectId)
     }
@@ -610,12 +608,10 @@ console.log(dt.text());
       tableSpawn=$('#spawn_Tbl').DataTable({responsive: true,pageLength: 50})
       await drawTableSpawn()
     }
-
     $(document).on("click",".showSpawn",async function(){
       let idSpawn=$(this).attr("idSpawn")
       window.location="/spawn?redirectId="+idSpawn
     })
-
     $("#newSpawn_Btn").click(function (e) { 
       e.preventDefault();
       resetForm("spawn_FRM")

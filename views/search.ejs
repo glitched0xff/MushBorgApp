@@ -52,7 +52,7 @@
             case "mushElement":
               html+=`
                     <div class="card w-100 col-8 mx-auto">
-                <img class="card-img-top" src="holder.js/100px180/" alt="">
+                
                 <div class="card-body">
                   <h4 class="card-title"><span class="badge badge-primary">Mush element</span></h4>
                   <p class="card-text">
@@ -66,11 +66,11 @@
             case "propagation":
               html+=`
                     <div class="card w-100 col-8 mx-auto">
-                <img class="card-img-top" src="holder.js/100px180/" alt="">
+                
                 <div class="card-body">
                   <h4 class="card-title"><span class="badge badge-seconday">Propagation</span></h4>
                   <p class="card-text">
-                    <a href="">${el.propagation_name}<a><br>
+                    <a href="/propagation?redirectId=${el.id}">${el.propagation_name}<a><br>
                     ${objVal.val3}<br>
                     ${el.id}</p>
                 </div>
@@ -80,11 +80,11 @@
             case "spawn":
               html+=`
                     <div class="card w-100 col-8 mx-auto">
-                <img class="card-img-top" src="holder.js/100px180/" alt="">
+                
                 <div class="card-body">
                   <h4 class="card-title"><span class="badge badge-danger">Spawn</span></h4>
                   <p class="card-text">
-                    <a href="">${el.spawn_name}<a><br>
+                    <a href="/spawn?redirectId=${el.id}">${el.spawn_name}<a><br>
                     <br>
                    ${el.id}</p>
                 </div>
@@ -94,11 +94,11 @@
             case "inoculum":
               html+=`
                     <div class="card w-100 col-8 mx-auto">
-                <img class="card-img-top" src="holder.js/100px180/" alt="">
+                
                 <div class="card-body">
                   <h4 class="card-title"><span class="badge badge-danger">Inoculum</span></h4>
                   <p class="card-text">
-                    <a href="">${el.inoculum_name}<a><br>
+                    <a href="/inculum?redirectId=${el.id}"">${el.inoculum_name}<a><br>
                     <br>
                    ${el.id}</p>
                 </div>
@@ -108,7 +108,7 @@
             case "strain":
               html+=`
                     <div class="card w-100 col-8 mx-auto">
-                <img class="card-img-top" src="holder.js/100px180/" alt="">
+                
                 <div class="card-body">
                   <h4 class="card-title"><span class="badge badge-alert">Strain</span></h4>
                   <p class="card-text">
