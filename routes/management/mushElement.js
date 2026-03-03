@@ -763,7 +763,7 @@ router.get('/csv',async (req,res)=>{
 router.get('/csvLotto',async (req,res)=>{
     //console.log(req.query)
     let {relatedId,filterCategory}=req.query
-    let mushElements=await db.mushElement.findAll({where:{relatedId:relatedId,type:filterCategory},attributes:["load_date","createdAt"]})
+    let mushElements=await db.mushElement.findAll({where:{relatedId:relatedId,type:filterCategory},attributes:["load_date","element_code"]})
     mushElements=JSON.parse(JSON.stringify(mushElements))
     let csvObj=[]
     for (let i = 0; i < mushElements.length; i++) {
