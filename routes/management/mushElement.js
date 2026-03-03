@@ -763,13 +763,11 @@ router.get('/csv',async (req,res)=>{
 router.get('/csvLotto',async (req,res)=>{
     //console.log(req.query)
     let {relatedId,filterCategory}=req.query
-    let mushElements=await db.mushElement.findAll({where:{relatedId:relatedId,type:filterCategory},attributes:["element_code","createdAt"]})
+    let mushElements=await db.mushElement.findAll({where:{relatedId:relatedId,type:filterCategory},attributes:["load_date","createdAt"]})
     mushElements=JSON.parse(JSON.stringify(mushElements))
     let csvObj=[]
     for (let i = 0; i < mushElements.length; i++) {
         let elem=mushElements[i]
-        console.log(JSON.parse(JSON.stringify(elem)))
-        console.log(moment( elem.load_date).format("DD-MM-YY HH:mm"))
         csvObj.push({
             element_code:elem.element_code,
             createAt:moment( elem.load_date).format("DD-MM-YY HH:mm"),
