@@ -17,7 +17,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.FLOAT
           },
           uom:{
-            type: Sequelize.STRING
+            type: Sequelize.INTEGER
           },
           material:{
             type: Sequelize.STRING
