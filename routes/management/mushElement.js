@@ -768,6 +768,7 @@ router.get('/csvLotto',async (req,res)=>{
     let csvObj=[]
     for (let i = 0; i < mushElements.length; i++) {
         let elem=mushElements[i]
+        console.log(JSON.parse(JSON.stringify(elem)))
         console.log(moment( elem.load_date).format("DD-MM-YY HH:mm"))
         csvObj.push({
             element_code:elem.element_code,
