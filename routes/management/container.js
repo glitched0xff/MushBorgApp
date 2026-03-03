@@ -18,11 +18,12 @@ const Op = db.Sequelize.Op;
 
 router.get('/',async  (req, res) => {
     let supplier=await Supplier.findAll()
+    let udmDD=await db.dDOption.findAll({where:{ddMenu:"udmSelect"}})
     let supplierDD=[]
     supplier.forEach(elem => {
         supplierDD.push({val:elem.id,txt:elem.supplier_name})
     });
-    res.render("management/container",{supplierDD:supplierDD})
+    res.render("management/container",{supplierDD:supplierDD,udmDD:udmDD})
   });
 
 router.get('/getAll',async  (req, res) => {
