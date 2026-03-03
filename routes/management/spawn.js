@@ -283,7 +283,7 @@ router.post('/newSpawn', async(req,res) => {
                         relatedId:result.id,
                         stato:"Buono",
                         qt:nrContiner,
-                        load_date:moment(),
+                        load_date:moment(data.createLot,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"),
                         storageId:result.storageId,
                         expected_maturation_date:moment(data.expected_maturation_date,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"),
                         createLot:moment(data.createLot,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"),

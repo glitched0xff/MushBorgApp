@@ -53,6 +53,23 @@ let rawMaterials=await RawMaterial.findAll({
         const elem = rawMaterials[i];
         elem.usedElement=elem.substrateElements.length
     }
+    // Recupero dati
+const udmDD = await db.dDOption.findAll({
+  where: { ddMenu: "udmSelect" },
+  raw: true
+});
+
+// Creo una mappa val -> txt
+const udmMap = new Map(
+  udmDD.map(item => [Number(item.val), item.txt])
+);
+
+// Associo uomText in O(n)
+for (const material of rawMaterials) {
+  const key = Number(material.uom);
+  material.uomText = udmMap.get(key) ?? null;
+}
+    //console.log(rawMaterials)
     res.status(200).json({rawMaterials:rawMaterials})
 });
 
