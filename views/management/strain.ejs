@@ -810,6 +810,7 @@ $(document).ready(async function () {
 
     $("#importParameterSave_Btn").click(function (e) { 
       e.preventDefault();
+      if (importParam){
       for (const [key, value] of Object.entries(importParam)) {
               if($("#"+key+"_Fld").attr("tp")=="textField"){
                 $("#"+key+"_Fld").val(value)
@@ -824,7 +825,11 @@ $(document).ready(async function () {
                 
                 }
             }
-       $("#importParameter_Mdl").modal("hide")
+       
+      $("#importParameter_Mdl").modal("hide")}
+      else{
+        console.log("cambia strain")
+      }
     });
 
     $("#saveParameter_Btn").click(function (e) { 
