@@ -24,12 +24,12 @@ router.get('/getAll',async  (req, res) => {
 });
   
 router.post('/newSubstrateElement', async(req,res) => {
-    //console.log(req.body)
+    console.log(req.body)
     let substrateId = req.body.substrateId?req.body.substrateId:false
     let materialCategoryId = req.body.materialCategoryId?req.body.materialCategoryId:false
     let rawMaterialId = req.body.rawMaterialId?req.body.rawMaterialId:false
     let qt_dry = req.body.qt_dry?req.body.qt_dry:false
-    let qt_hum = req.body.qt_hum?req.body.qt_hum:false
+    let qt_hum = req.body.qt_hum?req.body.qt_hum:0
     let data=req.body
     if ((substrateId!=false)&&(materialCategoryId!=false)&&(rawMaterialId!=false))
     {
@@ -38,8 +38,8 @@ router.post('/newSubstrateElement', async(req,res) => {
                     materialCategoryId:data.materialCategoryId,
                     rawMaterialId:data.rawMaterialId,
                     materialName:data.materialName,
-                    qt_dry:data.qt_dry,
-                    qt_hum:data.qt_hum,
+                    qt_dry:qt_dry,
+                    qt_hum:qt_hum,
                 })
                 .then(result=>{
                     res.status(200).json({data:result})

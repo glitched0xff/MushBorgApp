@@ -344,7 +344,7 @@ let recipeId
 let redirectId= <%- JSON.stringify( redirectId) %>
 let udmDD= <%- JSON.stringify( udmDD ) %>
 let pretreatmentDD= <%- JSON.stringify( pretreatmentDD ) %>
-
+let recipe
   let uomTxt
 
   async function  drawTable (){
@@ -473,59 +473,34 @@ function drawShowSubstrate(id) {
             }
             $("#pretreatment_Show").html(data.recipe.pretreatmentTxt)
             let html=""
-            if (data.recipe.drain==1){
+            
             let totDry=0
             let totHum=0
+            let qtHum=0
             data.substrateElements.forEach(el => {
               totDry=totDry+el.qt_dry
-              totHum=totHum+el.qt_hum
-              html+=`<tr>
-                <td>${el.materialCategory.category_name}</td>
-                <td >${el.rawMaterial.material_name}</td>
-                <td>${el.rawMaterial.supplier.supplier_name}</td>
-                <td>${el.qt_hum} ${uomTxt.txt}</td>
-                <td>${el.qt_dry} ${uomTxt.txt}</td>
-              </tr>`  
-            });
-            html+=`<tr>
-                <td></td>
-                <td ></td>
-                <td></td>
-                <td>${parseFloat(totHum.toFixed(2))} ${uomTxt.txt}</td>
-                <td>${parseFloat(totDry.toFixed(2))} ${uomTxt.txt}</td>
-              </tr>`
-            }
-            else{
-              //html="Fare il calcolo per le bag scorporando l'acqua sul fattore di umidità"
-              let totDry=0
-            let totHum=0
-            let totWater=0
-            data.substrateElements.forEach(el => {
-              totDry=totDry+el.qt_dry
-              totHum=totHum+el.qt_hum
-              if(el.materialCategory.water==0){
-                
-              totWater+=el.qt_hum-el.qt_dry
-              }else{
-                totWater+=el.qt_dry
+              qtHum=el.qt_hum
+              if (data.recipe.drain==0){
+                 qtHum=0
               }
+              totHum=totHum+qtHum 
               
               html+=`<tr>
                 <td>${el.materialCategory.category_name}</td>
                 <td >${el.rawMaterial.material_name}</td>
                 <td>${el.rawMaterial.supplier.supplier_name}</td>
-                <td>${el.qt_hum} ${uomTxt.txt}</td>
+                <td>${qtHum} ${uomTxt.txt}</td>
                 <td>${el.qt_dry} ${uomTxt.txt}</td>
               </tr>`  
             });
             html+=`<tr>
                 <td></td>
                 <td ></td>
-                <td>H2o tot:${parseFloat(totWater.toFixed(2))} ${uomTxt.txt}</td>
+                <td></td>
                 <td>${parseFloat(totHum.toFixed(2))} ${uomTxt.txt}</td>
                 <td>${parseFloat(totDry.toFixed(2))} ${uomTxt.txt}</td>
               </tr>`
-            }
+            
             $("#substrateElem_Tblb").html(html)
 
             if (data.spawns.length>0){
@@ -609,13 +584,14 @@ $(document).ready(async function () {
         url: "recipes/getOneRecipes?id="+idRecipe,
         success: async function (response) {
           selectRecipeFlag=true
-          let data=response.recipe
-          console.log(data.pretreatmentTxt)
-            $("#pretreatment_Show").html(data.pretreatmentTxt).show()
-          $("#recipeSubCode_Fld").val(data.sub_code)
-          $("#cod_recipe").html(data.cod_recipe)
-          $("#recipe_name").html(data.recipe_name)
-          $("#noteRecipe").html(data.noteRecipe)
+          recipe=response.recipe
+          
+          //console.log(data.pretreatmentTxt)
+            $("#pretreatment_Show").html(recipe.pretreatmentTxt).show()
+          $("#recipeSubCode_Fld").val(recipe.sub_code)
+          $("#cod_recipe").html(recipe.cod_recipe)
+          $("#recipe_name").html(recipe.recipe_name)
+          $("#noteRecipe").html(recipe.noteRecipe)
 
           //$("#rowRecipe").show()
           let lastCategory=false
@@ -623,13 +599,13 @@ $(document).ready(async function () {
           let totHum=0
           let totDry=0
           let uom
-          for (let i = 0; i < data.recipeElements.length; i++) {
-            let el=data.recipeElements[i]
+          for (let i = 0; i < recipe.recipeElements.length; i++) {
+            let el=recipe.recipeElements[i]
             let selectList
             //if (el.materialCategoryId!=lastCategory){
               await $.get("rawMaterial/getMaterialByCategory?idCategory="+el.materialCategoryId,
-              function (data) { 
-                selectList=data.material
+              function (recipe) { 
+                selectList=recipe.material
                 })
               //}
             //console.log(selectList)
@@ -651,19 +627,35 @@ $(document).ready(async function () {
             let qtRequest=$("#qt_Fld").val()
             let defaultHum=el.materialCategory.hum_factor
             // Qt mat dry
-            let qtPerc=qtRequest*(el.percentage/100)
-            let matDry=qtPerc/firstFieldHum
-            uom=$( "#uom_Fld option:selected" ).text()      
-            //totali
-            totHum=totHum+parseFloat(qtPerc.toFixed(2))
-            totDry=totDry+parseFloat(matDry.toFixed(2))
             html+=`<tr id="subElement_${i}">
                 <td>${catName}<input type="hidden" id="materialCategoryId_${i}" value="${el.materialCategoryId}"></td>
                 <td id="percent_${i}">${el.percentage}%</td>
-                <td>${dropDownMaterial}</td>
-                <td id="qtPerc_${i}">${qtPerc.toFixed(2)} ${uom}</td>
+                <td>${dropDownMaterial}</td>`
+            let qtPerc
+            let matDry
+            let matHum
+            uom=$( "#uom_Fld option:selected" ).text()      
+            if (recipe.drain==1){
+              //console.log("ricetta sgocciolamento")
+               matHum=qtRequest*(el.percentage/100)
+               matDry=matHum/firstFieldHum
+               html+=`<td id="qtPerc_${i}">${matHum.toFixed(2)} ${uom}</td>
                 <td id="materialDry_${i}">${matDry.toFixed(2)} ${uom}</td>
               </tr>`
+            } else{
+              //console.log("ricetta senza sgocciolamento")
+               matHum=0
+               matDry=qtRequest*(el.percentage/100)
+               html+=`<td id="qtPerc_${i}">0</td>
+                <td id="materialDry_${i}">${matDry.toFixed(2)} ${uom}</td>
+              </tr>`
+            }
+            //totali
+            totHum=totHum+parseFloat(matHum.toFixed(2))
+            totDry=totDry+parseFloat(matDry.toFixed(2))
+            
+
+            
           }
           let htmlFoot=`
                 <th></th>
