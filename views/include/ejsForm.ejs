@@ -5,7 +5,20 @@ if (classField==""){
 if(classTxt==""){
     classTxt=="hidden"
 }
-form.forEach(el => { %>    
+form.forEach(el => { %>  
+    <%# Plain text with no field%>  
+    <% if (el.type=="plainText") {%>
+    <div class="<%= el.classBox %>"
+        <% if (el.hidden){%>
+                style="display:none"
+            <% } %>
+            id="<%= el.fieldName %>_Wrp">    
+        <dl>
+          <dt><%= el.label %></dt>
+          <dd id="<%= el.fieldName %>_Show" class="<%= classTxt %>"></dd>
+        </dl>
+      </div>
+    <% } %>  
     <%# TEXT  TEMPLATE%>  
     <% if (el.type=="text") {%>
     <div class="<%= el.classBox %>"

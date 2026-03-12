@@ -22,7 +22,8 @@ Substrate.associate(db)
 router.get('/',async  (req, res) => {
     let destinationDD=await dropDownGenerator("destination")
     let materialCategory=await MaterialCategory.findAll({order:['category_name'],raw:true})
-   res.render("management/recipes",{materialCategory:materialCategory,destinationDD})
+    let pretreatmentDD=await dropDownGenerator("pretreatment")
+   res.render("management/recipes",{materialCategory:materialCategory,destinationDD,pretreatmentDD:pretreatmentDD})
   });
 
 router.get('/getAll',async  (req, res) => {
@@ -35,7 +36,7 @@ let recipes=await Recipe.findAll({
 });
 
 router.post('/newRecipe', async(req,res) => {
-    console.log(req.body)
+   // console.log(req.body)
     let recipe_name = req.body.recipe_name?req.body.recipe_name:false
     let data=req.body
     if (recipe_name!=false){
@@ -53,6 +54,8 @@ router.post('/newRecipe', async(req,res) => {
             sub_code:data.sub_code,
             destination:data.destination,
             forPurchased:data.forPurchased,
+            drain:data.drain,
+            pretreatmentId:data.pretreatmentId,
             note:data.note
             })
         .then(result=>{
@@ -77,6 +80,9 @@ router.put('/updateRecipe', async(req,res) => {
             recipe_name:data.recipe_name,
             sub_code:data.sub_code,
             destination:data.destination,
+            forPurchased:data.forPurchased,
+            drain:data.drain,
+            pretreatmentId:data.pretreatmentId,
             note:data.note
             },{where:{id:idRecipe}})
         .then(result=>{
@@ -94,9 +100,19 @@ router.put('/updateRecipe', async(req,res) => {
 router.get('/getOneRecipes',async  (req, res) => {
     let recipesId=req.query.id?req.query.id:false
     if (recipesId!=false){
+        
+        
         let recipe=await Recipe.findOne({where:{id:recipesId},
             include: [{model: RecipeElement,include:[{model:db.materialCategory,attributes:["hum_factor","category_name"]}]},
         {model:Substrate}]})
+        let pretreatment=await db.pretreatment.findOne({where:{id:recipe.pretreatmentId}})
+        recipe=JSON.parse(JSON.stringify(recipe))
+        if(pretreatment){
+            pretreatment=JSON.parse(JSON.stringify(pretreatment))
+            recipe.pretreatmentTxt=pretreatment.pretreatment_name
+        }else{
+            recipe.pretreatmentTxt="ND"
+        }
         res.status(200).json({recipe:recipe})
     } else {
             res.status(522).json()

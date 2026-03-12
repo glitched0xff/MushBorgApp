@@ -17,12 +17,12 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.TEXT
           },
     });
-    // Pretreatment.associate = (models) => {
+    Pretreatment.associate = (models) => {
     //   Pretreatment.belongsTo(models.spawn);
     //   Pretreatment.belongsTo(models.substrate);
     //   //Pretreatment.belongsTo(models.substrate);
-    //   Pretreatment.hasMany(models.pretreatmentElement,{foreignkey:'pretreatmentId'});
+      //Pretreatment.hasMany(models.recipes,{ foreignKey: 'pretreatmentId' });
     //   Pretreatment.hasMany(models.fructification,{foreignkey:'pretreatmentId'});
-    // };
+     };
     return Pretreatment;
   };

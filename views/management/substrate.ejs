@@ -77,6 +77,8 @@
                       label:"Nome substrato",
                       required:true, 
                     },
+                    { type:"endRow"},
+                    { type:"startRow"},
                     // {
                     //   type:"text",
                     //   classBox:"col-md-2 col-sm-6",
@@ -102,15 +104,7 @@
                       firstField:"Seleziona magazzino",
                       option:storageDD
                     },
-                    {
-                      type:"select",
-                      classBox:"col-md-2 col-sm-6",
-                      fieldName:"pretreatmentId",
-                      label:"Trattamento",
-                      required:true,
-                      firstField:"Seleziona trattamento",
-                      option:pretreatmentDD
-                    },
+                    
                     {
                       type:"checkbox",
                       classBox:"col-md-2 col-sm-6",
@@ -155,6 +149,12 @@
                       firstField:"Seleziona ricetta",
                       disabled:true,
                       option:recipeDD
+                    },
+                    {
+                      type:"plainText",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"pretreatment",
+                      label:"Pretrattamento",
                     },
                     {
                       type:"hidden",
@@ -343,6 +343,7 @@ let tableSubstrate
 let recipeId
 let redirectId= <%- JSON.stringify( redirectId) %>
 let udmDD= <%- JSON.stringify( udmDD ) %>
+let pretreatmentDD= <%- JSON.stringify( pretreatmentDD ) %>
 
   let uomTxt
 
@@ -457,6 +458,7 @@ function drawShowSubstrate(id) {
                     $("#forPurchased_Show").html(data.forPurchased? "Sì" : "No")
                     $("#forPurchased_Fld").attr("checked",data.forPurchased? true : false)
                   break;
+                  
               case "recipeId":
                      $("#"+key+"_Show").html(response.substrate.recipe.recipe_name)
                   break;
@@ -469,7 +471,9 @@ function drawShowSubstrate(id) {
                 break;
               }
             }
+            $("#pretreatment_Show").html(data.recipe.pretreatmentTxt)
             let html=""
+            if (data.recipe.drain==1){
             let totDry=0
             let totHum=0
             data.substrateElements.forEach(el => {
@@ -490,7 +494,40 @@ function drawShowSubstrate(id) {
                 <td>${parseFloat(totHum.toFixed(2))} ${uomTxt.txt}</td>
                 <td>${parseFloat(totDry.toFixed(2))} ${uomTxt.txt}</td>
               </tr>`
+            }
+            else{
+              //html="Fare il calcolo per le bag scorporando l'acqua sul fattore di umidità"
+              let totDry=0
+            let totHum=0
+            let totWater=0
+            data.substrateElements.forEach(el => {
+              totDry=totDry+el.qt_dry
+              totHum=totHum+el.qt_hum
+              if(el.materialCategory.water==0){
+                
+              totWater+=el.qt_hum-el.qt_dry
+              }else{
+                totWater+=el.qt_dry
+              }
+              
+              html+=`<tr>
+                <td>${el.materialCategory.category_name}</td>
+                <td >${el.rawMaterial.material_name}</td>
+                <td>${el.rawMaterial.supplier.supplier_name}</td>
+                <td>${el.qt_hum} ${uomTxt.txt}</td>
+                <td>${el.qt_dry} ${uomTxt.txt}</td>
+              </tr>`  
+            });
+            html+=`<tr>
+                <td></td>
+                <td ></td>
+                <td>H2o tot:${parseFloat(totWater.toFixed(2))} ${uomTxt.txt}</td>
+                <td>${parseFloat(totHum.toFixed(2))} ${uomTxt.txt}</td>
+                <td>${parseFloat(totDry.toFixed(2))} ${uomTxt.txt}</td>
+              </tr>`
+            }
             $("#substrateElem_Tblb").html(html)
+
             if (data.spawns.length>0){
               drawTableChild(data.spawns,"usedInSpawn_Tblb",["code_spawn","spawn_name"],"spawn","Spawn")
               $("#rowSpawn").show();             
@@ -573,11 +610,13 @@ $(document).ready(async function () {
         success: async function (response) {
           selectRecipeFlag=true
           let data=response.recipe
-          //console.log(data)
+          console.log(data.pretreatmentTxt)
+            $("#pretreatment_Show").html(data.pretreatmentTxt).show()
           $("#recipeSubCode_Fld").val(data.sub_code)
           $("#cod_recipe").html(data.cod_recipe)
           $("#recipe_name").html(data.recipe_name)
           $("#noteRecipe").html(data.noteRecipe)
+
           //$("#rowRecipe").show()
           let lastCategory=false
           let html=""

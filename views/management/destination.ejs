@@ -1,0 +1,326 @@
+<%- include ('../header') %>
+<%- include ('../navbar') %>
+<%- include ('../sidebar') %>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Gestione fornitori 
+            <button class="btn btn-xs btn-primary" id="modDestination_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca substrate</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newDestination_Btn"><i class="fas fa-plus"></i> Nuova fornitore</button>
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco fornitori</button>
+            </h1>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid" >
+        <div class="row" style="width: 100%;">
+          
+          <!-- Raw material card -->
+          <div class="card w-100" id="tableDestination_Crd">
+            <div class="card-body">
+              <table class="display table table-striped table-bordered compact" id="Destination_Tbl" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 45px; "></th>
+                        <th>Codice fornitore</th>
+                        <th>Nome fornitore</th>
+                        <th>Usata in N substrati</th>
+                        <th>Creata il</th>
+                    </tr>
+                </thead>
+                <tbody id="Destination_Tblb">
+                    
+                    
+                    
+                </tbody>
+            </table>
+            </div>
+          </div>
+          <!-- Show/mod Raw MAterial Card -->
+          <dvi class="card w-100" id="showDestination_Crd" style="display: none;">
+            <div class="row m-3">
+              <div class="col-12">
+              <form id="Destination_Form" class="p-3">
+                <div class="row w-100">
+                    <div class="col">
+                  <%- include('../include/ejsForm',
+                  {classTxt: "DestinationText",
+                    classField: "DestinationForm",
+                    form:[
+                    { 
+                      type:"hidden",
+                      fieldName:"id"
+                    },
+                    { type:"startRow"},
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"code_destination",
+                      label:"Codice destinatario",
+                      required:'', 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"name",
+                      label:"Nome",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"surname",
+                      label:"Cognome",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"address",
+                      label:"Indirizzo",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"mail",
+                      label:"Contatto e-mail",
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-3 col-sm-6",
+                      fieldName:"mobile",
+                      label:"Telefono",
+                    },
+                    { type:"endRow"},
+                    { type:"startRow"},
+                    {
+                      type:"textarea",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"note",
+                      label:"Note",
+                    },
+                    { type:"endRow"}
+                    ]  }) %>
+  
+                    </div>
+                  </div>
+                  
+              </form>
+              <div class="col-12">
+                <button type="button" class="btn btn-xs btn-primary" id="saveNewDestination_Btn"><i class="fas fa-plus"></i> Salva fornitore</button>
+                <button type="button" class="btn btn-xs btn-primary" id="saveModDestination_Btn"><i class="fas fa-plus"></i> Salva modifica fornitore</button>
+              </div>
+              </div>
+            </div>
+            
+          </dvi>
+</section>
+</div>
+
+
+<%- include ('../footer') %>
+<%- include ('../jsLoad') %>
+<script>
+
+ //let materialCategory = '<%# JSON.stringify(materialCategory) %>'
+ //materialCategory=JSON.parse(materialCategory)
+let tableDestination
+let idDestination
+// Draw Category Drop down
+function drawCategoryDD(){
+  let html=""
+  materialCategory.forEach(el => {
+    html+=`<option value="${el.id}">${el.category_name}</option>`
+  });
+   $('#categoryDD_Fld').html(html)
+  
+}
+// Draw and update table
+async function  drawTable (){
+   await $.ajax({
+        type: "GET",
+        url: "/destination/getAll",
+        success: async function (response) {
+          console.log(response)
+            let html=""
+            for (let i = 0; i < response.Destinations.length; i++) {
+                let el=response.Destinations[i]
+                let delBtnDisable=""
+                // if (el.used!=0){
+                //   delBtnDisable="disabled"
+                // }
+                html+=`<tr>
+                           <td>
+                            <button type="button" name="" id="showBtn${el.id}" 
+                            class="btn btn-primary btn-xs showDestination" style="width:25px"
+                            idDestination="${el.id}" DestinationName="${el.Destination_name}">
+                              <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" name="" id="delete${el.id}" 
+                          class="btn btn-danger btn-xs deleteDestination_Btn" style="width: 25px" 
+                          idDestination="${el.id}" DestinationName="${el.Destination_name }" ${delBtnDisable}>
+                            <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
+                          </button>
+                        </td>
+                                <td>${el.name} ${el.surname}</td>
+                                <td>${el.address}</td>
+                                <td></td>
+                                <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                            </tr>`
+                
+                }
+                await $('#Destination_Tbl').DataTable().clear().rows.add($(html)).draw();
+            }
+    });
+
+}
+
+$(document).ready(async function () {
+  // init
+    
+    tableDestination=$('#Destination_Tbl').DataTable({responsive: true,pageLength: 50});
+    await drawTable()
+    
+    // Card
+    // New rawMAterial
+  $("#newDestination_Btn").click(async function (e) { 
+    e.preventDefault();
+    $("#Destination_Form").trigger("reset")   
+    $(".DestinationForm").show()
+    $(".DestinationText").hide()
+    $("#rowDestination").hide() 
+    $("#newDestination_Btn").hide()
+    $("#backToMain_Btn").show()
+    $("#tableDestination_Crd").hide()
+    $("#showDestination_Crd").show()
+    $("#element_Row").hide()
+    $("#saveDestination_Btn").show()
+  });
+  // --> New destination
+  $("#saveNewDestination_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#cod_Destination_Fld").removeAttr("disabled")
+    $.ajax({
+        type: "POST",
+        url: "/destination/newDestination",
+        data: $("#Destination_Form").serialize(),   
+        success: async function (response) {
+          window.location="/destination"
+        }
+      });
+   
+    });
+   // --> New destination
+   $("#saveModDestination_Btn").click(function (e) { 
+    e.preventDefault();
+    $.ajax({
+        type: "PUT",
+        url: "/destination/updateDestination",
+        data: $("#Destination_Form").serialize(),   
+        success: async function (response) {
+          await drawTable()
+          $("#showDestination_Crd").hide()
+          $("#tableDestination_Crd").show()
+          $("#newDestination_Btn").show()
+          $("#modDestination_Btn").hide()
+          $("#backToMain_Btn").hide()
+          $("#saveNewDestination_Btn").hide()
+          $("#saveModDestination_Btn").hide()
+          $("#saveDestination_Btn").show()
+          $(".DestinationForm").hide()
+          $(".DestinationText").show()
+          $('#Destination_Form')[0].reset();
+        }
+      });
+    });
+  
+    // Back to main
+  $("#backToMain_Btn").click(async function (e) { 
+    e.preventDefault();
+    await drawTable()
+    $("#newDestination_Btn").show()
+    $("#backToMain_Btn").hide()
+    $("#newDestination_Crd").hide()
+    $("#showDestination_Crd").hide()
+    $("#tableDestination_Crd").show()
+    $("#modDestination_Btn").hide()
+    $("#saveNewDestination_Btn").hide()
+    $("#saveModDestination_Btn").hide()
+  });  
+  // Show/mod Raw material
+  $(document).on("click",".showDestination", async function(e){
+      $("#saveDestination_Btn").hide()
+
+      let id=$(this).attr("idDestination")
+      idDestination=id
+      let DestinationName=$(this).attr("DestinationName")
+      await $.ajax({
+        type: "GET",
+        url: "/destination/getOneDestination?id="+id,
+        success: async function (response) {
+          let data=response.destination
+          // Populate GUI
+          for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+              }
+                $("#"+key+"_Show").html(value?value:"-")
+            }
+            $("#id_Fld").val(data.id)
+          if (response.destination.used>0){
+              $("#saveDestination_Btn").hide()
+              await drawTableDestination()
+              $("#rowDestination").show()
+              $("#addElement_Btn").prop("disabled","true")
+              $(".delElement_Btn").prop("disabled","true")
+            } else {
+              $("#rowDestination").hide()
+              $("#addElement_Btn").removeAttr("disabled")
+              $(".delElement_Btn").removeAttr("disabled")
+            }
+          $("#showDestination_Crd").show()
+          $("#tableDestination_Crd").hide()
+          $("#newDestination_Btn").hide()
+          $("#saveNewDestination_Btn").hide()
+          $("#saveModDestination_Btn").show()
+          $("#modDestination_Btn").show()
+          $("#backToMain_Btn").show()
+          $(".DestinationForm").hide()
+          $(".DestinationText").show()
+        }
+      });   
+    })
+    $("#modDestination_Btn").click(function (e) { 
+      e.preventDefault();
+      $(".DestinationForm").show()
+      $(".DestinationText").hide()
+    }); 
+
+    // Delete destination
+    $(document).on("click",".deleteDestination_Btn", async function(e){
+      e.preventDefault();
+      let id=$(this).attr("idDestination")
+      let c=confirm(`Stai eliminando una fornitore, vuoi continuare? `)
+      if (c==true){
+        $.ajax({
+        type: "DELETE",
+        url: "/destination/deleteDestination?id="+id,
+        success: async function (response) {
+          await drawTable()
+        }
+      });
+      }
+    })
+});
+    
+
+</script>
+<%- include ('../closeTag') %>

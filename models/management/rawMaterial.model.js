@@ -49,6 +49,7 @@ module.exports = (sequelize, Sequelize) => {
       storageId:{
         type:Sequelize.INTEGER
       },
+      
       destination:{
         type:Sequelize.STRING
       },

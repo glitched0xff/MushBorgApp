@@ -158,7 +158,7 @@ router.put('/updateRawMaterial', async(req,res) => {
     let idMaterial=req.body.idRawMaterial?req.body.idRawMaterial:false
     let material_name=req.body.material_name?req.body.material_name:false
     let data=req.body
-    console.log(data)
+    //console.log(data)
     if ((material_name!=false)&&(idMaterial!=false)){
         
         let checkUse=await SubstrateElement.findAll({where:{id:idMaterial}})
@@ -213,10 +213,10 @@ router.get('/checkUseRawMaterial',async  (req, res) => {
   });
 
   router.get("/getMaterialByCategory",async (req,res)=>{
-    console.log(req.query.idCategory)
+    //console.log(req.query.idCategory)
     let idCategory=req.query.idCategory
     let material=await RawMaterial.findAll({where:{materialCategoryId:idCategory},include:[{model:MaterialCategory,attributes:["category_name","hum_factor"]}]})
-    console.log(material)
+    //console.log(material)
     res.status(200).json({material:material})
   })
 

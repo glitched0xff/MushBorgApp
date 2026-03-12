@@ -23,13 +23,20 @@ module.exports = (sequelize, Sequelize) => {
       forPurchased: {
         type: Sequelize.INTEGER
       },
+      drain: {
+        type: Sequelize.INTEGER
+      },
       destination:{
         type: Sequelize.STRING,
+      },
+      pretreatmentId: {
+        type: Sequelize.INTEGER
       }
     });
     Recipes.associate = (models) => {
       Recipes.hasMany(models.recipeElement,{foreignkey:'recipeId',onDelete: 'cascade' });
       Recipes.hasMany(models.substrate,{foreignkey:'recipeId' });
+      //Recipes.belong(models.pretreatment);
     }
     return Recipes;
   };

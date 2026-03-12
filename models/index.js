@@ -55,6 +55,8 @@ db.materialCategory = require("./management/materialCategory.model.js")(sequeliz
 db.rawMaterial = require("./management/rawMaterial.model.js")(sequelize, Sequelize);
 db.supplier = require("./management/supplier.model.js")(sequelize, Sequelize);
 db.recipeElement = require("./management/recipeElement.model.js")(sequelize, Sequelize);
+ db.pretreatment = require("./management/pretreatment.model.js")(sequelize, Sequelize);
+
 db.recipe = require("./management/recipes.model.js")(sequelize, Sequelize);
 db.substrateElement = require("./management/substrateElement.model.js")(sequelize, Sequelize);
 db.substrate = require("./management/substrate.model.js")(sequelize, Sequelize);
@@ -63,7 +65,6 @@ db.strain = require("./management/strain.model.js")(sequelize, Sequelize);
  db.spawn = require("./management/spawn.model.js")(sequelize, Sequelize);
  db.propagation = require("./management/propagation.model.js")(sequelize, Sequelize);
  db.fructification = require("./management/fructification.model.js")(sequelize, Sequelize);
- db.pretreatment = require("./management/pretreatment.model.js")(sequelize, Sequelize);
  db.container = require("./management/container.model.js")(sequelize, Sequelize);
  db.containerType = require("./management/containerType.model.js")(sequelize, Sequelize);
  db.inoculum = require("./management/inoculum.model.js")(sequelize, Sequelize);
@@ -75,7 +76,15 @@ db.strain = require("./management/strain.model.js")(sequelize, Sequelize);
  db.seed = require("./management/seed.model.js")(sequelize, Sequelize);
  db.movimentation = require("./management/movimentation.model.js")(sequelize, Sequelize);
  db.mushElementHarvest = require("./management/mushElementHarvest.model.js")(sequelize, Sequelize);
+ 
  db.speciesTemplate = require("./management/speciesTemplate.model.js")(sequelize, Sequelize);
+ 
+ db.orderDestination = require("./management/orderDestination.model.js")(sequelize, Sequelize);
+ db.productionOrder = require("./management/productionOrder.model.js")(sequelize, Sequelize);
+
+db.orderDestination.associate(db)
+db.productionOrder.associate(db)
+
  
 db.seed.associate(db)
 db.strain.associate(db)
@@ -89,6 +98,7 @@ db.mushElementNote.associate(db)
 db.mushElement.associate(db)
 db.materialCategory.associate(db)
 db.rawMaterial.associate(db)
+db.pretreatment.associate(db)
 
 db.associateActuator.associate(db)
 db.associateSensor.associate(db)

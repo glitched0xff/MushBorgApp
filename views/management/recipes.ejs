@@ -75,6 +75,8 @@
                       maxlength:2,
                       required:true, 
                     },
+                    { type:"endRow"},
+                     {type:"startRow"},
                     {
                       type:"select",
                       classBox:"col-md-2 col-sm-6",
@@ -85,10 +87,25 @@
                       option:destinationDD
                     },
                     {
+                      type:"select",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"pretreatmentId",
+                      label:"Trattamento",
+                      firstField:"Seleziona trattamento",
+                      required:true, 
+                      option:pretreatmentDD
+                    },
+                    {
                       type:"checkbox",
                       classBox:"col-md-2 col-sm-6",
                       fieldName:"forPurchased",
                       label:"Ricetta per acquisto",
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"drain",
+                      label:"Ricetta richiede sgocciolamento",
                     },
                   
                      { type:"endRow"},
@@ -376,9 +393,16 @@ $(document).ready(async function () {
                 case "destination":
                   $("#"+key+"_Show").html(value=="INOCULUM"?"Inoculo":value=="SPAWN"?"Spawn":value=="CULTIVATION"?"Coltivazione":"-")
                   break;
+                case "pretreatmentId":
+                  $("#"+key+"_Show").html(data.pretreatmentTxt)
+                  break;
                 case "forPurchased":
                     $("#forPurchased_Show").html(data.forPurchased? "Sì" : "No")
                     $("#forPurchased_Fld").attr("checked",data.forPurchased? true : false)
+                  break;
+                  case "drain":
+                    $("#drain_Show").html(data.drain? "Sì" : "No")
+                    $("#drain_Fld").attr("checked",data.drain? true : false)
                   break;
                 default:
                   $("#"+key+"_Show").html(value?value:"-")

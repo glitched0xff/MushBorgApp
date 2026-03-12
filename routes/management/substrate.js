@@ -58,7 +58,7 @@ let substrates=await Substrate.findAll({
 
 router.post('/newSubstrate', async(req,res) => {
     let data=req.body
-    console.log(data)
+    //console.log(data)
     // CodeGen
     let prefix="SUB"
     let recipeSubCode=data.recipeSubCode
@@ -126,7 +126,7 @@ router.get('/getOneSubstrate',async  (req, res) => {
                                 include:[{model:db.supplier,attributes:["supplier_name"]}],
                                 attributes:["material_name","hum_factor"]
                             },
-                            { model:MaterialCategory,attributes:["category_name"]}
+                            { model:MaterialCategory,attributes:["category_name","water"]}
                         ]
                     },
                     {model:db.recipe,include:[{model:db.recipeElement}]},
@@ -134,6 +134,17 @@ router.get('/getOneSubstrate',async  (req, res) => {
                     {model:Propagation,attributes:["id","propagation_name","code_propagation"]},
                     {model:db.inoculum,attributes:["id","inoculum_name","code_inoculum"]}
                 ]})
+        substrate=JSON.parse(JSON.stringify(substrate))
+        console.log(substrate)
+        let pret=await db.pretreatment.findOne({where:{id:substrate.recipe.pretreatmentId},attributes:["pretreatment_name"]})
+        substrate.recipe.pretreatmentTxt=pret.pretreatment_name
+        // for (let i = 0; i < substrate.recipe.recipeElements.length; i++) {
+        //     const el = substrate.recipe.recipeElements[i];
+        //     let isWater=await db.materialCategory.findOne({where:{id:el.materialCategoryId,water:1}})
+        //     console.log(isWater)
+
+        //     substrate.recipe.recipeElements[i].isWater=isWater?true:false
+        // }
         
         res.status(200).json({substrate:substrate})
     } else {

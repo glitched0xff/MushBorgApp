@@ -18,8 +18,10 @@ module.exports = (sequelize, Sequelize) => {
       },
       color:{
         type:Sequelize.STRING
-      }
-
+      },
+      water:{
+        type:Sequelize.INTEGER
+      },
     });
     MaterialCategory.associate = (models) => {
       MaterialCategory.hasMany(models.rawMaterial,{foreignkey:'materialCategoryId'});

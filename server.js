@@ -122,6 +122,12 @@ let print = require('./routes/print.js');
 app.use('/print', print);
 let setting = require('./routes/setting.js');
 app.use('/setting', setting);
+let orderDestination = require('./routes/management/orderDestination.js');
+app.use('/destination', orderDestination);
+let productionOrder = require('./routes/management/productionOrder.js');
+app.use('/productionOrder', productionOrder);
+
+
 const sensorData=require("./controllers/sensorData.controller.js")
 
 
