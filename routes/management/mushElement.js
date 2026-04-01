@@ -85,15 +85,20 @@ router.put('/updateMushElement', async(req,res) => {
 })
 
 router.get('/singleMushElement',async  (req, res) => {
-    //console.log(req.query)
+    console.log(req.query)
     let titoloFiltro=""
     let filterCategory
-    let mushElementId
+    let mushElementId=false
     if(req.query.elementCode){
         let findPar=await db.mushElement.findOne({where:{element_code:req.query.elementCode}, attributes:['id','type']})
-        //console.log(JSON.parse(JSON.stringify(findPar)))
-        mushElementId=findPar.id        
-        filterCategory=findPar.type
+        if (findPar){
+            mushElementId=findPar.id        
+            filterCategory=findPar.type
+        }else{
+        console.log(JSON.parse(JSON.stringify(findPar)))
+
+            mushElementId=false
+        }   
     }else{
         filterCategory=req.query.filterCategory?req.query.filterCategory.toUpperCase():null
         mushElementId=req.query.id?req.query.id:false
@@ -216,9 +221,19 @@ router.get('/singleMushElement',async  (req, res) => {
                                                     titoloFiltro:titoloFiltro,
                                                     filterCategory:filterCategory,
                                                     destinationDD:destinationDD,
-                                                    seeds:seeds})
+                                                    seeds:seeds,
+                                                error:false})
     } else {
-            res.status(422).json()
+            res.render("management/mushElementZoom",{error:true,
+                                                    mushElement:req.query.elementCode,
+                                                    parentElement:false,
+                                                    stageDD:false,
+                                                    pickReasonDD:false,
+                                                    titoloFiltro:false,
+                                                    filterCategory:false,
+                                                    destinationDD:false,
+                                                    seeds:false,
+            })
         }   
   });
 

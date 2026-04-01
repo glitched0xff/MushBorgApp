@@ -21,8 +21,20 @@
     </div>
     <section class="content">
       <div class="mushElement-fluid">
+      <% if (error==true){%>
+        <div class="card w-100">
+          <div class="row w-100 m-2">
+            <div class="col bg-danger text-center p-2 text-uppercase text-bold">
+              
+              Elemento <%= mushElement %> non è più presente nel database.
+            </div>
+          </div>
+        </div>
+      <% } else { %>
+        
       <div class="card w-100" id="showMushElement_Crd">
         <div class="row m-3">
+
           <div class="col-12">
             <!-- Visual -->
             <div id="showElement_Div">
@@ -821,15 +833,17 @@
             </div>
           </div>
             </div>
-          </div>
           <div class="row">
+            
             <div>
-  
 </div>
           </div>
+
+      <% } %>
+        
 </section>
 </div>
-
+<% if (error==false){%>
 <!-- Modal insert note -->
 <div class="modal fade" id="insertNote_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -1190,7 +1204,7 @@
  <div id="loadingOverlay" style="display:none;">
   <div class="spinner"></div>
 </div>
-
+<% } %>
 <%- include ('../footer') %>
 <%- include ('../jsLoad') %>
 <script src="/dist/js/heic2any.min.js"></script>
@@ -1198,6 +1212,9 @@
 
 <script>  
 
+ let HttpError =<%= error %> 
+ console.log(HttpError)
+if (HttpError==false){
  let mushElement =<%- JSON.stringify(mushElement) %> 
  let stageDD =<%- JSON.stringify(stageDD) %> 
  let parentElement = <%- JSON.stringify( parentElement) %>
@@ -1213,6 +1230,8 @@ let idSpawn
 let spawnElementTempId=0
 let letterElement="" // Identifica postfisso della cartella immagini
 const sensorChartCtx = document.getElementById('sensorChart');
+}
+
 
 
 //Draw Element NOTE table
@@ -1375,6 +1394,7 @@ async function drawGraph(label,dataSet) {
 }
 // docReady
 $(document).ready(async function () {
+  if (HttpError==false){
   $(document).on('click', '[data-toggle="lightbox"]', function(event) {
                 event.preventDefault();
                 $(this).ekkoLightbox();
@@ -1796,7 +1816,7 @@ $(document).ready(async function () {
         e.preventDefault();
          window.location='/mushElement?filterCategory='+filterCategory
       });
-
+    }
 });
     
 
