@@ -27,14 +27,16 @@
                 <thead>
                     <tr>
                         <th style="width: 45px; "></th>
-                        <th>Tipo</th>
-                        <th>Codice</th>
-                        <th>Stato</th>
-                        <th>Stage</th>
-                        <th>Tot note</th>
-                        <th>Tot raccolto</th>
+                        <th style="width: 15%">Codice</th>
+                        <th>Strain</th>
+                        <th style="width: 10%">Tipo</th>
+                        
+                        <th style="width: 10%">Stato</th>
+                        <th style="width: 10%">Stage</th>
+                        <th style="width: 8%;">Tot note</th>
+                        <th style="width: 8%;">Tot raccolto</th>
                         <!-- <th>Contenitori</th> -->
-                        <th>Creato il</th>
+                        <th style="width: 10%">Creato il</th>
                     </tr>
                 </thead>
                 <tbody id="mushElement_Tblb">
@@ -192,9 +194,9 @@ async function  drawTable (){
                 }
 
                   html+=`       </td>
+                  <td>${el.element_code}</td>
+                                <td>${el.strainName}</td>
                                 <td>${el.type}</td>
-
-                                <td>${el.element_code}</td>
                                 <td>${el.stato} </td>
                                 <td>${stage} </td>
                                 <td>${el.totalNote}</td>

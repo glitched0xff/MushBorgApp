@@ -40,7 +40,8 @@ router.get('/getAll',async  (req, res) => {
          mushElements=await db.mushElement.findAll({
         where:{type:filterCategory},
         include: [{model: db.mushElementNote,attributes:[]},
-        {model: db.mushElementHarvest,attributes:[]}],
+        {model: db.mushElementHarvest,attributes:[]},
+        ],
          attributes: {
             include: [[fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
                     [fn("COUNT", col("mushElementNotes.id")), "totalNote"]]
@@ -56,6 +57,16 @@ router.get('/getAll',async  (req, res) => {
         },
         group: ["mushElement.id"] // serve il group by per fare l’aggregazione
         },{ order:['load_date', 'ASC']})
+    }
+    if(mushElements){
+        mushElements=JSON.parse(JSON.stringify(mushElements))
+        
+        for (let i = 0; i < mushElements.length; i++) {
+            let strain=await db.strain.findOne({where:{id:mushElements[i].strainId}, attributes:["species"],raw:true})
+            console.log(strain)
+            
+            mushElements[i].strainName=strain?strain.species:null
+        }
     }
     res.status(200).json({mushElements:mushElements})
 });

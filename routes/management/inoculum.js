@@ -182,6 +182,7 @@ router.post('/newInoculum', async(req,res) => {
                     stato:"Buono",
                     qt:nrContiner,
                     load_date:moment(),
+                    strainId:result.strainId,
                     storageId:data.storageId,
                     purchased:data.purchased,
                     expected_maturation_date:data.expected_maturation_date?moment(data.expected_maturation_date,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"):NULL,

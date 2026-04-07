@@ -184,6 +184,7 @@ router.post('/newPropagation', async(req,res) => {
                     qt:nrContiner,
                     storageId:result.storageId,
                     stage:1,
+                    strainId:result.strainId,
                     load_date:moment(data.createLot,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"),
                     expected_maturation_date:moment(data.expected_maturation_date,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"),
                     expected_fructification_date:moment(data.expected_fructification_date,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"),

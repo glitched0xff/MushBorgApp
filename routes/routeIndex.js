@@ -46,7 +46,7 @@ router.get('/',async (req, res) => {
             ],
             where: {
               createdAt: {
-                [Op.between]: [moment().startOf("month").toDate(), moment()]
+                [Op.between]: [moment().startOf("year").toDate(), moment()]
               }
             },
             raw: true
