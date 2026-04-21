@@ -469,7 +469,7 @@ $(document).ready(async function () {
       let categoryId=$("#categoryDD_Fld").val()
       let categoryName=$("#categoryDD_Fld option:selected").text();
       let percentageElement=$("#percentageElement_Fld").val()
-      if (Math.ceil(percentageElement)>100){
+      if (Math.floor(percentageElement)>100){
         alert("Attenzione il valore inserito non puo essere magiore di 100")
       }else{
       let data={
