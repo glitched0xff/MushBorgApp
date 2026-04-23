@@ -1221,10 +1221,8 @@ if (HttpError==false){
 let filterCategory="<%= filterCategory %>"
 // console.log(filterCategory)
 // console.log(parentElement)
- console.log("-----")
- 
-console.log(mushElement)
- console.log("-----")
+ //console.log("-----")
+//console.log(mushElement)
 
 let storages
 let tableMushElement
@@ -1243,7 +1241,7 @@ async function drawElementNote(idMushElement){
   console.log(idMushElement)
   $.ajax({
     type: "GET",
-    url: "/mushElement/getMushElementNote?idElement="+mushElement.id+"&filterCategoryNote="+mushElement.type,
+    url: "/mushElement/getMushElementNote?idElement="+idMushElement+"&filterCategoryNote="+mushElement.type,
     success: function (response) {
       console.log("response")
       console.log(response)
