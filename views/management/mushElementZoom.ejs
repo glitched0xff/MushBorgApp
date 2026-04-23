@@ -1215,23 +1215,18 @@
  let HttpError =<%= error %> 
  console.log(HttpError)
 if (HttpError==false){
- let mushElement =<%- JSON.stringify(mushElement) %> 
- let stageDD =<%- JSON.stringify(stageDD) %> 
- let parentElement = <%- JSON.stringify( parentElement) %>
-let filterCategory="<%= filterCategory %>"
-// console.log(filterCategory)
-// console.log(parentElement)
- //console.log("-----")
-//console.log(mushElement)
-
-let storages
-let tableMushElement
-let idMushElement=mushElement.id
-let tableSpawn
-let idSpawn
-let spawnElementTempId=0
-let letterElement="" // Identifica postfisso della cartella immagini
-const sensorChartCtx = document.getElementById('sensorChart');
+ var mushElement =<%- JSON.stringify(mushElement) %> 
+ var stageDD =<%- JSON.stringify(stageDD) %> 
+ var parentElement = <%- JSON.stringify( parentElement) %>
+  var filterCategory="<%= filterCategory %>"
+  var storages
+  var tableMushElement
+  var idMushElement=mushElement.id
+  var tableSpawn
+  var idSpawn
+  var spawnElementTempId=0
+  var letterElement="" // Identifica postfisso della cartella immagini
+  var sensorChartCtx = document.getElementById('sensorChart');
 }
 
 
