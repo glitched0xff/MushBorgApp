@@ -26,7 +26,7 @@
     "express-session": "^1.18.1",
     "heic-convert": "^2.1.0",
     "i18n": "^0.15.3",
-    "ink-docstrap": "^0.5.4",
+    "ink-docstrap": "^1.3.2",
     "install": "^0.13.0",
     "jimp": "^1.6.0",
     "jsdoc-to-markdown": "^9.1.3",
@@ -34,19 +34,20 @@
     "jspdf": "^4.1.0",
     "luxon": "^3.7.2",
     "mariadb": "^3.4.0",
-    "merge-base64": "^1.1.4",
+    "merge-base64": "^1.0.4",
     "merge-images": "^2.0.0",
     "moment": "^2.30.1",
     "mqtt": "^5.10.3",
     "mysql2": "^3.14.3",
     "node-cron": "^4.2.1",
     "node-schedule": "^2.1.1",
-    "node-telegram-bot-api": "^0.63.0",
+    "node-telegram-bot-api": "^0.67.0",
     "npm": "^11.8.0",
     "puppeteer": "^24.23.0",
     "qrcode": "^1.5.4",
     "sequelize": "^6.37.5",
     "socket.io": "^4.8.3",
-    "text-to-image": "^8.0.0"
+    "text-to-image": "^8.0.0",
+    "uuid": "^14.0.0"
   }
 }

@@ -20,6 +20,9 @@ const mergeImages = require('merge-base64');
 const { Json } = require('sequelize/lib/utils');
 const heicConverter=require("heic-convert")
 const Op = db.Sequelize.Op;
+const { v4: uuidv4 } = require('uuid');
+
+
 
 router.get('/',async  (req, res) => {
     let searchCode=req.query.searchCode?req.query.searchCode:false
@@ -96,7 +99,8 @@ router.put('/updateMushElement', async(req,res) => {
 })
 
 router.get('/singleMushElement',async  (req, res) => {
-    console.log(req.query)
+    //console.log(req.query)
+    
     let titoloFiltro=""
     let filterCategory
     let mushElementId=false
@@ -106,7 +110,7 @@ router.get('/singleMushElement',async  (req, res) => {
             mushElementId=findPar.id        
             filterCategory=findPar.type
         }else{
-        console.log(JSON.parse(JSON.stringify(findPar)))
+        //console.log(JSON.parse(JSON.stringify(findPar)))
 
             mushElementId=false
         }   
@@ -576,10 +580,10 @@ router.post('/movimentazioneSingleElement',async (req,res)=>{
 /** Mushroom element note */
 router.post('/newMushElementNote', async(req,res) => {
     const data=req.body
-    console.log(req.body)
+    //console.log(req.body)
     let imgMushElementNote=null
-    let nomeFile= null
-    
+    let nomeFile= uuidv4()+".jpg";
+    console.log(nomeFile)
     const array_of_allowed_file_types = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif','image/heic'];
     const allowed_file_size = 5;
     // Deprecated use element_code and not id
@@ -601,10 +605,10 @@ router.post('/newMushElementNote', async(req,res) => {
     const pathToDir = path.join(__dirname, "../../public/imgMushEleNote",dirname);
     let uploadFlag=true
     let uploadError=""
-
+    
     if (req.files!=null){
         imgMushElementNote  = req.files.imgMushElementNote?req.files.imgMushElementNote:null;
-        nomeFile = imgMushElementNote.name
+        //nomeFile = imgMushElementNote.name
         //console.log(uploadFlag,uploadError)
         if (!array_of_allowed_file_types.includes(imgMushElementNote.mimetype)) {
             uploadFlag=false
@@ -626,7 +630,7 @@ router.post('/newMushElementNote', async(req,res) => {
         
     }
     if(uploadFlag==true){
-        
+        console.log(nomeFile)
         await db.mushElementNote.create({
             mushElementId:data.idMushElementNote,
             check_date:data.check_date?moment(data.check_date,"DD-MM-YYYY"):null,
@@ -655,7 +659,7 @@ router.post('/newMushElementNote', async(req,res) => {
                 //     imgMushElementNote.mimetype = "image/jpeg";
                 //     imgMushElementNote.name = imgMushElementNote.name.replace(/\.heic$/i, ".jpg");
                 // }
-                const outputPath = path.join(pathToDir, imgMushElementNote.name);
+                const outputPath = path.join(pathToDir, nomeFile);
                 let image = await Jimp.read(imgMushElementNote.data)
                 image.resize({
                             w: 1024,
