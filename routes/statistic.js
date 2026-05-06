@@ -137,13 +137,28 @@ router.get('/checkWeigth',async (req,res)=>{
     let spliceId=[]
     for (let i = 0; i < harvestsData.length; i++) {
         let el = harvestsData[i];
-        let mushElementData=await db.mushElement.findOne({where:{id:el.mushElementId},include:db.propagation})
+        let mushElementData=await db.mushElement.findOne({where:{id:el.mushElementId}})
+        let type=mushElementData.type
+        let lotto
+        switch (mushElementData.type) {
+          case "SPAWN":
+         lotto=await db.spawn.findOne({where:{id:mushElementData.relatedId}})
+            
+            break;
+        case "CULTIVATION":
+         lotto=await db.propagation.findOne({where:{id:mushElementData.relatedId}})
+            
+            break;
+         
+        }
+        
         //console.log(JSON.parse(JSON.stringify(mushElementData)))
         if (specie!=false){
           console.log(admitStrain)
           console.log(mushElementData.strainId)
           if (admitStrain.includes(mushElementData.strainId)){
             harvestsData[i].mushElementData=JSON.parse(JSON.stringify(mushElementData))
+            harvestsData[i].mushElementData.propagation=JSON.parse(JSON.stringify(lotto))
             // inserisco nella strainlist per menu a discesa
             if (!strainList.includes(mushElementData.strainId)){
               strainList.push(mushElementData.strainId)

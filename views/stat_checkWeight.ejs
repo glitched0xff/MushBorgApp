@@ -87,9 +87,16 @@
                           <%= el.mushElementData.element_code%></a></td>
                         <td><%= el.mushElementData.propagation.propagation_name%></td>
                         <td>
-                          <a href="/propagation?redirectId=<%= el.mushElementData.propagation.id%>" target="_blank" rel="noopener noreferrer">
+                          <% if (el.mushElementData.type=="SPAWN"){%>
+                            <a href="/spawn?redirectId=<%= el.mushElementData.propagation.id%>" target="_blank" rel="noopener noreferrer">
+                          <%= el.mushElementData.propagation.code_spawn%></a>
+                          <% } else if (mushElementData=="CULTIVATION"){ %>
+                            <a href="/propagation?redirectId=<%= el.mushElementData.propagation.id%>" target="_blank" rel="noopener noreferrer">
+                          <%= el.mushElementData.propagation.code_propagation%></a>
+                          <% } %>
+                          
+                          </td>
 
-                          <%= el.mushElementData.propagation.code_propagation%></a></td>
                         <td><%= el.total_harvest_weight%> g 
                           <% total=total+el.total_harvest_weight%>
                           </td>
@@ -149,9 +156,9 @@
   let toDate=<%- toDate %>
   let totalDay=[]
 
-// console.log(harvests)
+ console.log(harvests)
 // console.log(strainList)
-console.log(speciesList)
+//console.log(speciesList)
 
   // Weight per day and total in period
     function getTotalPerDayArray(harvests){

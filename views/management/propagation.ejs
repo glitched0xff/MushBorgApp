@@ -243,17 +243,25 @@
               <hr>
               <div class="row mx-2" id="mushElement_Div" >
                 <div class="col">
-                  <div class="row" >
-                      <div class="col-12 h5">
+                  <div class="row py-2" >
+                        <div class="col-2">
                         Elementi lotto 
+                        </div>
+                        <div class="col-2">
                         <button type="button"  data-toggle="modal" data-target="#movimentazioni_Mdl" 
                           class="btn btn-primary btn-xs mx-2 movimentazioneBtn" disabled type="all">
                           <i class="fas fa-truck-moving"></i>Movimenta elementi</button>
+                        </div>
+                        <div class="col-2">
                         <button type="button" class="btn btn-primary btn-xs mx-2" id="exportCsv_Btn">
                           <i class="fas fa-file-csv"></i> Esporta csv</button>
+                        </div>
+                        <div class="col-2">
                         <button type="button" class="btn btn-primary btn-xs mx-2" id="insertHArvestBulk_Btn"
                           data-toggle="modal" data-target="#insertBulk_Mdl">
                           <i class="fas fa-file-csv"></i> Inserisci raccolto bulk</button>
+</div>
+                          <div class="text-right col-2 border-danger">Raccolto totale: <span id="totalWeight"></span>g</div>
                       </div>
                     <table class="table table-sm " id="mushElement_Tbl">
                       <thead>
@@ -702,6 +710,16 @@
       });   
 
   }
+  
+  async function getTotalWeight(id){
+    $.ajax({
+      type: "get",
+      url: "/propagation/getWeightPropagation?id="+id,
+      success: function (response) {
+        $("#totalWeight").html(response.total)
+      }
+    });
+  }
   /** Gestione date */
   $(document).ready(async function () {
     $('#exp_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
@@ -710,9 +728,10 @@
     $('#purchased_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $('#harvestBulk_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $('#createLot_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
-
+    
     if (redirectId!=null){
       await drawShowPropagation(redirectId)
+      await getTotalWeight(redirectId)
     }
     else{
       tablePropagation=$('#propagation_Tbl').DataTable({pageLength: 50})
@@ -1244,6 +1263,8 @@
       window.open(url, '_blank').focus();
     });
   
+    
+
     $("#backToMain_Btn").click(function (e) { 
         e.preventDefault();
          window.location='/propagation'

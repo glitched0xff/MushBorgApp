@@ -341,6 +341,24 @@ router.get('/getQrElement',async  (req, res) => {
     
 });
 
+router.get('/getWeightPropagation',async (req,res)=>{
+    let propId=req.query.id
+    let total=await db.mushElement.findAll({
+        where: {
+            relatedId: propId,
+            type: "CULTIVATION"
+        },
+        attributes: [
+            [fn('SUM', col('mushElementHarvests.harvest_weight')), 'totalHarvestWeight']
+        ],
+        include: [{
+            model: db.mushElementHarvest,
+            attributes: []
+        }],
+        raw: true
+        });
+    res.status(200).json({total:total[0].totalHarvestWeight})
+})
 /**
  * @route GET /propagation/pdf
  * @group Propagation - Operazioni relative agli elementi propagation
