@@ -1,7 +1,10 @@
 <div class="chart-wrapper">
   <canvas id="dataArrayChart"></canvas>
 </div>
-<%- JSON.stringify(dataArray) %>;
+<div id="log" style="display: none;">
+  <%- JSON.stringify(dataArray) %>;
+</div>
+
 <script>
   (function () {
     // 🔹 dati ricevuti da Node

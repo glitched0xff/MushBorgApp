@@ -78,21 +78,30 @@
                     </thead>
                     <tbody>
                       <% elem.forEach (el => {
-                        console.log(el.mushElementData)
+                        
                         if (el.mushElementData){%>
-                        <tr>
+                        
+                          <tr>
+
                         <td>
                           <a href="/mushElement/singleMushElement?elementCode=<%= el.mushElementData.element_code%>" target="_blank" rel="noopener noreferrer">
                           
                           <%= el.mushElementData.element_code%></a></td>
-                        <td><%= el.mushElementData.propagation.propagation_name%></td>
                         <td>
                           <% if (el.mushElementData.type=="SPAWN"){%>
-                            <a href="/spawn?redirectId=<%= el.mushElementData.propagation.id%>" target="_blank" rel="noopener noreferrer">
-                          <%= el.mushElementData.propagation.code_spawn%></a>
-                          <% } else if (mushElementData=="CULTIVATION"){ %>
-                            <a href="/propagation?redirectId=<%= el.mushElementData.propagation.id%>" target="_blank" rel="noopener noreferrer">
-                          <%= el.mushElementData.propagation.code_propagation%></a>
+                          <%= el.mushElementData.lotto.spawn_name%>
+                          <% } else if (el.mushElementData.type=="CULTIVATION"){ %>
+                          <%= el.mushElementData.lotto.propagation_name%>
+                          <% } %>
+
+                          </td>
+                        <td>
+                          <% if (el.mushElementData.type=="SPAWN"){%>
+                            <a href="/spawn?redirectId=<%= el.mushElementData.lotto.id%>" target="_blank" rel="noopener noreferrer">
+                          <%= el.mushElementData.lotto.code_spawn%></a>
+                          <% } else if (el.mushElementData.type=="CULTIVATION"){ %>
+                            <a href="/propagation?redirectId=<%= el.mushElementData.lotto.id%>" target="_blank" rel="noopener noreferrer">
+                          <%= el.mushElementData.lotto.code_propagation%></a>
                           <% } %>
                           
                           </td>

@@ -10,87 +10,7 @@ router.get('/',async  (req, res) => {
   res.render("statistic")
 });
 
-/** Check weight ok */
-router.get('/checkWeigth01',async (req,res)=>{
-  console.log(res.query)
-    let fromDate=req.query.fromDate?moment(req.query.fromDate,"YYYY-MM-DD"):moment().subtract(10,"days")
-    let toDate=req.query.toDate?moment(req.query.toDate,"YYYY-MM-DD"):moment()
-    let propId=req.query.propId?req.query.propId:""
-    let harvests = await db.mushElementHarvest.findAll({
-  attributes: [
-    "mushElementId",
-    [fn("DATE", col("createdAt")), "day"],
-    [fn("SUM", col("harvest_weight")), "total_harvest_weight"]
-  ],
-  where: {
-    mushElementId: {
-      [Op.like]: `%${propId}%`
-    },
-    type: "CULTIVATION",
-    createdAt: {
-      [Op.gte]: fromDate,
-      [Op.lte]: toDate,
-    }
-  },
-  group: [
-    "mushElementId",
-    literal("DATE(createdAt)")
-  ],
-  order: [
-    [literal("day"), "DESC"]
-  ]
-});
-    let harvestsData=JSON.parse(JSON.stringify(harvests))
-    let strainList=[]
-    for (let i = 0; i < harvestsData.length; i++) {
-        let el = harvestsData[i];
-        let mushElementData=await db.mushElement.findAll({where:{id:el.mushElementId},include:db.propagation})
-      
-        if (!strainList.includes(mushElementData[0].strainId)){
-          strainList.push(mushElementData[0].strainId)
-        }
-        harvestsData[i].mushElementData=JSON.parse(JSON.stringify(mushElementData))
-    }
-      let harvestsGroupedByDay = harvestsData.reduce((acc, item) => {
-        let { day } = item;
-        if (!acc[day]) {
-          acc[day] = [];
-        }
-        acc[day].push(item);
-        return acc;
-      }, {});
-    harvestsGroupedByDay = Object.values(harvestsGroupedByDay);
-    
-    // ogni elemento contiene il totale, l'indice è uguale all'array precedente
-    let arrayTotalWeight=[]
-    for (let i = 0; i < harvestsGroupedByDay.length; i++) {
-      let day = harvestsGroupedByDay[i];
-      let tot=0
-      for (let y = 0; y < day.length; y++) {
-        let elem = day[y];
-        tot=tot+elem.total_harvest_weight
-      }
-      arrayTotalWeight.push(tot)
-    }
-    strainList=await db.strain.findAll({where:{id: {
-      [Op.in]: strainList
-    }}})
-    let speciesList=[]
-    for (let i = 0; i < strainList.length; i++) {
-      const el = strainList [i];
-      console.log(el)
-      if(!speciesList.includes(el.speciesId)){
-        speciesList.push(el.speciesId)
-      }
-    }
-    speciesList=await db.species.findAll({where:{id: {
-      [Op.in]: speciesList
-    }}})
-    console.log(JSON.parse(JSON.stringify(speciesList)))
-    res.render("stat_checkWeight",{harvests:harvestsGroupedByDay,arrayTotalWeight:arrayTotalWeight,
-                                  fromDate:fromDate,toDate:toDate,strainList:strainList,speciesList:speciesList})
 
-})
 
 /** Check weight ok */
 router.get('/checkWeigth',async (req,res)=>{
@@ -158,7 +78,8 @@ router.get('/checkWeigth',async (req,res)=>{
           console.log(mushElementData.strainId)
           if (admitStrain.includes(mushElementData.strainId)){
             harvestsData[i].mushElementData=JSON.parse(JSON.stringify(mushElementData))
-            harvestsData[i].mushElementData.propagation=JSON.parse(JSON.stringify(lotto))
+            harvestsData[i].mushElementData.lotto=JSON.parse(JSON.stringify(lotto))
+            console.log(harvestsData[i].mushElementData)
             // inserisco nella strainlist per menu a discesa
             if (!strainList.includes(mushElementData.strainId)){
               strainList.push(mushElementData.strainId)
@@ -166,6 +87,8 @@ router.get('/checkWeigth',async (req,res)=>{
           }
         } else {
           harvestsData[i].mushElementData=JSON.parse(JSON.stringify(mushElementData))
+            harvestsData[i].mushElementData.lotto=JSON.parse(JSON.stringify(lotto))
+
           // inserisco nella strainlist per menu a discesa
             if (!strainList.includes(mushElementData.strainId)){
               strainList.push(mushElementData.strainId)
@@ -187,9 +110,7 @@ console.log("..."+harvestsData.length)
       }, {});
     harvestsGroupedByDay = Object.values(harvestsGroupedByDay);
     
-  console.log(harvestsGroupedByDay)
-   
-    
+  //console.log(harvestsGroupedByDay)
 
     // ogni elemento contiene il totale, l'indice è uguale all'array precedente
     let arrayTotalWeight=[]
