@@ -31,9 +31,8 @@
                 </div>
                 <div class="col-md-2 col-sm-9">
                   <div class="form-group">
-                    <label for=""></label>
                     <select class="form-control" name="filterReasonDD" id="filterReasonDD">
-                      <option value="-1"> Filtra motivazione</option>
+                      <option value="-1"> Tutti</option>
                       <% pickReasonDD.forEach (elem => {%>
                         <option value=<%= elem.val %>> <%= elem.txt %></option>
                       <% }) %>

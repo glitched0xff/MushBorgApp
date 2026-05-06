@@ -1337,11 +1337,19 @@ async function getMovimentation(){
             html+=`<td>${el.code_storage} ${el.name_storage}</td>`
           }
         }
-        html+=`<td>${moment(storageStory[i].from).format("DD-MM-YY HH:mm").toString()}</td>
-              <td>${moment(storageStory[i].to).format("DD-MM-YY HH:mm").toString()}</td>
-              <td>
+        let toDate
+        if (mushElement.active==0){
+          toDate=moment(mushElement.pick_date,"DD-MM-YY")
+        }else{
+          toDate=storageStory[i].to
+        }
+          html+=`<td>${moment(storageStory[i].from).format("DD-MM-YY HH:mm").toString()}</td>`
+
+        
+        html+=`<td>${moment(toDate).format("DD-MM-YY HH:mm").toString()}</td>`
+        html+=`<td>
                 <button class="btn-primary btn-xs drawDataGraph"
-                  storageId="${storageStory[i].storageId}" from="${storageStory[i].from}" to="${storageStory[i].to}">
+                  storageId="${storageStory[i].storageId}" from="${storageStory[i].from}" to="${toDate}">
                   <i class="fas fa-chart-line"></i></button>
               </td>`
       }

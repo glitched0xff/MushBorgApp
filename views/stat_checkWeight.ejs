@@ -36,11 +36,24 @@
                 <div class="col pt-2 h5 ">
                   Peso totale per periodo rif: <span id="totalWeight_SPN">10799g</span>
                 </div>
+                <div>
+                  <div class="form-group">
+                    <select class="form-control" name="" id="strainFilter">
+                      <option>Filtra per specie</option>
+                      <option value="">Tutte le strain</option>
+                      <% speciesList.forEach (elem => {%>
+                        <option value="<%= elem.id %>"><%= elem.species_name %></option>
+                      <% }) %>
+                    </select>
+                  </div>
+                </div>
               </div>
               <div class="row m-3">
                 <div class="accordion w-100" id="accordionRaccolto">
                 <% harvests.forEach ((elem,index) => {
-                  let total=0%>
+                  let total=0
+                  
+                  %>
                   <div class="card " >
                       <button class="btn  btn-block text-left" type="button" 
                         data-toggle="collapse" data-target="#collapse<%= index %>" 
@@ -64,19 +77,24 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <% elem.forEach (el => {%>
+                      <% elem.forEach (el => {
+                        console.log(el.mushElementData)
+                        if (el.mushElementData){%>
                         <tr>
-                        <td><a href="/propagation?redirectId=<%= el.mushElementData[0].propagation.id%>" target="_blank" rel="noopener noreferrer">
-                          <%= el.mushElementData[0].element_code%></a></td>
-                        <td><%= el.mushElementData[0].propagation.propagation_name%></td>
                         <td>
-                          <a href="/mushElement/singleMushElement?id=<%= el.mushElementData[0].propagation.id%>&filterCategory=CULTIVATION" target="_blank" rel="noopener noreferrer">
-                          <%= el.mushElementData[0].propagation.code_propagation%></a></td>
+                          <a href="/mushElement/singleMushElement?id=<%= el.mushElementData.id%>&filterCategory=CULTIVATION" target="_blank" rel="noopener noreferrer">
+                          
+                          <%= el.mushElementData.element_code%></a></td>
+                        <td><%= el.mushElementData.propagation.propagation_name%></td>
+                        <td>
+                          <a href="/propagation?redirectId=<%= el.mushElementData.propagation.id%>" target="_blank" rel="noopener noreferrer">
+
+                          <%= el.mushElementData.propagation.code_propagation%></a></td>
                         <td><%= el.total_harvest_weight%> g 
                           <% total=total+el.total_harvest_weight%>
                           </td>
                       </tr>
-                      <% }) %>
+                      <% }}) %>
                       <tfoot>
                         <tr>
                           <td></td>
@@ -124,10 +142,16 @@
   <%- include ('jsLoad') %>
   <script>
   let harvests= <%- JSON.stringify( harvests) %>
+  let strainList= <%- JSON.stringify( strainList) %>
+  let speciesList= <%- JSON.stringify( speciesList) %>
   let arrayTotalWeight= <%- JSON.stringify( arrayTotalWeight) %>
   let fromDate=<%-fromDate  %>
   let toDate=<%- toDate %>
   let totalDay=[]
+
+// console.log(harvests)
+// console.log(strainList)
+console.log(speciesList)
 
   // Weight per day and total in period
     function getTotalPerDayArray(harvests){
@@ -149,7 +173,8 @@
       $("#totalWeight_SPN").html(totalWeight+"g")
       return totalDay
     }
-    
+
+  
     $(document).ready(async function () {
         console.log(fromDate,toDate)
         console.log(moment(fromDate).format("DD-MM"),moment(toDate).format("DD-MM"))
@@ -164,10 +189,7 @@
 
       totalDay=getTotalPerDayArray(harvests)
 
-
-      $('#intervalData').on('apply.daterangepicker', function(ev, picker) {
-  
-      });
+      
 
       $("#createGraph").click(async function (e) { 
         let ttDayGrph=totalDay
@@ -185,9 +207,19 @@
       $('#intervalData').on('apply.daterangepicker', function(ev, picker) {
         let fromDate=picker.startDate.format('YYYY-MM-DD')
         let toDate=picker.endDate.format('YYYY-MM-DD')
-          window.location="/statistic/checkWeigth?fromDate="+fromDate+"&toDate="+toDate
+        let idSpecie=$("#strainFilter").val()
+        window.location="/statistic/checkWeigth?fromDate="+fromDate+"&toDate="+toDate+"&specie="+idSpecie
       });
 
+      /** filtro per specie */
+      $("#strainFilter").change(function (e) { 
+        e.preventDefault();
+        const { startDate, endDate  } = $('#intervalData').data('daterangepicker');
+        let fromDate=startDate.format('YYYY-MM-DD')
+        let toDate=endDate.format('YYYY-MM-DD')
+        let idSpecie=$(this).val()
+        window.location="/statistic/checkWeigth?fromDate="+fromDate+"&toDate="+toDate+"&specie="+idSpecie
+      });
     });
 
   </script>

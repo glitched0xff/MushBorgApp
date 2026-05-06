@@ -131,6 +131,7 @@ router.get('/singleMushElement',async  (req, res) => {
                                                     },
                                                     group: ["mushElement.id"] // serve il group by per fare l’aggregazione
                                                         })
+                                                        console.log(mushElement)
          let harvests= await db.mushElementHarvest.findAll({where:{mushElementId:mushElementId,type:mushElement.type}})
         mushElement=JSON.parse(JSON.stringify(mushElement))
         harvests=JSON.parse(JSON.stringify(harvests))
