@@ -39,7 +39,7 @@
                 <div>
                   <div class="form-group">
                     <select class="form-control" name="" id="strainFilter">
-                      <option>Filtra per specie</option>
+                      <option value="false">Filtra per specie</option>
                       <option value="">Tutte le strain</option>
                       <% speciesList.forEach (elem => {%>
                         <option value="<%= elem.id %>"><%= elem.species_name %></option>
@@ -214,11 +214,12 @@ console.log(speciesList)
       /** filtro per specie */
       $("#strainFilter").change(function (e) { 
         e.preventDefault();
+        let idSpecie=$(this).val()
+        if (idSpecie!="false"){
         const { startDate, endDate  } = $('#intervalData').data('daterangepicker');
         let fromDate=startDate.format('YYYY-MM-DD')
         let toDate=endDate.format('YYYY-MM-DD')
-        let idSpecie=$(this).val()
-        window.location="/statistic/checkWeigth?fromDate="+fromDate+"&toDate="+toDate+"&specie="+idSpecie
+        window.location="/statistic/checkWeigth?fromDate="+fromDate+"&toDate="+toDate+"&specie="+idSpecie}
       });
     });
 
