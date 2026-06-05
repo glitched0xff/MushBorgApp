@@ -82,6 +82,9 @@ db.strain = require("./management/strain.model.js")(sequelize, Sequelize);
  db.orderDestination = require("./management/orderDestination.model.js")(sequelize, Sequelize);
  db.productionOrder = require("./management/productionOrder.model.js")(sequelize, Sequelize);
 
+ db.sensorHomeAssistant = require("./sensorHomeAssistant.model.js")(sequelize, Sequelize);
+
+
 db.orderDestination.associate(db)
 db.productionOrder.associate(db)
 

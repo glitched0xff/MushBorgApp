@@ -1,0 +1,118 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+mqtt:
+  sensor:
+# Sensore Temperatura
+    - name: "Camera Espansione Temp"
+      state_topic: "mushborg/zigbee2mqtt/ZigLab01"
+      unique_id: "cameraEspansione_temp"
+      value_template: "{{ value_json.temperature }}"
+      unit_of_measurement: "°C"
+      device_class: "temperature"
+      state_class: "measurement"
+
+    # Sensore Umidità
+    - name: "Camera Espansione Umidità"
+      state_topic: "mushborg/zigbee2mqtt/ZigLab01"
+      unique_id: "cameraEspansione_hum"
+      value_template: "{{ value_json.humidity }}"
+      unit_of_measurement: "%"
+      device_class: "humidity"
+      state_class: "measurement"
+
+    # Sensore Batteria
+    - name: "Camera Espansione Batteria"
+      state_topic: "mushborg/zigbee2mqtt/ZigLab01"
+      unique_id: "cameraEspansione_batt"
+      value_template: "{{ value_json.battery }}"
+      unit_of_measurement: "%"
+      device_class: "battery"
+      state_class: "measurement"
+
+    # Sensore Qualità del Segnale (Linkquality)
+    - name: "Camera Espansione Linkquality"
+      state_topic: "mushborg/zigbee2mqtt/ZigLab01"
+      unique_id: "cameraEspansione_link"
+      value_template: "{{ value_json.linkquality }}"
+      unit_of_measurement: "lqi"
+      state_class: "measurement"
+
+    # Sensore Temperatura
+    - name: "Laboratorio Temperatura"
+      state_topic: "mushborg/zigbee2mqtt/ZigLab02"
+      unique_id: "laboratorio_temp"
+      value_template: "{{ value_json.temperature }}"
+      unit_of_measurement: "°C"
+      device_class: "temperature"
+      state_class: "measurement"
+
+    # Sensore Umidità
+    - name: "Laboratorio Umidità"
+      state_topic: "mushborg/zigbee2mqtt/ZigLab02"
+      unique_id: "laboratorio_hum"
+      value_template: "{{ value_json.humidity }}"
+      unit_of_measurement: "%"
+      device_class: "humidity"
+      state_class: "measurement"
+
+    # Sensore Batteria
+    - name: "Laboratorio Batteria"
+      state_topic: "mushborg/zigbee2mqtt/ZigLab02"
+      unique_id: "laboratorio_batt"
+      value_template: "{{ value_json.battery }}"
+      unit_of_measurement: "%"
+      device_class: "battery"
+      state_class: "measurement"
+
+    # Sensore Qualità del Segnale (Linkquality)
+    - name: "Laboratorio Linkquality"
+      state_topic: "mushborg/zigbee2mqtt/ZigLab02"
+      unique_id: "laboratorio_link"
+      value_template: "{{ value_json.linkquality }}"
+      unit_of_measurement: "lqi"
+      state_class: "measurement"
+
+    # Sensore Temperatura
+    - name: "GrowBox Temperatura"
+      state_topic: "mushborg/zigbee2mqtt/growBox"
+      unique_id: "growBox_temp"
+      value_template: "{{ value_json.temperature }}"
+      unit_of_measurement: "°C"
+      device_class: "temperature"
+      state_class: "measurement"
+
+    # Sensore Umidità
+    - name: "GrowBox Umidità"
+      state_topic: "mushborg/zigbee2mqtt/growBox"
+      unique_id: "growBox_hum"
+      value_template: "{{ value_json.humidity }}"
+      unit_of_measurement: "%"
+      device_class: "humidity"
+      state_class: "measurement"
+
+    # Sensore Batteria
+    - name: "GrowBox Batteria"
+      state_topic: "mushborg/zigbee2mqtt/growBox"
+      unique_id: "growBox_batt"
+      value_template: "{{ value_json.battery }}"
+      unit_of_measurement: "%"
+      device_class: "battery"
+      state_class: "measurement"
+
+    # Sensore Qualità del Segnale (Linkquality)
+    - name: "GrowBox Linkquality"
+      state_topic: "mushborg/zigbee2mqtt/growBox"
+      unique_id: "growBox_link"
+      value_template: "{{ value_json.linkquality }}"
+      unit_of_measurement: "lqi"
+      state_class: "measurement"

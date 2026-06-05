@@ -23,6 +23,7 @@ router.get('/massivePrintCSV',async (req,res)=>{
       for (let i = 0; i < elementCodes.length; i++) {
         const el = elementCodes[i];
         let elem= await db.mushElement.findOne({where:{element_code: el}})
+        console.log(moment(elem.createLot).format("DD-MM-YY HH:mm"))
       csvObj.push({
                   element_code:elem.element_code,
                   createAt:moment(elem.createLot).format("DD-MM-YY HH:mm"),

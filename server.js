@@ -127,6 +127,12 @@ app.use('/destination', orderDestination);
 let productionOrder = require('./routes/management/productionOrder.js');
 app.use('/productionOrder', productionOrder);
 
+let api = require('./routes/testApi.js');
+app.use('/api', api);
+
+let sensorDataHa=require('./routes/sensorDataHa.js')
+app.use('/sensorDataHa',sensorDataHa)
+
 
 const sensorData=require("./controllers/sensorData.controller.js")
 
