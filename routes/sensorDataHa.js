@@ -13,7 +13,7 @@ router.get('/',async  (req, res) => {
 });
 
 router.post('/insertData',async (req,res)=>{
-     console.log(req.body)
+     //console.log(req.body)
      const dt = new Date(req.body.last_triggered);
     await db.sensorHomeAssistant.create({
         sensor_code:req.body.sensor_code,
@@ -24,6 +24,7 @@ router.post('/insertData',async (req,res)=>{
         class: req.body.class,
         last_triggered: moment(req.body.last_triggered)
     }).then(result=>{
+        console.log("Dato inserito")
         res.status(200).json(result)
     }).catch(err=>{
         console.log(err)
