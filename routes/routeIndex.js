@@ -54,16 +54,6 @@ router.get('/',async (req, res) => {
     harvestYear=harvestYear[0].totalWeight?harvestYear[0].totalWeight:0
     harvests.push({harvest:harvestYear,year:moment().year()})
 
-    
-    // let storage=await db.storage.findAll({include:{model:db.device,
-    //                                               include:{model:db.sensorData,
-    //                                               attributes: [
-    //                                                     "id","hume","co2","status","createdAt","temp",
-    //                                                     [fn('date_format', col('createdAt'), '%d-%m-%y %hh:%mm'), 'createdAtFormatted']
-    //                                                 ],
-    //                                               order:[ [ 'createdAt', 'DESC' ]],
-    //                                               limit:1}}})
-
       let storage=await db.storage.findAll()
      res.render("index", { title: "Express" ,
                            nInoculum,

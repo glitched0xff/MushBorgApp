@@ -300,7 +300,7 @@ router.get('/getMoviementation',async (req,res)=>{
     if (mushElementId!=false){
         let mushElement= await db.mushElement.findAll({where:{id:mushElementId,type:filterCategory}})
         let movimentation= await db.movimentation.findAll({where:{relatedId:mushElementId,type:filterCategory}})
-        let storages=await db.storage.findAll({include:{model:db.device}})
+        let storages=await db.storage.findAll()
         let storageStory=[]
         console.log(JSON.parse(JSON.stringify(movimentation)))
         console.log(movimentation.length)
