@@ -1,5 +1,4 @@
 {
-    "telemetry":true,
     "search":true,
     "todo":true,
     "diaryNote":true,
@@ -16,6 +15,8 @@
     "material":true,
     "ordini":true,
     "print":true,
+    "HomeAssistant":true,
+    "homeAssistantURL":"http://homeassistant.local:8123/",
     "env":"SVILUPPO",
     "titlePage":"Mushborg - DEV"
 }

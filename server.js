@@ -74,10 +74,9 @@ let routeIndex = require('./routes/routeIndex');
 app.use('/', routeIndex);
 let user = require('./routes/user');
 app.use('/user', user);
-let telemetry = require('./routes/telemetry');
-app.use('/telemetry', telemetry);
-let device = require('./routes/device');
-app.use('/device', device);
+// let telemetry = require('./routes/telemetry');
+// app.use('/telemetry', telemetry);
+
 let toDo = require('./routes/todo');
 app.use('/toDo', toDo);
 let calendar = require('./routes/calendar');
@@ -130,11 +129,9 @@ app.use('/productionOrder', productionOrder);
 let api = require('./routes/testApi.js');
 app.use('/api', api);
 
+/** Route gestione messaggi da Home assistant */
 let sensorDataHa=require('./routes/sensorDataHa.js')
 app.use('/sensorDataHa',sensorDataHa)
-
-
-const sensorData=require("./controllers/sensorData.controller.js")
 
 
 // Start server

@@ -197,23 +197,7 @@
                 </div>
               </div>
             </div>
-            <!-- telemetry-->
-             <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">
-                  <i class="fas fa-chart-pie mr-1"></i>
-                   <%= __('telemetria_Ds') %>
-                </h3>
-                <div class="card-tools">
-                  
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="row w-100" id="storageData_Wrp">
-                  
-                </div>
-              </div>
-            </div>
+            
           </section>
         </div>
       </div>
@@ -232,104 +216,12 @@
 
   console.log(storage)
 
-    async function updateData() {
-      $.ajax({
-        type: "GET",
-        url: "/getStoragesData",
-        success: function (response) {
-          let storage=response.result
-          console.log(storage)
-        
-      let html=""
-      storage.forEach (elem => {
-      if (elem.showInHome==1){
-        html+=`<div class="card col-md-6 col-sm-12 mx-auto">
-                        <h4 class="card-title p-2">
-                            <span class="text-bold">
-                              ${elem.code_storage} <span class="small">${elem.name_storage}</span>
-                              <a href="/storage/storageZoom?storageId=${elem.id}">
-                              <i class="fa fa-link fa-xs" aria-hidden="true"></i>
-                              </a>
-                              
-                            </span>
-                        </h4>
-                        <div class="card-body p-1 row">`
-        if (elem.associateSensors.length>0){
-            html+=`<div class="row w-100">`
-              elem.associateSensors.forEach (sens => {
-                console.log(sens)
-                html+=`<div class=" col-md-6 col-sm-12 my-1 mx-auto text-center">
-                                    <div  class="btn  ${sens.bgcolor} " style="width: 200px;" >
-                                      <span class="small text-center w-100">${ sens.label }</span>
-                                  <span class="w-100"><i class="${ sens.icon} mx-2 fa-10px" aria-hidden="true"></i>`
-                                    if(sens.sensorData[0]){
-                                      html+=`${ sens.sensorData[0][sens.fieldName]} ${ sens.postChr }<br><div class="small">${ sens.sensorData[0].createdAtFormatted } </div>`
-                                    }else{
-                                      html+=`N/D`
-                                    }
-                                    html+=`</span> 
-                                      </div>
-                                </div>`
-              })
-              html+="</div>"
-          }
-        if (elem.associateSensors.length>0){
-          html+=`<div class="col-md-6 col-sm-12">
-                <ul class="">
-                  <div>Attuatori</div>`
-          elem.associateActuators.forEach (act => {
-            html+="<li>"
-              if (act.inUse==1){
-              html+=`<span class="badge badge-success col-2">ON</span>`
-              } else {
-              html+=`<span class="badge badge-secondary  col-2">OFF</span>`
-              }
-              html+=`<span class="small text-center w-100 col-6"> ${act.label}`
-              if(act.flagClock==1){
-                html+=`(dalle: ${act.timeOn} alle: ${act.timeOff})`
-              }
-              if(act.flagInterval==1){
-              html+=`(min: ${act.valMin} max: ${act.valMax})`
-              }
-              html+="</li>"
-          })
-              html+="</ul></div>"
-        }
-        if (elem.associateAllarms.length>0){      
-            html+=`<div class="col-md-6 col-sm-12"><ul><div>Allarmi</div>`
-              elem.associateAllarms.forEach (all => {
-                html+="<li>"
-                  if (all.inUse==1){
-                    html+=`<span class="badge badge-danger col-2""><i class="fa fa-bell" aria-hidden="true"></i></span>`
-                  } else {
-                    html+=`<span class="badge badge-success col-2""><i class="fa fa-bell" aria-hidden="true"></i></span>`
-                  }
-                  html+=`<span class="small text-center w-100"> ${all.label}
-                  ( ${all.referenceField} ${all.operator}${all.threshold})</span>`
-                  html+="</li>"  
-                    })
-              html+="</ul></div>"
-        }
-        html+="</div></div>"
-        $("#storageData_Wrp").html(html)
-        }
-      })
-    }
-      });
-    }
-  
 
     $(document).ready(async function () {
-      const socket = io();
-      await updateData()
-      socket.on('data', data => {
-        console.log("socket")
-        console.log(data);
-        updateData()
-      });
+      
 
       drawTodoList()
-      updateData()
+      
     });
   </script>
  <%- include ('closeTag') %>

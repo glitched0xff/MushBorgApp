@@ -30,40 +30,6 @@
                 </a>
               </li>
               <% } %>
-               <% if ((config.telemetry)||(config.telemetry)){%>
-                <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-plug"></i>
-                  <p>
-                    Telementry
-                    <i class="fas fa-angle-left right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-               <% if (config.telemetry){%>
-                  <li class="nav-item">
-                <a href="/telemetry" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>
-                    Telemetry
-                    <span class="badge badge-info right">2</span>
-                  </p>
-                </a>
-              </li>
-              <% } %>
-               <% if (config.device){%>
-              <li class="nav-item">
-                <a href="/device" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                  <p>
-                    Devices
-                  </p>
-                </a>
-              </li>
-              <% } %>
-              </ul>
-              </li> 
-               <% } %>
                <% if (config.ordini){%> 
                 <li class="nav-item">
                 <a href="#" class="nav-link">
@@ -349,7 +315,14 @@
                 </a>
               </li>
               <% } %>
-                 
+                <!-- <li class="nav-item">
+                <a href="/setting" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                    Setting
+                  </p>
+                </a>
+              </li> --> 
               
                <!-- <li class="nav-item">
                 <a href="/setting" class="nav-link">
@@ -362,6 +335,16 @@
                 </ul>
               </li>  
               <% } %>
+              <% if (config.HomeAssistant){ %>
+                <li class="nav-item">
+                  <a href="<%= config.homeAssistantURL%>" class="nav-link" target="_blank">
+                    <i class="fas fa-cogs"></i>
+                    <p style="margin-left:5px">
+                      Home assistant
+                    </p>
+                  </a>
+                </li>
+                <% } %>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

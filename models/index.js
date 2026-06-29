@@ -39,11 +39,11 @@ db.sequelize = sequelize;
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.sensorData = require("./sensorData.model.js")(sequelize, Sequelize);
 db.storage = require("./storage.model.js")(sequelize, Sequelize);
-db.device = require("./device.model.js")(sequelize, Sequelize);
+// db.device = require("./device.model.js")(sequelize, Sequelize);
 
-db.associateActuator = require("./associateActuator.model.js")(sequelize, Sequelize);
-db.associateSensor = require("./associateSensor.model.js")(sequelize, Sequelize);
-db.associateAllarm = require("./associateAllarm.model.js")(sequelize, Sequelize);
+// db.associateActuator = require("./associateActuator.model.js")(sequelize, Sequelize);
+// db.associateSensor = require("./associateSensor.model.js")(sequelize, Sequelize);
+// db.associateAllarm = require("./associateAllarm.model.js")(sequelize, Sequelize);
 
 db.toDo = require("./toDo.model.js")(sequelize, Sequelize);
 db.unknowMessage = require("./unknowMessage.model.js")(sequelize, Sequelize);
@@ -104,9 +104,9 @@ db.materialCategory.associate(db)
 db.rawMaterial.associate(db)
 db.pretreatment.associate(db)
 
-db.associateActuator.associate(db)
-db.associateSensor.associate(db)
-db.associateAllarm.associate(db)
+// db.associateActuator.associate(db)
+// db.associateSensor.associate(db)
+// db.associateAllarm.associate(db)
 
 
 module.exports = db;

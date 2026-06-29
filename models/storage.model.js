@@ -50,9 +50,6 @@ module.exports = (sequelize, Sequelize) => {
          Storage.hasMany(models.inoculum, {foreignKey: "storageId"});
          Storage.hasMany(models.spawn, {foreignKey: "storageId"});
          Storage.hasMany(models.propagation, {foreignKey: "storageId"});
-         Storage.hasMany(models.associateActuator, {foreignKey: "storageId"})
-         Storage.hasMany(models.associateSensor, {foreignKey: "storageId"})
-         Storage.hasMany(models.associateAllarm, {foreignKey: "storageId"})
     }
     return Storage;
   };
