@@ -81,6 +81,7 @@ db.strain = require("./management/strain.model.js")(sequelize, Sequelize);
  
  db.orderDestination = require("./management/orderDestination.model.js")(sequelize, Sequelize);
  db.productionOrder = require("./management/productionOrder.model.js")(sequelize, Sequelize);
+ db.pastorizzazioneBatch = require("./management/pastorizzazioneBatch.model.js")(sequelize, Sequelize);
 
  db.sensorHomeAssistant = require("./sensorHomeAssistant.model.js")(sequelize, Sequelize);
 
