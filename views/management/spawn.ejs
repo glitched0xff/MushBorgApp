@@ -844,7 +844,7 @@ console.log(dt.text());
       if(str!=""){
          $.ajax({
         type: "GET",
-        url: "/spawn/liveSearch?str="+str+"&strainFilterId="+strainFilter,
+        url: "/mushElement/liveSearch?str="+str+"&strainFilterId="+strainFilter,
         success: function (response) {
           let element=response.list
           inoculiList=element

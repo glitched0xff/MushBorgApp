@@ -897,6 +897,26 @@ router.get('/mushElementLanding',async (req,res)=>{
     
 })
 
+/**
+ * @route GET /mushElement/liveSearch
+ * @group MushElement - Operazioni relative agli elementi seed
+ * @summary Ricerca rapida per elementi di seeding
+ * @param {string} str Stringa da ricercare
+ * @returns 200 - Elenco primi 50 risultati
+ */
+router.get('/liveSearch',async (req,res)=>{
+    let str=req.query.str
+    let strainFilerterId=req.query.strainFilterId?req.query.strainFilterId:null
+    let whereSql={element_code:{[Op.like]:str+"%"},active:1,strainId:strainFilerterId}
+    if (strainFilerterId==null){
+        whereSql={element_code:{[Op.like]:str+"%"},active:1}
+    }
+    //{element_code:{[Op.like]:str+"%"},active:1}
+    let list=await db.mushElement.findAll({where:whereSql,
+                                            limit:50,
+                                        order:[["element_code","DESC"],["type","DESC"]]})
+    res.status(200).json({list:list})
+})
 
 
 
