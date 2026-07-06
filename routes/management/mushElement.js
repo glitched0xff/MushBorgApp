@@ -374,6 +374,31 @@ router.get('/getSensorData',async (req,res)=>{
     res.status(200).json({sensorData:sensorData})
 })
 
+router.get('/getSensorDataHa',async (req,res)=>{
+    let {storageId,from,to,sampleSize}=req.query
+    console.log(req.query)
+    to= moment(new Date(to).toISOString());
+    let storageData= await db.storage.findOne({where:{id:parseInt(storageId)}})
+    console.log(JSON.parse(JSON.stringify(storageData)))
+    let data=await db.sensorHomeAssistant.findAll({where:{area:storageData.area_HomeAssistant,
+                                                        last_triggered  : {
+                                                                [Op.between]: [from, to]
+                                                                }
+                                                    },
+                                                    order: [['last_triggered', 'ASC']]
+                                                        });
+    if (data.length>0){
+        let sensorData=await getSampledData(data,sampleSize)
+        function raggruppaPerClasse(arrayDiOggetti) {
+            return Object.groupBy(arrayDiOggetti, oggetto => oggetto.class);
+        }
+        let groupedData=raggruppaPerClasse( sensorData)
+        res.status(200).json({sensorData:groupedData})
+        
+    } else{
+        res.status(200).json({sensorData:null})
+    }
+})
 
   router.get('/getMushElementByRelated',async  (req, res) => {
     let relatedId=req.query.relatedId?req.query.relatedId:false
@@ -437,7 +462,7 @@ router.put('/modMushElement', async(req,res) => {
 
 
 router.put('/pickElement', async(req,res) => {
-console.log(req.body)
+//console.log(req.body)
     let idMushElement=req.body.idMushElement?req.body.idMushElement:false
     let data=req.body
     if (idMushElement!=false){
@@ -463,13 +488,13 @@ console.log(req.body)
                 let pickReasonDesc=""
                 let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
                 pickReasonDD=JSON.parse(JSON.stringify(pickReasonDD))
-                console.log(pickReasonDD)
+                //console.log(pickReasonDD)
                 pickReasonDD.forEach(el => {
                     if (el.val===parseInt(data.pickReason)){
                         pickReasonDesc=el.txt
                     }
                 });
-                console.log(pickReasonDesc)
+                //console.log(pickReasonDesc)
                 await db.diaryNote.create({nota:`Pick dell'elemento ${mushElement.element_code} motivazione: ${pickReasonDesc}`,tag:"",area:""}) 
                 res.status(200).json({message:"ok"})
             })
@@ -552,14 +577,14 @@ router.put('/movimentazioneElement',async (req,res)=>{
 
 /** Versione movimentazione per singolo elemento */
 router.post('/movimentazioneSingleElement',async (req,res)=>{
-    console.log(req.body)
+    //console.log(req.body)
     let mushElementCode=req.body.movElementCode
     let to=req.body.toStorage
     let from=req.body.fromStorage
     let movType=req.body.movType
     let movIdElement=req.body.movIdElement
     let nMov=await db.movimentation.count({where:{relatedId:movIdElement}})
-    console.log(nMov)
+    //console.log(nMov)
     // Se l'elemento non ha movimentazioni precedenti
     let mushElement=await db.mushElement.findOne({where:{id:movIdElement}})
     if (nMov==0){
@@ -584,7 +609,7 @@ router.post('/newMushElementNote', async(req,res) => {
     //console.log(req.body)
     let imgMushElementNote=null
     let nomeFile= uuidv4()+".jpg";
-    console.log(nomeFile)
+    //console.log(nomeFile)
     const array_of_allowed_file_types = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif','image/heic'];
     const allowed_file_size = 5;
     // Deprecated use element_code and not id
@@ -631,7 +656,7 @@ router.post('/newMushElementNote', async(req,res) => {
         
     }
     if(uploadFlag==true){
-        console.log(nomeFile)
+        //console.log(nomeFile)
         await db.mushElementNote.create({
             mushElementId:data.idMushElementNote,
             check_date:data.check_date?moment(data.check_date,"DD-MM-YYYY"):null,
@@ -694,7 +719,7 @@ router.delete('/deleteMushElementNote',async  (req, res) => {
 
         let elemData=await db.mushElementNote.findOne({where:{id:mushElementNoteId}})
         let mushElementCode= await db.mushElement.findOne({where:{id:elemData.mushElementId}})
-        console.log(JSON.parse(JSON.stringify(mushElementCode)))
+        //console.log(JSON.parse(JSON.stringify(mushElementCode)))
         const dirname=mushElementCode.element_code
         //console.log(JSON.parse(JSON.stringify(elemData)))
         if (elemData.pict){
@@ -703,7 +728,7 @@ router.delete('/deleteMushElementNote',async  (req, res) => {
                     if (err) {
                         console.error(`Error removing file: ${err}`);
                         return;
-                    }console.log(`File "../../public/imgMushEleNote/${dirname}" has been successfully removed.`);
+                    }//console.log(`File "../../public/imgMushEleNote/${dirname}" has been successfully removed.`);
                     });
         }
         let result=await db.mushElementNote.destroy({where:{id:mushElementNoteId}})
@@ -716,9 +741,9 @@ router.delete('/deleteMushElementNote',async  (req, res) => {
 /** Mushroom element harvest */
 router.post('/insertHarvest',async (req,res)=>{
     let data=req.body
-    console.log(data)
+    //console.log(data)
     let countHarvest=await db.mushElementHarvest.count({where:{id:data.idMushElementHarvest}})
-    console.log(countHarvest)
+    //console.log(countHarvest)
     if (countHarvest==0){
         db.mushElement.update({real_fructification_date:moment(data.harvest_date,"DD-MM-YY")},
                               {where:{id:data.idMushElementHarvest}})

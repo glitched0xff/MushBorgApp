@@ -109,3 +109,7 @@ orderDestinations_form.html
 generateFormScript.js
 .DS_Store
 public/test.html
+views/management/mushElementZoom.ejs
+.DS_Store
+public/.DS_Store
+public/imgMushEleNote/.DS_Store

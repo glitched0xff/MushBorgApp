@@ -14,10 +14,21 @@ router.get('/',async  (req, res) => {
 });
 
 router.post('/insertData',async (req,res)=>{
-     console.log(req.body)
+    console.log("InsertData")
+    // console.log(req.body)
     if (req.body){
         const dt = new Date(req.body.last_triggered);
-        await db.sensorHomeAssistant.create({
+        
+        // Controllo e inserimento automatico
+            await db.sensorHomeAssistant.findOrCreate({
+        where: { 
+            sensor_code: req.body.sensor_code,
+            last_triggered: moment(req.body.last_triggered) ,
+            val: parseFloat(req.body.val)? parseFloat(req.body.val):0,
+            area: req.body.area,
+            class: req.body.class,
+        },
+        defaults: {
             sensor_code:req.body.sensor_code,
             friendly_name: req.body.friendly_name,
             val: parseFloat(req.body.val)? parseFloat(req.body.val):0,
@@ -25,19 +36,52 @@ router.post('/insertData',async (req,res)=>{
             area: req.body.area,
             class: req.body.class,
             last_triggered: moment(req.body.last_triggered)
+        }
         }).then(result=>{
-            console.log("Dato inserito")
+            // console.log("Dato inserito")
+            // console.log(result)
             res.status(200).json(result)
         }).catch(err=>{
             console.log(err)
         })
+
+        // if (creataOra) {
+        // console.log('Nuovo dato salvato con successo!');
+        // res.status(200).json(result)
+        // } else {
+        // console.log('Dato già presente a database. Ignorato.');
+        // }
+                
+        
+        
+        // let present=db.sensorHomeAssistant.count({})
+        // await db.sensorHomeAssistant.create({
+        //     sensor_code:req.body.sensor_code,
+        //     friendly_name: req.body.friendly_name,
+        //     val: parseFloat(req.body.val)? parseFloat(req.body.val):0,
+        //     unit_of_measurement: req.body.unit_of_measurement,
+        //     area: req.body.area,
+        //     class: req.body.class,
+        //     last_triggered: moment(req.body.last_triggered)
+        // }).then(result=>{
+        //     console.log("Dato inserito")
+        //     res.status(200).json(result)
+        // }).catch(err=>{
+        //     console.log(err)
+        // })
     } else {
         res.status(200)
     }
 
 })
 
+router.post('/insertDataPolling',async (req,res)=>{
+    console.log("insertDataPolling")
+     console.log(req.body)
+    
+        res.status(200)
 
+})
 /********************************************
  * Route per gestione batch pastorizzazione *
 ********************************************/

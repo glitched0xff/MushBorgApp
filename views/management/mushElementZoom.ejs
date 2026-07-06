@@ -1128,8 +1128,51 @@
           </button>
       </div>
       <div class="modal-body">
-        <canvas id="sensorChart"></canvas>
+        <div class="row w-100" id="graph_Div" style="display: none;">
+          <div class="col-12 text-right"><button class="btn btn-sm btn-primary"> <i class="fas fa-file-csv    "></i> Esporta Csv </button></div>
+           <!-- 1. CAMBIO FONDAMENTALE: Avvolgi tutto in una colonna a tutta larghezza -->
+  <div class="col-12">
+    
+    <!-- Contenitore delle linguette (Tab) -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist"></ul>
+
+    <!-- Contenitore dei pannelli con i grafici (Tab Content) -->
+    <div class="tab-content" id="myTabContent" style="padding-top: 20px;"></div>
+    
+  </div> <!-- Fine col-12 -->
+
+
+          
+          <div class="col-12">
+            <div class="row w-100 m-2">
+        <div class="col text-center">
+          <dl>
+            <dt>Val. minimo</dt>
+            <dd id="valMin"></dd>
+          </dl>
+        </div>
+<div class="col text-center">
+          <dl>
+            <dt>Val. massimo</dt>
+            <dd id="valMax"></dd>
+          </dl>
+        </div>
+        <div class="col text-center">
+          <dl>
+            <dt>Val. medio</dt>
+            <dd id="valAvg"></dd>
+          </dl>
+        </div>
       </div>
+          </div>
+        </div>
+        <div class="row" id="graph_NoData" style="display: none;">
+          <div class="alert alert-danger" role="alert">
+            Non sono presenti dati per questo elemento nelle condizioni richieste
+          </div>
+        </div>
+      </div>
+      
     </div>
   </div>
  </div>
@@ -1349,7 +1392,7 @@ async function getMovimentation(){
         html+=`<td>${moment(toDate).format("DD-MM-YY HH:mm").toString()}</td>`
         html+=`<td>
                 <button class="btn-primary btn-xs drawDataGraph"
-                  storageId="${storageStory[i].storageId}" from="${storageStory[i].from}" to="${toDate}">
+                  storageId="${storageStory[i].storageId}" from="${storageStory[i].from}" to="${moment(toDate)}">
                   <i class="fas fa-chart-line"></i></button>
               </td>`
       }
@@ -1363,7 +1406,7 @@ async function getSensorData(storageId,from,to,sampleSize=100) {
   let sensorData
   await $.ajax({
     type: "GET",
-    url: "/mushElement/getSensorData",
+    url: "/mushElement/getSensorDataHa",
     data:{
       storageId:storageId,from:from,to:to,sampleSize:sampleSize
     },
@@ -1375,15 +1418,10 @@ async function getSensorData(storageId,from,to,sampleSize=100) {
   return sensorData
 }
 
-async function drawGraph(label,dataSet) {
-  console.log(dataSet)
-  console.log(label)
+async function drawGraph(labels,dataSet,cl) {
+  
   let sensorChart = new Chart(sensorChartCtx, {
         type: 'line',
-        data: {
-          labels:label,
-          datasets:dataSet
-        },
         options: {
           plugins: {
             legend: {
@@ -1395,6 +1433,14 @@ async function drawGraph(label,dataSet) {
           }
       },
       });
+      let data={
+        labels:labels,
+        datasets:[{
+            data:dataSet.map(d=>d.toFixed(1)),
+            label:cl
+          }]
+      }
+      sensorChart.data=data
       sensorChart.update()
 }
 // docReady
@@ -1574,10 +1620,12 @@ $(document).ready(async function () {
       e.preventDefault();
       $('#pick_Mdl').modal('show')
     });
+    
     $("#moveElement_Btn").click(function (e) { 
       e.preventDefault();
       $("#movimentation_Mdl").modal("show")
     });
+
     $("#saveMovimentation_Btn").click(function (e) { 
       e.preventDefault();
       let toStorage=$("#toStorage_Fld option:selected").text();
@@ -1589,7 +1637,6 @@ $(document).ready(async function () {
         data: $("#movimentation_Frm").serialize(),
         success: function (response) {
          window.location.reload();
-          
         }
       });
       }
@@ -1730,44 +1777,134 @@ $(document).ready(async function () {
     });
 
     // area movimentation
+  function generaTabEGrafici(datiIot) {
+      const tabList = document.getElementById('myTab');
+      const tabContent = document.getElementById('myTabContent');
+      
+      tabList.innerHTML = '';
+      tabContent.innerHTML = '';
+
+      const chiavi = Object.keys(datiIot);
+
+      chiavi.forEach((chiave, index) => {
+        const datiSensore = datiIot[chiave];
+        
+        // Sicurezza: controlla che sia un array valido e popolato
+        if (!datiSensore || !Array.isArray(datiSensore) || datiSensore.length === 0) return;
+
+        const isFirst = index === 0;
+        const activeClass = isFirst ? 'active' : '';
+        const showActiveClass = isFirst ? 'show active' : '';
+
+        // --- CORREZIONE 1: Estrazione corretta dei dati dall'array ---
+        const values = datiSensore.map(d => Number(d.val)); // Converte in numeri puri
+        const labels = datiSensore.map(d => {
+          const data = new Date(d.last_triggered);
+          return data.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' }) + 
+                ' ' + 
+                data.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+        });
+
+        // IMPORTANTE: Prendi l'unità dal PRIMO elemento dell'array, non dall'array stesso
+        const unitaMisura = datiSensore[0].unit_of_measurement || '';
+        const nomeSensore = chiave.charAt(0).toUpperCase() + chiave.slice(1);
+
+        // --- 2. CREAZIONE DEL LINGUETTA (TAB LINK) ---
+        const li = document.createElement('li');
+        li.className = 'nav-item';
+        li.innerHTML = `
+          <a class="nav-link ${activeClass}" 
+            id="${chiave}-tab" 
+            data-toggle="tab" 
+            href="#pane-${chiave}" 
+            role="tab" 
+            aria-controls="pane-${chiave}" 
+            aria-selected="${isFirst}">
+            ${nomeSensore}
+          </a>
+        `;
+        tabList.appendChild(li);
+
+        // --- 3. CREAZIONE DEL PANNELLO CONTENITORE (TAB PANE) ---
+        const pane = document.createElement('div');
+        pane.className = `tab-pane fade ${showActiveClass}`;
+        pane.id = `pane-${chiave}`;
+        pane.setAttribute('role', 'tabpanel');
+        pane.setAttribute('aria-labelledby', `${chiave}-tab`);
+
+        pane.innerHTML = `
+          <div class="chart-container" style="position: relative; width: 100%; height: 400px; margin: 0 auto;">
+            <canvas id="canvas-${chiave}"></canvas>
+          </div>
+        `;
+        tabContent.appendChild(pane);
+
+        // --- 4. INIZIALIZZAZIONE CHART.JS ---
+        const ctx = document.getElementById(`canvas-${chiave}`).getContext('2d');
+        
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels, // Array di stringhe (date)
+            datasets: [{
+              label: `${nomeSensore} (${unitaMisura})`,
+              data: values,   // Array di numeri veri
+              borderColor: 'rgb(75, 192, 192)',
+              backgroundColor: 'rgba(75, 192, 192, 0.1)',
+              tension: 0.2,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: false, // Permette al grafico di zoommare sui dati reali
+                ticks: {
+                  callback: function(value) { return value + ' ' + unitaMisura; }
+                }
+              }
+            }
+          }
+        });
+      });
+}
+
+
+      // Forza il ricalcolo delle dimensioni del grafico al cambio della tab di Bootstrap 4
+  $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+    const targetPaneId = $(e.target).attr('href'); // Es: #pane-humidity
+    const canvas = $(targetPaneId).find('canvas')[0];
+    if (canvas) {
+      const chartInstance = Chart.getChart(canvas); // Chart.js v3/v4
+      // Se usi Chart.js v2 usa invece: const chartInstance = window.Chart.instances[Object.keys(window.Chart.instances).find(k => window.Chart.instances[k].canvas === canvas)];
+      if (chartInstance) {
+        chartInstance.resize();
+      }
+    }
+  });
+
     $(document).on("click",".drawDataGraph",async function (e) { 
       e.preventDefault();
       let storageId=$(this).attr("storageId")
       let from=$(this).attr("from")
       let to=$(this).attr("to")
       let sensorData=await getSensorData(storageId,from,to)
-      let stor
-      storages.forEach(el=>{if(el.id==storageId){
-        stor=el
-      }})
-      let label=[]
-      let dataSet=[]
-      sensorData.forEach(elem=>{label.push(moment.utc(elem.createdAt).format("DD-MM HH:mm"))})
-     
-
-      // Draw temp graph
-      if (stor.devices[0].temp==1){
-        let tempData=[]
-        sensorData.forEach(elem=>{tempData.push(elem.temp)})
-        dataSet.push({
-          label:"Temperatura",
-          data:tempData,
-          borderColor:"#FA6384"
-        })
+       if (sensorData){
+        await generaTabEGrafici(sensorData)
+        $("#graph_NoData").hide();
+        $("#graph_Div").show();
+      } 
+      else {
+        $("#graph_Div").hide();
+        $("#graph_NoData").show();
+        $("#classData_BtnGrp").hide();
       }
-      // Draw hum graph
-      if (stor.devices[0].hum==1){
-        let humData=[]
-        sensorData.forEach(elem=>{humData.push(elem.hum)})
-        dataSet.push({
-          label:"Umidità",
-          data:humData,
-          borderColor:"#9BD0F5"
-        })
-      }
-      await drawGraph(label,dataSet)
-      $("#sensorDataGraph_Mdl").modal("show")
+        $("#sensorDataGraph_Mdl").modal("show")
     });
+
+  
 
     // Are raccolto
     $("#addHarvest_Btn").click(function (e) { 

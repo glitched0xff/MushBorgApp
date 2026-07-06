@@ -10,6 +10,9 @@ module.exports = (sequelize, Sequelize) => {
           relatedId:{
             type: Sequelize.INTEGER
           },
+          mushElement:{
+            type: Sequelize.STRING
+          },
           from:{
             type: Sequelize.INTEGER
           },

@@ -27,10 +27,6 @@ module.exports = (sequelize, Sequelize) => {
   last_triggered: {
     type:Sequelize.DATE,
   },
-    
-  
-    },{
-      timestamps: false
-    },);
+    });
     return SensorHomeAssistant;
   };
