@@ -838,11 +838,13 @@ console.log(dt.text());
     $("#liveSearch").keyup(function (e) { 
       e.preventDefault();
       let str=$(this).val()
+      let strainFilter=$("#strainId_Fld").val().split("|")[0]
+      console.log(strainFilter)
       console.log(str)
       if(str!=""){
          $.ajax({
         type: "GET",
-        url: "/spawn/liveSearch?str="+str,
+        url: "/spawn/liveSearch?str="+str+"&strainFilterId="+strainFilter,
         success: function (response) {
           let element=response.list
           inoculiList=element
