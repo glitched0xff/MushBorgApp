@@ -36,15 +36,27 @@ router.get('/',async  (req, res) => {
   });
 
 router.get('/getAll',async  (req, res) => {
-    let filterCategory=req.query.filterCategory?req.query.filterCategory:false
-    //console.log(req.query)
+    //let filterCategory=req.query.filterCategory?req.query.filterCategory:false
+    console.log(req.query)
     let mushElements
-    if(filterCategory!=false){
+    if(req.query.filterCategory || req.query.active || req.query.lotto){
+        let where={}
+        if (req.query.filterCategory) {
+            where.type=req.query.filterCategory        
+        }
+        if (req.query.active) {
+            where.active=req.query.active        
+        }
+        if (req.query.lotto) {
+            where.codice= {
+                [Op.like]: req.query.lotto+'%'
+                }       
+        }
          mushElements=await db.mushElement.findAll({
-        where:{type:filterCategory},
-        include: [{model: db.mushElementNote,attributes:[]},
-        {model: db.mushElementHarvest,attributes:[]},
-        ],
+                    where:where,
+                    include: [{model: db.mushElementNote,attributes:[]},
+                              {model: db.mushElementHarvest,attributes:[]},
+                            ],
          attributes: {
             include: [[fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
                     [fn("COUNT", col("mushElementNotes.id")), "totalNote"]]
@@ -66,7 +78,7 @@ router.get('/getAll',async  (req, res) => {
         
         for (let i = 0; i < mushElements.length; i++) {
             let strain=await db.strain.findOne({where:{id:mushElements[i].strainId}, attributes:["species"],raw:true})
-            console.log(strain)
+            //console.log(strain)
             
             mushElements[i].strainName=strain?strain.species:null
         }
@@ -349,6 +361,7 @@ router.get('/getMoviementation',async (req,res)=>{
         } 
 })
 
+// Sample dei dati
 async function getSampledData(data,sampleSize) {
             if (data.length <= sampleSize) return data;
             let step = data.length / sampleSize;
@@ -360,26 +373,12 @@ async function getSampledData(data,sampleSize) {
         }
 
 
-router.get('/getSensorData',async (req,res)=>{
-    let {storageId,from,to,sampleSize}=req.query
-    //console.log(req.query)
-    let data=await db.sensorData.findAll({where:{storageId:storageId,
-                                                        createdAt: {
-                                                                [Op.between]: [from, to]
-                                                                }
-                                                    },
-                                                    order: [['createdAt', 'ASC']]
-                                                        });
-    let sensorData=await getSampledData(data,sampleSize)
-    res.status(200).json({sensorData:sensorData})
-})
 
 router.get('/getSensorDataHa',async (req,res)=>{
     let {storageId,from,to,sampleSize}=req.query
     console.log(req.query)
     to= moment(new Date(to).toISOString());
     let storageData= await db.storage.findOne({where:{id:parseInt(storageId)}})
-    console.log(JSON.parse(JSON.stringify(storageData)))
     let data=await db.sensorHomeAssistant.findAll({where:{area:storageData.area_HomeAssistant,
                                                         last_triggered  : {
                                                                 [Op.between]: [from, to]
@@ -586,14 +585,14 @@ router.post('/movimentazioneSingleElement',async (req,res)=>{
     let nMov=await db.movimentation.count({where:{relatedId:movIdElement}})
     //console.log(nMov)
     // Se l'elemento non ha movimentazioni precedenti
-    let mushElement=await db.mushElement.findOne({where:{id:movIdElement}})
+    let mushElement=await db.mushElement.findOne({where:{id:movIdElement,type:movType}})
     if (nMov==0){
         await db.movimentation.create({relatedId:movIdElement,
                                     to:mushElement.storageId,
                                     type:movType,
                                     mushElement:mushElement.element_code})
     }
-    await db.mushElement.update({storageId:to},{where:{id:movIdElement}})
+    await db.mushElement.update({storageId:to},{where:{id:movIdElement,type:movType}})
     await db.movimentation.create({relatedId:movIdElement,
                                     from:from,
                                     to:to,
@@ -817,16 +816,28 @@ router.get('/csv',async (req,res)=>{
 }) 
 
 router.get('/csvIotData',async (req,res)=>{
-    let mushElementCode=req.query.mushElementCode?req.query.mushElementCode:null
-    if (mushElementCode){
-        let iotData=await db.mushElement.findOne()
-        const csv = await converter.json2csv(mushElements);
+
+    let {storageId,from,to}=req.query
+    let sampleSize=9999
+    to= moment(new Date(to).toISOString());
+    let storageData= await db.storage.findOne({where:{id:parseInt(storageId)}})
+    let data=await db.sensorHomeAssistant.findAll({where:{area:storageData.area_HomeAssistant,
+                                                        last_triggered  : {
+                                                                [Op.between]: [from, to]
+                                                                }
+                                                    },
+                                                    order: [['last_triggered', 'ASC']]
+                                                        });
+    if (data.length>0){
+        let sensorData=await getSampledData(data,sampleSize)
+        const csv = await converter.json2csv(sensorData);
         res.set('Content-Type', 'application/octet-stream');
         res.attachment('filename.csv');
-        res.status(200).send(csv);}
-    else{
-        res.status(422).send("codice mancante")
+        res.status(200).send(csv);
+    } else{
+        res.status(200).json({sensorData:null})
     }
+
 }) 
 
 router.get('/csvLotto',async (req,res)=>{

@@ -25,8 +25,10 @@
     </div>
     <section class="content">
       <div class="container-fluid">
+        
         <!-- Table inoculi -->
         <div class="row" style="width: 100%;" id="inoculi_Table" style="display: none;">
+          
           <div class="card w-100" id="tableInoculi_Crd">
             <div class="card-body">
               <table class="display table table-striped table-bordered compact" id="inoculi_Tbl" style="width: 100%;">
@@ -372,7 +374,7 @@
   async function  drawTableInoculi (){
    await $.ajax({
         type: "GET",
-        url: "/inoculum/getAll",
+        url: "/inoculum/getAll?active=1",
         success: async function (response) {
           console.log(response)
             let html=""
@@ -605,7 +607,8 @@ function drawTableChild(data,table,fields,topic,title) {
     $('#expected_maturation_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $('#purchased_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $("#createLot_DT").datetimepicker({locale: 'it', format:"DD-MM-YY"})
-   
+    // console.log("---")
+    // console.log(redirectId)
      if (redirectId!=null){
       await drawShowInoculi(redirectId)
     }
