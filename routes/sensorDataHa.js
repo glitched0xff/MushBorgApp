@@ -44,7 +44,7 @@ router.post('/insertData', async (req, res) => {
             const timeDiffMinutes = currentTriggered.diff(lastTriggered, 'minutes');
 
             if (timeDiffMinutes < timeFilter && valueDiff < HysteresisFilter) {
-                console.log(" Dato non inserito per filtro di valore HysteresisFilter="+HysteresisFilter+" o filtro temporale timeFilter="+timeFilter)
+                console.log(" Dato non inserito per filtro di valore valueDiff="+valueDiff+" o filtro temporale timeDiffMinutes="+timeDiffMinutes)
                 // Se non rispetta nessuna delle due condizioni, scartiamo il dato
                 return res.status(200).json({ 
                     status: "skipped", 
