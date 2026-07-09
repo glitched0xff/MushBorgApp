@@ -13,73 +13,67 @@ router.get('/',async  (req, res) => {
     res.status(200).json({ok:"RICEZIONE DATI"})
 });
 
-router.post('/insertData', async (req, res) => {
-    console.log("InsertData");
-    let timeFilter=120 // valore in secondi
-    let HysteresisFilter=0.4 // valore di differenza per cui il dato sia salvato
-    
-    if (!req.body) {
-        return res.status(400).json({ error: "Body mancante" });
-    }
-
-    try {
-        const currentCode = req.body.sensor_code;
-        const currentVal = parseFloat(req.body.val) ? parseFloat(req.body.val) : 0;
-        const currentTriggered = moment(req.body.last_triggered);
-
-        //Recupera l'ULTIMO dato salvato 
-        const lastRecord = await db.sensorHomeAssistant.findOne({
-            where: { sensor_code: currentCode },
-            order: [['last_triggered', 'DESC']] // Prende il più recente
-        });
-
-        if (lastRecord) {
-            const lastVal = parseFloat(lastRecord.val);
-            const lastTriggered = moment(lastRecord.last_triggered);
-
-            // DIFFERENZA DI VALORE (< 0.3) 
-            const valueDiff = Math.abs(currentVal - lastVal);
-
-            // DIFFERENZA DI TEMPO (< 2 minuti) 
-            const timeDiffMinutes = currentTriggered.diff(lastTriggered, 'minutes');
-
-            if (timeDiffMinutes < timeFilter && valueDiff < HysteresisFilter) {
-                // Se non rispetta nessuna delle due condizioni, scartiamo il dato
-                return res.status(200).json({ 
-                    status: "skipped", 
-                    message: "Dato ignorato: variazione minima e meno di 2 minuti trascorsi." 
-                });
-            }
+router.post('/insertData',async (req,res)=>{
+    console.log("InsertData")
+    // console.log(req.body)
+    if (req.body){
+        const dt = new Date(req.body.last_triggered);
+        
+        // Controllo e inserimento automatico
+            await db.sensorHomeAssistant.findOrCreate({
+        where: { 
+            sensor_code: req.body.sensor_code,
+            last_triggered: moment(req.body.last_triggered) ,
+            val: parseFloat(req.body.val)? parseFloat(req.body.val):0,
+            area: req.body.area,
+            class: req.body.class,
+        },
+        defaults: {
+            sensor_code:req.body.sensor_code,
+            friendly_name: req.body.friendly_name,
+            val: parseFloat(req.body.val)? parseFloat(req.body.val):0,
+            unit_of_measurement: req.body.unit_of_measurement,
+            area: req.body.area,
+            class: req.body.class,
+            last_triggered: moment(req.body.last_triggered)
         }
+        }).then(result=>{
+            // console.log("Dato inserito")
+            // console.log(result)
+            res.status(200).json(result)
+        }).catch(err=>{
+            console.log(err)
+        })
 
-        // Inserisco il record univoco
-        const [result, created] = await db.sensorHomeAssistant.findOrCreate({
-            where: { 
-                sensor_code: currentCode,
-                last_triggered: currentTriggered,
-                val: currentVal,
-                area: req.body.area,
-                class: req.body.class,
-            },
-            defaults: {
-                sensor_code: currentCode,
-                friendly_name: req.body.friendly_name,
-                val: currentVal,
-                unit_of_measurement: req.body.unit_of_measurement,
-                area: req.body.area,
-                class: req.body.class,
-                last_triggered: currentTriggered
-            }
-        });
-
-        return res.status(200).json({ result, created });
-
-    } catch (err) {
-        console.error("Errore durante l'inserimento:", err);
-        return res.status(500).json({ error: "Errore interno del server" });
+        // if (creataOra) {
+        // console.log('Nuovo dato salvato con successo!');
+        // res.status(200).json(result)
+        // } else {
+        // console.log('Dato già presente a database. Ignorato.');
+        // }
+                
+        
+        
+        // let present=db.sensorHomeAssistant.count({})
+        // await db.sensorHomeAssistant.create({
+        //     sensor_code:req.body.sensor_code,
+        //     friendly_name: req.body.friendly_name,
+        //     val: parseFloat(req.body.val)? parseFloat(req.body.val):0,
+        //     unit_of_measurement: req.body.unit_of_measurement,
+        //     area: req.body.area,
+        //     class: req.body.class,
+        //     last_triggered: moment(req.body.last_triggered)
+        // }).then(result=>{
+        //     console.log("Dato inserito")
+        //     res.status(200).json(result)
+        // }).catch(err=>{
+        //     console.log(err)
+        // })
+    } else {
+        res.status(200)
     }
-})
 
+})
 
 router.post('/insertDataPolling',async (req,res)=>{
     console.log("insertDataPolling")
