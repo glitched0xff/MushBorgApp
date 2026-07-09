@@ -20,6 +20,7 @@
     </div>
     <section class="content">
       <div class="container-fluid">
+        
         <!-- Table propagation -->
         <div class="row" style="width: 100%;" id="propagation_Table" style="display: none;">
           <div class="card w-100" id="tablePropagation_Crd">
@@ -535,7 +536,7 @@
   async function  drawTablePropagation (){
    await $.ajax({
         type: "GET",
-        url: "/propagation/getAll",
+        url: "/propagation/getAll?active=1",
         success: async function (response) {
           console.log(response)
           let delBtnDisable=""

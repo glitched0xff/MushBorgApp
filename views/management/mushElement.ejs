@@ -20,9 +20,21 @@
     </div>
     <section class="content">
       <div class="mushElement-fluid" >
+        
+
           <!-- Table card -->
           <div class="card w-100" id="tableMushElement_Crd">
             <div class="card-body">
+              <div class="row my-2 ">
+                <div class="col text-right">
+                  <div class="btn-group " role="group" aria-label="Filtro">
+                    <button type="button" class="btn btn-secondary btn-sm">Elementi eliminati</button>
+                    <button type="button" class="btn btn-secondary btn-sm">Inoculi</button>
+                    <button type="button" class="btn btn-secondary btn-sm">Spawn</button>
+                    <button type="button" class="btn btn-secondary btn-sm">Coltivazione</button>
+                  </div>
+                </div>
+            </div>
               <table class="display table table-striped table-bordered compact" id="mushElement_Tbl" style="width: 100%;">
                 <thead>
                     <tr>
@@ -138,10 +150,9 @@ let tableMushElement
 async function  drawTable (){
   let url
   if(filterCategory==false){
-    url="/mushElement/getAll"
-   
+    url="/mushElement/getAll?active=1"
   } else{
-    url="/mushElement/getAll?filterCategory="+filterCategory
+    url="/mushElement/getAll?filterCategory="+filterCategory+"&active=1"
      switch (filterCategory) {
       case "INOCULUM":
         $("#titoloFiltro").html("inoculi");

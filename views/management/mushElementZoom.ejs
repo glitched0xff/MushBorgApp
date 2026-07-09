@@ -44,8 +44,23 @@
               <button type="button" name="" id="modElement_Btn" class="btn btn-primary btn-xs mx-2">Modifica elemento</button>
               <button type="button" name="" id="moveElement_Btn" class="btn btn-primary btn-xs mx-2">Sposta elemento</button>
               <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-xs mx-2">Elimina elemento</button>
-              
+              <% if(filterCategory=="INOCULUM") {%>
+              <a href="/inoculum?incoulumCode=<% %>">
+                    <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-xs mx-2">Vai al lotto</button>
+                    </a>
+                <% } %>
+              <% if(filterCategory=="SPAWN") {%>
+              <a href="/spawn?spawnCode=<% %>">
+                    <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-xs mx-2">Vai al lotto</button>
+                    </a>
+                <% } %>
+                <% if(filterCategory=="CULTIVATION") {%>
+              <a href="/propagation?propagationCode=<% %>">
+                    <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-xs mx-2">Vai al lotto</button>
+                    </a>
+                <% } %>
               <% if((filterCategory=="SPAWN")&&(mushElement.stage==null)){ %>
+                  
                   <button type="button" name="" id="fructElement_Btn" class="btn btn-success btn-xs mx-2">Metti in fruttificazione</button>
               <% } else if((filterCategory=="SPAWN")&&(mushElement.stage==2)){%>
                 <!-- <div class="col mx-auto text-center">Elemento in fruttificazione</div> -->
@@ -97,6 +112,12 @@
                     </dl>
                   </div>
                   <% }  %>
+                  <div>
+                    <dl>
+                      <dt>Magazzino</dt>
+                      <dd id="storage_Show" class="elementText"> <%= mushElement.storage[0].name_storage %></dd>
+                    </dl>
+                  </div>
                 </div>
                 <div class="row w-100">
                   <div class="col-md-2 col-sm-6">
@@ -1119,8 +1140,8 @@
 </div>
 <!-- Modal graph -->
  <div class="modal fade" id="sensorDataGraph_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content ">
       <div class="modal-header">
         <h5 class="modal-title">Sensor data graph</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -1129,45 +1150,24 @@
       </div>
       <div class="modal-body">
         <div class="row w-100" id="graph_Div" style="display: none;">
-          <div class="col-12 text-right"><button class="btn btn-sm btn-primary"> <i class="fas fa-file-csv    "></i> Esporta Csv </button></div>
+          <div class="col-12 text-right">
+              <button class="btn btn-sm btn-primary" id="csvIotData" > 
+                <i class="fas fa-file-csv"></i> Esporta Csv 
+              </button>
+            </div>
            <!-- 1. CAMBIO FONDAMENTALE: Avvolgi tutto in una colonna a tutta larghezza -->
-  <div class="col-12">
-    
-    <!-- Contenitore delle linguette (Tab) -->
-    <ul class="nav nav-tabs" id="myTab" role="tablist"></ul>
+            <div class="col-12">
+              
+              <!-- Contenitore delle linguette (Tab) -->
+              <ul class="nav nav-tabs" id="myTab" role="tablist"></ul>
 
-    <!-- Contenitore dei pannelli con i grafici (Tab Content) -->
-    <div class="tab-content" id="myTabContent" style="padding-top: 20px;"></div>
-    
-  </div> <!-- Fine col-12 -->
-
-
+              <!-- Contenitore dei pannelli con i grafici (Tab Content) -->
+              <div class="tab-content" id="myTabContent" style="padding-top: 20px;"></div>
+            </div> 
           
-          <div class="col-12">
-            <div class="row w-100 m-2">
-        <div class="col text-center">
-          <dl>
-            <dt>Val. minimo</dt>
-            <dd id="valMin"></dd>
-          </dl>
-        </div>
-<div class="col text-center">
-          <dl>
-            <dt>Val. massimo</dt>
-            <dd id="valMax"></dd>
-          </dl>
-        </div>
-        <div class="col text-center">
-          <dl>
-            <dt>Val. medio</dt>
-            <dd id="valAvg"></dd>
-          </dl>
-        </div>
-      </div>
-          </div>
         </div>
         <div class="row" id="graph_NoData" style="display: none;">
-          <div class="alert alert-danger" role="alert">
+          <div class="alert alert-danger col-12 text-center" role="alert">
             Non sono presenti dati per questo elemento nelle condizioni richieste
           </div>
         </div>
@@ -1270,6 +1270,7 @@ if (HttpError==false){
   var spawnElementTempId=0
   var letterElement="" // Identifica postfisso della cartella immagini
   var sensorChartCtx = document.getElementById('sensorChart');
+  var fromIotData, toIotData, storageIdIot // Data globale per export CSV dati Iot
 }
 
 
@@ -1780,24 +1781,21 @@ $(document).ready(async function () {
   function generaTabEGrafici(datiIot) {
       const tabList = document.getElementById('myTab');
       const tabContent = document.getElementById('myTabContent');
-      
       tabList.innerHTML = '';
       tabContent.innerHTML = '';
-
       const chiavi = Object.keys(datiIot);
-
       chiavi.forEach((chiave, index) => {
         const datiSensore = datiIot[chiave];
         
         // Sicurezza: controlla che sia un array valido e popolato
         if (!datiSensore || !Array.isArray(datiSensore) || datiSensore.length === 0) return;
-
+        if (chiave=="") return;
         const isFirst = index === 0;
         const activeClass = isFirst ? 'active' : '';
         const showActiveClass = isFirst ? 'show active' : '';
 
         // --- CORREZIONE 1: Estrazione corretta dei dati dall'array ---
-        const values = datiSensore.map(d => Number(d.val)); // Converte in numeri puri
+        const values = datiSensore.map(d => Number(Number(d.val).toFixed(2))); // Converte in numeri puri
         const labels = datiSensore.map(d => {
           const data = new Date(d.last_triggered);
           return data.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' }) + 
@@ -1838,7 +1836,31 @@ $(document).ready(async function () {
           </div>
         `;
         tabContent.appendChild(pane);
-
+        // Max min AVG
+        const minMaxAvg= document.createElement('div')
+        pane.innerHTML+=`<div class="col-12">
+            <div class="row w-100 m-2">
+              <div class="col text-center">
+                <dl>
+                  <dt>Val. minimo</dt>
+                  <dd >${Math.min(...values)}</dd>
+                </dl>
+              </div>
+              <div class="col text-center">
+                <dl>
+                  <dt>Val. massimo</dt>
+                  <dd >${Math.max(...values)}</dd>
+                </dl>
+              </div>
+              <div class="col text-center">
+                <dl>
+                  <dt>Val. medio</dt>
+                  <dd>${(values.reduce((a,e)=>a=a+e, 0)/values.length).toFixed(2)}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>`
+       tabContent.appendChild(pane);
         // --- 4. INIZIALIZZAZIONE CHART.JS ---
         const ctx = document.getElementById(`canvas-${chiave}`).getContext('2d');
         
@@ -1862,7 +1884,7 @@ $(document).ready(async function () {
               y: {
                 beginAtZero: false, // Permette al grafico di zoommare sui dati reali
                 ticks: {
-                  callback: function(value) { return value + ' ' + unitaMisura; }
+                  callback: function(value) { return  Number(value).toFixed(1) + ' ' + unitaMisura; }
                 }
               }
             }
@@ -1870,7 +1892,6 @@ $(document).ready(async function () {
         });
       });
 }
-
 
       // Forza il ricalcolo delle dimensioni del grafico al cambio della tab di Bootstrap 4
   $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
@@ -1885,12 +1906,16 @@ $(document).ready(async function () {
     }
   });
 
+  $("#csvIotData").click(function() {
+    window.open("/mushElement/csvIotData?&from="+fromIotData+"&to="+toIotData+"&storageId="+storageIdIot+"&sampleSize=400", "_blank");
+});
+
     $(document).on("click",".drawDataGraph",async function (e) { 
       e.preventDefault();
-      let storageId=$(this).attr("storageId")
-      let from=$(this).attr("from")
-      let to=$(this).attr("to")
-      let sensorData=await getSensorData(storageId,from,to)
+      storageIdIot=$(this).attr("storageId")
+      fromIotData=$(this).attr("from")
+      toIotData=$(this).attr("to")
+      let sensorData=await getSensorData(storageIdIot,fromIotData,toIotData)
        if (sensorData){
         await generaTabEGrafici(sensorData)
         $("#graph_NoData").hide();

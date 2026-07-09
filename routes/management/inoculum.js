@@ -26,7 +26,7 @@ Inoculum.associate(db)
  * @returns Render ejs template "management/inoculum"
  */
 router.get('/',async  (req, res) => {
-    let redirectId=req.query.redirectId?req.query.redirectId:null
+    
     let strainDD=await dropDownGenerator("strain")
     let containerDD=await dropDownGenerator("container","INOCULUM")
     //console.log(containerDD)
@@ -35,24 +35,34 @@ router.get('/',async  (req, res) => {
     //console.log(substrateDD)
     let sampleTypeDD=await dropDownGenerator("dropDown","sampleType")
     // Inoculi degli inoculi
-    let inoculums=await db.inoculum.findAll({include:{model:db.mushElement, where:{type:"INOCULUM"}}})
+    //let inoculums=await db.inoculum.findAll({include:{model:db.mushElement, where:{type:"INOCULUM"}}})
     let inoculumDD=[]
     let supplierDD=await dropDownGenerator("supplier")
+    //console.log(req.query)
+
+    let redirectId=req.query.redirectId?req.query.redirectId:null
+    if(req.query.incoulumCode){
+        redirectId=await db.inoculum.findOne({where:{code_inoculum:req.query.incoulumCode},attributes:["id"]}, { raw: true })
+        redirectId=redirectId.id
+        console.log(redirectId)
+    }
+    
     //console.log(JSON.parse(JSON.stringify(inoculums)))
     
-    inoculums.forEach(elem => {
-        if (elem.mushElements.length>0){
-            inoculumDD.push({val:elem.id,txt:elem.code_inoculum+" - "+ elem.inoculum_name})
-        }
-    });
+    // inoculums.forEach(elem => {
+    //     if (elem.mushElements.length>0){
+    //         inoculumDD.push({val:elem.id,txt:elem.code_inoculum+" - "+ elem.inoculum_name})
+    //     }
+    // });
     res.render("management/inoculum",{containerDD:containerDD,
                                       strainDD:strainDD,
                                       redirectId:redirectId,
                                       storagesDD:storagesDD,
                                       substrateDD:substrateDD,
                                       sampleTypeDD:sampleTypeDD,
-                                      supplierDD:supplierDD,
-                                        inoculumDD:inoculumDD})
+                                      supplierDD:supplierDD //,
+                                        //inoculumDD:inoculumDD
+                                    })
   });
 
 /**
@@ -281,9 +291,15 @@ router.delete('/deleteInoculum',async  (req, res) => {
 router.get('/getOneInoculum',async  (req, res) => {    
           //console.log(req.query)
     let inoculumId=req.query.id?req.query.id:false
-    if (inoculumId!=false){
+
+    if (req.query.id){
+        let where={}
+        if (req.query.id){
+            where.id=req.query.id
+        }
+        console.log(where)
         let inoculum=await Inoculum.findOne({
-            where:{id:inoculumId},
+            where:where,
             include: [
             {model: db.strain, attributes: ['strain_name','species','code_strain','species_code','strain_name']},
              {model: db.container, attributes: ['container_name']},

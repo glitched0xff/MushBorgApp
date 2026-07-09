@@ -28,7 +28,7 @@ const Op = db.Sequelize.Op;
  * @returns  Restituisce il file views/management/spawn.ejs renderizzato
  */
 router.get('/',async  (req, res) => {
-    let redirectId=req.query.redirectId?req.query.redirectId:null
+    //let redirectId=req.query.redirectId?req.query.redirectId:null
         let strainDD=await dropDownGenerator("strain")
         //let containerDD=await dropDownGenerator("container","SPAWN")
         let storagesDD=await dropDownGenerator("storage")
@@ -48,6 +48,12 @@ router.get('/',async  (req, res) => {
         inoculums.forEach(elem => {
             inoculumDD.push({val:elem.id,txt:elem.code_inoculum+" - "+ elem.inoculum_name})
         });
+        let redirectId=req.query.redirectId?req.query.redirectId:null
+        if(req.query.spawnCode){
+            redirectId=await db.spawn.findOne({where:{code_spawn:req.query.spawnCode},attributes:["id"]}, { raw: true })
+            redirectId=redirectId.id
+           // console.log(redirectId)
+        }
         res.render("management/spawn",{containerDD:containerDD,
                                           strainDD:strainDD,
                                           redirectId:redirectId,

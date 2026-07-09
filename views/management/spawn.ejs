@@ -375,7 +375,7 @@
   async function  drawTableSpawn (){
    await $.ajax({
         type: "GET",
-        url: "/spawn/getAll",
+        url: "/spawn/getAll?active=1",
         success: async function (response) {
           console.log(response)
             let html=""
