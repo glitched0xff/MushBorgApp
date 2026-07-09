@@ -816,6 +816,19 @@ router.get('/csv',async (req,res)=>{
     res.status(200).send(csv);
 }) 
 
+router.get('/csvIotData',async (req,res)=>{
+    let mushElementCode=req.query.mushElementCode?req.query.mushElementCode:null
+    if (mushElementCode){
+        let iotData=await db.mushElement.findOne()
+        const csv = await converter.json2csv(mushElements);
+        res.set('Content-Type', 'application/octet-stream');
+        res.attachment('filename.csv');
+        res.status(200).send(csv);}
+    else{
+        res.status(422).send("codice mancante")
+    }
+}) 
+
 router.get('/csvLotto',async (req,res)=>{
     //console.log(req.query)
     let {relatedId,filterCategory}=req.query
