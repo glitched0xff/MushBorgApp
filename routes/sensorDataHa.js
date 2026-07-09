@@ -8,6 +8,10 @@ const { Op,where,fn,col } = require('sequelize');
 const db = require('../models');
 const { v4: uuidv4 } = require("uuid");
 const moment = require('moment');
+const IN_DATA_TIME_FILTER = process.env.IN_DATA_TIME_FILTER || 120 // DEFAULT 2 MINUTI
+const IN_DATA_HYSTERESYS_FILTER = process.env.IN_DATA_HYSTERESYS_FILTER || 0.5 // DEFAULT DIFFERENZA DATO
+
+
 
 router.get('/',async  (req, res) => {
     res.status(200).json({ok:"RICEZIONE DATI"})
@@ -15,7 +19,7 @@ router.get('/',async  (req, res) => {
 
 router.post('/insertData', async (req, res) => {
     console.log("InsertData");
-    let timeFilter=120 // valore in secondi
+    let timeFilter=180 // valore in secondi
     let HysteresisFilter=0.4 // valore di differenza per cui il dato sia salvato
     
     if (!req.body) {
@@ -41,7 +45,7 @@ router.post('/insertData', async (req, res) => {
             const valueDiff = Math.abs(currentVal - lastVal);
 
             // DIFFERENZA DI TEMPO (< 2 minuti) 
-            const timeDiffMinutes = currentTriggered.diff(lastTriggered, 'minutes');
+            const timeDiffMinutes = currentTriggered.diff(lastTriggered, 'seconds');
 
             if (timeDiffMinutes < timeFilter && valueDiff < HysteresisFilter) {
                 console.log(" Dato non inserito per filtro di valore valueDiff="+valueDiff+" o filtro temporale timeDiffMinutes="+timeDiffMinutes)
