@@ -1,4 +1,0 @@
-{
-  "ignore": ["node_modules", "logs", "public", ".git","config","controllers","out","test_area"],
-  "ext": "js,json"
-}
