@@ -1,6 +1,6 @@
 const dbConfig = require("../config/db.config.js");
 
-const HOST=process.env.HOSTDB
+const HOST=process.env.HOST
 const USER=process.env.USERDB
 const PASSWORD=process.env.PASSWORDDB
 const DB=process.env.DB

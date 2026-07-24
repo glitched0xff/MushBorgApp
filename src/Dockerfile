@@ -29,7 +29,8 @@ RUN apk add --no-cache \
 COPY package*.json ./
 
 # Sblocca gli script di post-installazione e installa i moduli Node.js
-RUN npm config set ignore-scripts false && \
+RUN apk add --no-cache git && \
+    npm config set ignore-scripts false && \
     npm install
 
 # Copia il resto dell'applicazione
