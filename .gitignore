@@ -101,7 +101,7 @@ nodemon.json
 jsdoc.json
 modelliSvg.js
 resetTables.js
-public/imgMushEleNote/786_C/Screenshot 2025-12-27 alle 15.39.07.png
+public/imgMushEleNote/*
 .DS_Store
 public/.DS_Store
 productionOrders_form.html
@@ -112,3 +112,22 @@ public/test.html
 views/management/mushElementZoom.ejs
 public/.DS_Store
 public/imgMushEleNote/.DS_Store
+src/public/imgMushEleNote/CPOS26C23IS0PS02/594b5ee1-e986-412d-b209-5cb5d1409a4a.jpg
+src/public/imgMushEleNote/CPOS26C23IS0PS02/1271a9df-126e-4234-a6bd-16678f9fcfb5.jpg
+src/public/imgMushEleNote/CPOS26C23IS0PS09/09fee748-bdf4-4610-b168-136eb3aca288.jpg
+src/public/imgMushEleNote/CPOS26C23IS0PS15/8f63ae76-d9f3-4f27-8579-5a053a49a3a5.jpg
+src/public/imgMushEleNote/CPOS26C23IS0PS15/f892a62e-d9b5-412f-95b2-c7e27ab59eef.jpg
+src/public/imgMushEleNote/SGFR26A26GS0SC05/image.jpg
+src/public/imgMushEleNote/SHTE26A24GS0SC04/a59b7767-5fbc-42fd-95b5-dd6baaae0e4f.jpg
+src/public/imgMushEleNote/SHTW26B03GS0C001/919a3f9f-4667-4427-a216-056f44bb2064.jpg
+src/public/imgMushEleNote/SLED26F29GS0SS00/d75666f4-a20e-4b76-ba6a-4a4a5291f657.jpg
+src/public/imgMushEleNote/SLED26F29GS0SS01/312f92ae-0103-483b-90da-5f2edb1a1675.jpg
+src/public/imgMushEleNote/SLED26F29GS0SS01/b483127a-5ea3-406d-bb2a-cafa24325e9c.jpg
+src/public/imgMushEleNote/SLED26F29GS0SS02/92eaaa46-c119-4b82-b548-e68aac2b8378.jpg
+src/public/imgMushEleNote/SLED26F29GS0SS02/888d087d-09d5-48ba-ab58-e212eb4de539.jpg
+src/public/imgMushEleNote/SPER26D15GM0C301/92dd64c9-3e36-4e3f-b02b-2673b88a708b.jpg
+src/public/imgMushEleNote/SPER26D15GM0C304/0124f9e6-7965-4e70-a4b6-dc8365a69dff.jpg
+src/public/imgMushEleNote/SPRO26D23GM0SL02/26f910a0-9d6e-40e7-a85b-8a18860fa848.jpg
+src/public/imgMushEleNote/SPRO26D23GM0SL02/75dc4184-3d1b-4446-8fcb-ad5c9c093af0.jpg
+src/public/imgMushEleNote/SPRO26D23GM0SL02/968a32b7-ab6b-4b73-b4f5-cbdaae7d3ac6.jpg
+src/public/imgMushEleNote/SPRO26D23GM0SL02/ca783fc2-e0cd-4181-8b60-022a15730d11.jpg
