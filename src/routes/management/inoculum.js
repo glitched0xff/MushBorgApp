@@ -283,7 +283,7 @@ router.delete('/deleteInoculum',async  (req, res) => {
 /**
  * @route /inoculum/getOneInoculum?id=
  * @group Inoculum - Operazioni relative agli elementi inoculum
- * @param  {String} id dell'utente
+ * @param  {String} id dell'inoculo
  * @summary Restituisce un lotto di inoculo per id
  * @returns 200 - Inoculo trovato
  * @returns {Error} 404 - Lotto non trovato
@@ -297,7 +297,6 @@ router.get('/getOneInoculum',async  (req, res) => {
         if (req.query.id){
             where.id=req.query.id
         }
-        console.log(where)
         let inoculum=await Inoculum.findOne({
             where:where,
             include: [

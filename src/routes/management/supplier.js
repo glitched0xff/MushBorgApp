@@ -109,4 +109,17 @@ router.get('/getAll',async  (req, res) => {
       subCode=subCode+date+idStr+"00"
       res.status(200).json({subCode:subCode})
     });
+
+  router.get('/getElementBySupplier',async (req,res)=>{
+    let supplierId=req.query.id?req.query.id:false
+    if (supplierId!=false){
+        let inoculum=await db.inoculum.findAll({where:{supplierId:supplierId,purchased:1},attributes:["id","code_inoculum","inoculum_name","purchased_date","n_container"]})
+        let spawn=await db.spawn.findAll({where:{supplierId:supplierId,purchased:1},attributes:["id","code_spawn","spawn_name","purchased_date","n_container"]})
+        let propagation=await db.propagation.findAll({where:{supplierId:supplierId,purchased:1},attributes:["id","code_propagation","propagation_name","purchased_date","n_container"]})
+        let rawMaterial=await db.rawMaterial.findAll({where:{supplierId:supplierId},attributes:["id","material_name","quantity","createdAt"]})    
+        res.status(200).json({inoculum:inoculum,spawn:spawn,propagation:propagation,rawMaterial:rawMaterial})
+    } else {
+            res.status(522).json()
+        }
+  })
 module.exports=router;

@@ -368,10 +368,19 @@ async function drawShowRawMaterial(id) {
               if($("#"+key+"_Fld").attr("tp")=="selectField"){
                 $("#"+key+"_Fld").val(value).change();
               }
-              if(key=="storageId"){
-                $("#storageId_Show").html(data.storageName?data.storageName:"-")
-              }else{
-                 $("#"+key+"_Show").html(value?value:"-")
+              switch (key) {
+                case "storageId":
+                  $("#storageId_Show").html(data.storageName?data.storageName:"-")
+                  break;
+                case "supplierId":
+                  $("#supplierId_Show").html(data.supplier.supplier_name)
+                  break;
+                case "uom":
+                  $("#uom_Show").html(data.uomLiteral)
+                  break;
+                default:
+                  $("#"+key+"_Show").html(value?value:"-")
+                  break;
               }
             }
             $("#idRawMaterial_Fld").val(data.id)

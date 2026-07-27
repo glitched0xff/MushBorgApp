@@ -3,7 +3,7 @@ const router = express.Router();
 const moment=require("moment")
 const dropDownGenerator= require("../../module/dropDownGenerator")
 const db = require("../../models");
-const { Op, literal } = require("sequelize");
+const { Op, literal, where } = require("sequelize");
 const MaterialCategory = db.materialCategory;
 const RawMaterial = db.rawMaterial;
 const Supplier = db.supplier;
@@ -114,7 +114,9 @@ router.get('/getOneRawMaterial',async  (req, res) => {
                                                             include:[{model: Substrate,attributes:["id","cod_substrate","name_substrate"]}]
                                                         }]
                                                     })
+        let udm=await db.dDOption.findOne({where:{val:material.uom, ddMenu:"udmSelect"},attributes:["txt"]})
     material=JSON.parse(JSON.stringify(material))
+    material.uomLiteral=udm.txt
     let substrates=[]
     material.substrateElements.forEach(elem => {
         substrates.push(elem.substrate)

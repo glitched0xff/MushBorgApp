@@ -21,17 +21,16 @@
     <section class="content">
       <div class="container-fluid" >
         <div class="row" style="width: 100%;">
-          
-          <!-- Raw material card -->
+          <!-- Elenco fornitore -->
           <div class="card w-100" id="tableSupplier_Crd">
             <div class="card-body">
               <table class="display table table-striped table-bordered compact" id="supplier_Tbl" style="width: 100%;">
                 <thead>
                     <tr>
                         <th style="width: 45px; "></th>
-                        <th>Codice fornitore</th>
-                        <th>Nome fornitore</th>
-                        <th>Usata in N substrati</th>
+                        <th>Fornitore</th>
+                        <th>Telefono</th>
+                        <th>E-mail</th>
                         <th>Creata il</th>
                     </tr>
                 </thead>
@@ -43,11 +42,11 @@
             </table>
             </div>
           </div>
-          <!-- Show/mod Raw MAterial Card -->
+          <!-- Inserimento fornitore -->
           <dvi class="card w-100" id="showSupplier_Crd" style="display: none;">
             <div class="row m-3">
               <div class="col-12">
-              <form id="supplier_Form" class="p-3">
+              <form id="supplier_FRM" class="p-3">
                 <div class="row w-100">
                     <div class="col">
                   <%- include('../include/ejsForm',
@@ -64,7 +63,7 @@
                       classBox:"col-md-3 col-sm-6",
                       fieldName:"supplier_name",
                       label:"Nome fornitore",
-                      required:'', 
+                      required:true,  
                     },
                     {
                       type:"text",
@@ -103,11 +102,16 @@
                 <button type="button" class="btn btn-xs btn-primary" id="saveNewSupplier_Btn"><i class="fas fa-plus"></i> Salva fornitore</button>
                 <button type="button" class="btn btn-xs btn-primary" id="saveModSupplier_Btn"><i class="fas fa-plus"></i> Salva modifica fornitore</button>
               </div>
+              <div class="row" id="element_TBL">
+                
+              </div>
               </div>
             </div>
             
           </dvi>
-</section>
+        </div>
+      </div>
+    </section>
 </div>
 
 
@@ -156,8 +160,8 @@ async function  drawTable (){
                           </button>
                         </td>
                                 <td>${el.supplier_name}</td>
-                                <td>${el.supplier_name}</td>
-                                <td>${el.used}</td>
+                                <td>${el.phone?el.phone:"-"}</td>
+                                <td>${el.mail?el.mail:"-"}</td>
                                 <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
                             </tr>`
                 
@@ -168,17 +172,87 @@ async function  drawTable (){
 
 }
 
+// Find element supplier
+async function elementBySupplier(){
+  $.ajax({
+    type: "GET",
+    url: "/supplier/getElementBySupplier?id="+idSupplier,
+    success: function (response) {
+      console.log(response)
+      $("#element_TBL").html("")
+      if (response.inoculum.length){
+        drawElementTable("Inoculi",
+                        ["","Codice ","Nome","Numero contenitori","Data di acquisto"],
+                        ["code_inoculum","inoculum_name","n_container","purchased_date"],
+                        response.inoculum,
+                        "id",
+                        "/inoculum?redirectId=")}
+      if (response.spawn.length){
+        drawElementTable("Spawn",
+                        ["","Codice ","Nome","Numero contenitori","Data di acquisto"],
+                        ["code_spawn","spawn_name","n_container","purchased_date"],
+                        response.spawn,
+                        "id",
+                        "/spawn?redirectId=")}
+      if (response.propagation.length){
+        drawElementTable("Lotti coltivazioni",
+                        ["","Codice ","Nome","Numero contenitori","Data di acquisto"],
+                        ["code_propagation","propagation_name","n_container","purchased_date"],
+                        response.propagation,
+                        "id",
+                        "/propagation?redirectId=")}
+      if (response.rawMaterial.length){
+        drawElementTable("Materiali",
+                        ["","Nome materiale","Quantità","Creato il"],
+                        ["material_name","quantity","createdAt"],
+                        response.rawMaterial,
+                        "id",
+                        "/rawMaterial?redirectId=")}
+    }
+  });
+}
+function drawElementTable(title,header,field,data,indexLink,route){
+const formatoISO = "YYYY-MM-DDTHH:mm:ss.SSSZ";
+  let html= `
+  <div class="col-12 my-2">
+    <h4>${title}</h4>
+  <table class="table table-sm table-striped"><thead><tr>`
+  header.forEach(el => {
+    html+=`<th>${el}</th>`
+  });
+  html+="</tr></thead><tbody>"
+  data.forEach(el=>{
+    html+=`<tr>`
+    html+=`<td >
+              <a href="${route}${el[indexLink]}" target="_blank">
+              <button type="button" class="btn btn-primary btn-xs " style="width:25px">
+                    <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                </button></a>
+              </td>`
+    field.forEach(fl=>{
+      if (moment(el[fl], formatoISO, true).isValid()){
+        let dt=moment(el[fl], formatoISO).format("DD-MM-YY")
+        console.log(moment(el[fl], formatoISO).format("DD-MM-YY"))
+        html+=`<td >${dt}</td>`
+      }
+      else{ html+=`<td >${el[fl]}</td>`}
+    }
+    )
+    html+=`</tr>`
+  })
+  html+=` </tbody> </table></div>`
+  $("#element_TBL").append(html);
+}
+
+
 $(document).ready(async function () {
-  // init
+  tableSupplier=$('#supplier_Tbl').DataTable({responsive: true,pageLength: 50});
+  await drawTable()
     
-    tableSupplier=$('#supplier_Tbl').DataTable({responsive: true,pageLength: 50});
-    await drawTable()
-    
-    // Card
     // New rawMAterial
   $("#newSupplier_Btn").click(async function (e) { 
     e.preventDefault();
-    $("#supplier_Form").trigger("reset")   
+    $("#supplier_FRM").trigger("reset")   
     $(".supplierForm").show()
     $(".supplierText").hide()
     $("#rowSupplier").hide() 
@@ -187,60 +261,29 @@ $(document).ready(async function () {
     $("#tableSupplier_Crd").hide()
     $("#showSupplier_Crd").show()
     $("#element_Row").hide()
-    $("#saveSupplier_Btn").show()
+    $("#saveNewSupplier_Btn").show()
+    $("#saveModSupplier_Btn").hide()
   });
   // --> New supplier
   $("#saveNewSupplier_Btn").click(function (e) { 
     e.preventDefault();
     $("#cod_supplier_Fld").removeAttr("disabled")
-    $.ajax({
-        type: "POST",
-        url: "/supplier/newSupplier",
-        data: $("#supplier_Form").serialize(),   
-        success: async function (response) {
-          window.location="/supplier"
+    let f=checkForm("supplier_FRM")
+     if (f==true){
+      let c=confirm("Inserire il fornitore? L'operazione non è annullabile")
+        if(c==true){
+          $.ajax({
+              type: "POST",
+              url: "/supplier/newSupplier",
+              data: $("#supplier_FRM").serialize(),   
+              success: async function (response) {
+                window.location="/supplier"
+              }
+            });
+          }
         }
-      });
-   
     });
-   // --> New supplier
-   $("#saveModSupplier_Btn").click(function (e) { 
-    e.preventDefault();
-    $.ajax({
-        type: "PUT",
-        url: "/supplier/updateSupplier",
-        data: $("#supplier_Form").serialize(),   
-        success: async function (response) {
-          await drawTable()
-          $("#showSupplier_Crd").hide()
-          $("#tableSupplier_Crd").show()
-          $("#newSupplier_Btn").show()
-          $("#modSupplier_Btn").hide()
-          $("#backToMain_Btn").hide()
-          $("#saveNewSupplier_Btn").hide()
-          $("#saveModSupplier_Btn").hide()
-          $("#saveSupplier_Btn").show()
-          $(".supplierForm").hide()
-          $(".supplierText").show()
-          $('#supplier_Form')[0].reset();
-        }
-      });
-    });
-  
-    // Back to main
-  $("#backToMain_Btn").click(async function (e) { 
-    e.preventDefault();
-    await drawTable()
-    $("#newSupplier_Btn").show()
-    $("#backToMain_Btn").hide()
-    $("#newSupplier_Crd").hide()
-    $("#showSupplier_Crd").hide()
-    $("#tableSupplier_Crd").show()
-    $("#modSupplier_Btn").hide()
-    $("#saveNewSupplier_Btn").hide()
-    $("#saveModSupplier_Btn").hide()
-  });  
-  // Show/mod Raw material
+    // Show/mod Raw material
   $(document).on("click",".showSupplier", async function(e){
       $("#saveSupplier_Btn").hide()
 
@@ -278,19 +321,53 @@ $(document).ready(async function () {
           $("#tableSupplier_Crd").hide()
           $("#newSupplier_Btn").hide()
           $("#saveNewSupplier_Btn").hide()
-          $("#saveModSupplier_Btn").show()
+          $("#saveModSupplier_Btn").hide()
           $("#modSupplier_Btn").show()
           $("#backToMain_Btn").show()
           $(".supplierForm").hide()
           $(".supplierText").show()
         }
       });   
+      await elementBySupplier()
     })
+    // Mod supplier
     $("#modSupplier_Btn").click(function (e) { 
       e.preventDefault();
       $(".supplierForm").show()
       $(".supplierText").hide()
+
+      $("#saveModSupplier_Btn").show()
     }); 
+    // --> Mod supplier
+   $("#saveModSupplier_Btn").click(function (e) { 
+    e.preventDefault();
+    let f=checkForm("supplier_FRM")
+     if (f==true){
+      let c=confirm("Modificare il fornitore?")
+        if(c==true){
+            $.ajax({
+              type: "PUT",
+              url: "/supplier/updateSupplier",
+              data: $("#supplier_FRM").serialize(),   
+              success: async function (response) {
+                await drawTable()
+                $("#showSupplier_Crd").hide()
+                $("#tableSupplier_Crd").show()
+                $("#newSupplier_Btn").show()
+                $("#modSupplier_Btn").hide()
+                $("#backToMain_Btn").hide()
+                $("#saveNewSupplier_Btn").hide()
+                $("#saveModSupplier_Btn").hide()
+                $("#saveSupplier_Btn").show()
+                $(".supplierForm").hide()
+                $(".supplierText").show()
+                $('#supplier_FRM')[0].reset();          
+              }
+            });
+        }
+      }
+    });
+   
 
     // Delete supplier
     $(document).on("click",".deleteSupplier_Btn", async function(e){
@@ -307,7 +384,22 @@ $(document).ready(async function () {
       });
       }
     })
-});
+
+      // Back to main
+      $("#backToMain_Btn").click(async function (e) { 
+        e.preventDefault();
+        await drawTable()
+        $("#newSupplier_Btn").show()
+        $("#backToMain_Btn").hide()
+        $("#newSupplier_Crd").hide()
+        $("#showSupplier_Crd").hide()
+        $("#tableSupplier_Crd").show()
+        $("#modSupplier_Btn").hide()
+        $("#saveNewSupplier_Btn").hide()
+        $("#saveModSupplier_Btn").hide()
+      });  
+  
+  });
     
 
 </script>
