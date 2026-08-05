@@ -72,13 +72,20 @@ router.get('/',async  (req, res) => {
  * @returns 200 - Lista inoculi con join dei dati collegati
  */
 router.get('/getAll',async  (req, res) => {
-    let spawns=await Spawn.findAll({include:[
-                                    {model: db.strain},
-                                    {model: db.container, attributes: ['container_name']},
-                                    {model: db.substrate, attributes: ['id','name_substrate']},
-                                    
+    let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(2, 'months').startOf('month')
+    let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
+    //console.log(fromDate,toDate)
+    let spawns=await Spawn.findAll({where: {
+                                        createLot: {
+                                            [Op.between]: [fromDate.toDate(), toDate.toDate()] 
+                                            }
+                                        },
+                                    attributes:["id","code_spawn","spawn_name","n_container","createLot","createdAt"],
+                                    include:[
+                                        {model: db.strain, attributes:["strain_name","species_code"]},
+                                        {model: db.container, attributes: ['container_name']},
                                     ]})   
-    res.status(200).json({spawns:spawns})
+    res.status(200).json({spawns:spawns,fromDate:fromDate,toDate:toDate})
 });
 
 router.get('/getInoculumElementRelId',async (req,res)=>{

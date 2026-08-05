@@ -3,114 +3,76 @@
 <%- include ('../sidebar') %>
 
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <div class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Inoculi
-              <button class="btn btn-xs btn-primary" id="modInoculi_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca inoculo</button>
-              <button type="button" class="btn btn-xs btn-primary" id="newInoculi_Btn"><i class="fas fa-plus"></i> Nuovo inoculo</button>
-              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco inoculi</button>
+            <h1 class="m-0">Spawn
+              <button class="btn btn-xs btn-primary" id="modSpawn_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca spawn</button>
+              <button type="button" class="btn btn-xs btn-primary" id="newSpawn_Btn"><i class="fas fa-plus"></i> Nuova spawn</button>
+              <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco spawn</button>
             </h1>
           </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Inoculi</li>
-            </ol>
-          </div>
+          
         </div>
       </div>
     </div>
     <section class="content">
       <div class="container-fluid">
-        
-        <!-- Table inoculi -->
-        <div class="row" style="width: 100%;" id="inoculi_Table" style="display: none;">
-          
-          <div class="card w-100" id="tableInoculi_Crd">
+        <!-- Table spawn -->
+        <div class="row" style="width: 100%;" id="spawn_Table" style="display: none;">
+          <div class="card w-100" id="tableSpawn_Crd">
             <div class="card-body">
-               <div class="row">
-                 <div class="row w-100 p-2">
-                <div class="pt-1">
-                  Intervallo spawn 
-                </div>
-                <div class="col-md-2 col-sm-9">
-                  <input type="text" class="form-control form-control-sm" id="intervalData" name="intervalData" value="" style="width: 100px;">
-                </div>
-                <div class="col text-center">
-                  <div class="form-group form-inline">
-                    <div class="mr-2">Cerca:</div>
-                    <input type="text" id="customSearch" class="form-control form-control-sm" placeholder="Digita per cercare...">
-                </div>
-                </div>
-                <div class="col text-right ">
-                  N° inoculi: <span id="elNum_Span"></span>
-                </div>
-              </div>
-              </div>
-               <div class="table-responsive pb-3">
-              <table class="display table table-striped table-bordered compact" id="inoculi_Tbl" style="width: 100%;">
+              <table class="display table table-striped table-bordered compact" id="spawn_Tbl" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th style="max-width: 10%; "></th>
-                        <th style="max-width:20%">Codice</th>
-                        <th style="max-width:25%">Nome</th>
-                        <th style="max-width:15%">Qt</th>
-                        <th style="max-width:25%">Strain</th>
-                        <th style="max-width:8  %">Creato il</th>
+                        <th style="width: 45px; "></th>
+                        <th style="max-width:100px">Codice</th>
+                        <th style="max-width:100px">Nome</th>
+                        <th style="max-width:250px">Qt</th>
+                        <th style="max-width:100px">Strain</th>
+                        <th style="max-width:50px">Creato il</th>
                     </tr>
                 </thead>
-                <tbody id="inoculi_Tblb">  
+                <tbody id="spawn_Tblb">  
                 </tbody>
             </table>
             </div>
-            </div>
           </div>
         </div>
-        <!-- Data inoculi -->
-        <div class="card w-100" id="inoculi_Data" style="display: none;">
+        <!-- Data spawn -->
+        <div class="card w-100" id="spawn_Data" style="display: none;">
             <div class="card-body">
-              <h4 id="titoloForm">
-                Nuovo inoculo
-              </h4>
-
+              <h4 id="titoloForm">Nuovo spawn</h4>
               <div class="row">
                 <div class="col">
-              <form id="inoculi_FRM" class="p-3">
+              <form id="spawn_FRM" class="p-3">
                 <div class="row w-100">
                     <div class="col">
 
                 <!-- <div class="row border-bottom mb-2 pb-2 font-weight-bold w-100">
-                  Elemento <span id="inoculiCode" class="mx-1"></span> 
-                  <button class="btn btn-xs btn-primary mx-1" id="backToMain_Btn"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco inoculii</button>
-                  <button class="btn btn-xs btn-primary mx-1" id="modInoculo_Btn"> <i class="fas fa-pen"></i> Modifica inoculio</button>
+                  Elemento <span id="spawnCode" class="mx-1"></span> 
+                  <button class="btn btn-xs btn-primary mx-1" id="backToMain_Btn"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco spawni</button>
+                  <button class="btn btn-xs btn-primary mx-1" id="modSpawn_Btn"> <i class="fas fa-pen"></i> Modifica spawno</button>
                 </div> -->
                 <%- include('../include/ejsForm',
-                  { classTxt: "inoculiText",
-                    classField: "inoculiForm",
+                  { classTxt: "spawnText",
+                    classField: "spawnForm",
                     form:[
                     { 
                       type:"hidden",
-                      fieldName:"idInoculo"
+                      fieldName:"idSpawn"
                     },
                     { type:"startRow"},
 // purchased
                     {
                       type:"text",
                       classBox:"col-md-3 col-sm-6",
-                      fieldName:"inoculum_name",
-                      label:"Nome inoculo",
+                      fieldName:"spawn_name",
+                      label:"Nome spawn",
                       required:true, 
                     },
-                    {
-                      type:"text",
-                      classBox:"col-md-2 col-sm-6",
-                      fieldName:"code_inoculum",
-                      label:"Codice inoculo",
-                      disabled:true, 
-                    },
+                    
                     {
                       type:"select",
                       classBox:"col-md-3 col-sm-6",
@@ -131,13 +93,16 @@
                     },
                     {
                       type:"number",
-                      classBox:"col-md-1 col-sm-6",
+                      classBox:"col-md-3 col-sm-6",
                       fieldName:"n_container",
-                      label:"Quantità",
-                      required:true, 
+                      label:"Quantità contenitori",
+                      min:0,
+                      step:1,
+                      required:true,
+                      disabled:true
                     },
                     { type:"endRow"},
-                     {type:"startRow"},
+                    { type:"startRow"},
                     {
                       type:"checkbox",
                       classBox:"col-md-1 col-sm-6",
@@ -159,22 +124,7 @@
                       fieldName:"purchased_date",
                       label:"Data acquisto",
                     },
-                    {
-                      type:"checkbox",
-                      classBox:"col-md-2 col-sm-6",
-                      fieldName:"fromSample",
-                      label:"Da campione",
-                    },
-                    {
-                      type:"select",
-                      classBox:"col-md-3 col-sm-6",
-                      fieldName:"sampleType",
-                      label:"Tipo di campione",
-                      firstField:"Seleziona tipo campione",
-                      disabled:true,
-                      option:sampleTypeDD
-                    },
-                     { type:"endRow"},
+                    { type:"endRow"},
                      {type:"startRow"},
                     {
                       type:"select",
@@ -186,6 +136,34 @@
                       option:substrateDD
                     },
                     {
+                      type:"number",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"substrateQt",
+                      label:"Qt substrato",
+                      min:0,
+                      step:0.1,
+                      required:true, 
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"strainPerc",
+                      label:"% di Inoculo",
+                      setValue:0,
+                      min:0,
+                      step:0.1,
+                   //   required:true, 
+                    },
+                    {
+                      type:"number",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"strainWeight",
+                      label:"Qt inoculo",
+                      min:0,
+                      step:0.1,
+                   //   required:true, 
+                    },
+                    {
                       type:"select",
                       classBox:"col-md-3 col-sm-6",
                       fieldName:"storageId",
@@ -194,8 +172,10 @@
                       required:true, 
                       option:storagesDD
                     },
-                    { type:"endRow"},
+                    
+                     { type:"endRow"},
                      {type:"startRow"},
+                    
                     {
                       type:"date",
                       classBox:"col-md-3 col-sm-6",
@@ -203,7 +183,6 @@
                       label:"Data creazione",
                       required:true
                     },
-                    
                     {
                       type:"date",
                       classBox:"col-md-3 col-sm-6",
@@ -221,53 +200,58 @@
                     { type:"endRow"}
                     ]  
                 }) %>
-                <div class="row w-100 mt-2" id="setInoculo_Row" >
+                
+                <div class="row w-100 mt-2" id="setSeed_Row" >
                   
-                    <div class="col-12 h5">Elementi di inoculo
-                      <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" 
-                            data-target="#inoculiModal" id="selInoculo_BtnMdl" style="display: none;">
-                            Seleziona seeds
-                          </button>
-                    </div>
+                  <div class="col-12 h5">Elementi di inoculo
+                    <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" 
+                          data-target="#inoculiModal" id="selSeed_BtnMdl" style="display: none;">
+                          Seleziona inoculo
+                        </button>
+                  </div>
                     <div id="addSeedTbl_Div" style="display: none;" class="w-100"></div>
-                    <table class="table table-sm mb-0" id="setSeed_Tbl" style="display: none;width: 50%;">
-                      <thead>
-                        <tr>
-                          <th>Codice seed</th>
-                        </tr>
-                      </thead>
-                      <tbody id="setSeed_Tblb">
-                      </tbody>
-                    </table>
+
+                  <table class="table table-sm mb-0" id="setSeed_Tbl" style="display: none;width: 50%;">
+                    <thead>
+                      <tr>
+                        <th>Codice seed</th>
+                        
+                      </tr>
+                    </thead>
+                    <tbody id="setSeed_Tblb">
+                      
+                    </tbody>
+                  </table>
                 </div>
                 </div>
                 </div>
                 </form>
                 
-                <div class="row w-100 m-3">
-                  <button class="btn btn-xs btn-primary mx-1" id="saveNewInoculo_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva inoculo </button>
-                  <button class="btn btn-xs btn-primary mx-1" id="saveInoculo_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva modifica </button>
-                  <button class="btn btn-xs btn-secondary mx-1" id="abortInoculo_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Annulla modifica </button>
+                <div class="row w-100 text-center">
+                  <button class="btn btn-xs btn-primary mx-auto col-2" id="saveNewSpawn_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva spawn </button>
+                  <button class="btn btn-xs btn-primary mx-auto col-2" id="saveSpawn_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Salva modifica </button>
+                  <button class="btn btn-xs btn-secondary mx-auto col-2" id="abortSpawn_Btn" style="display: none;" idElement=""> <i class="fas fa-pen"></i> Annulla modifica </button>
                 </div>
                 </div>
                </div>
-              </div>
-              <div class="row m-3" id="mushElement_Div">
-              <div class="col">
-                 <div class="row" >
-                    <div class="col-12 h5">
+              <hr>
+              <div class="row mx-2" id="mushElement_Div" >
+                <div class="col">
+                  <div class="row" >
+                      <div class="col-12 h5">
                         Elementi lotto
                         <button type="button"  data-toggle="modal" 
                 data-target="#movimentazioni_Mdl" 
                 class="btn btn-primary btn-xs mx-2 movimentazioneBtn" disabled type="all"><i class="fas fa-truck-moving"></i> Movimenta elementi</button>
                 <button type="button" class="btn btn-primary btn-xs mx-2" id="exportCsv_Btn"><i class="fas fa-file-csv"></i> Esporta csv</button>
                       </div>
-                  <table class="table table-sm " id="mushElement_Tbl">
+                    <table class="table table-sm " id="mushElement_Tbl">
                       <thead>
                         <tr>
-                          <th ></th>
-                          <th >Codice elemento</th>
+                          <th></th>
+                          <th>Codice elemento</th>
                           <th>Stato elemento</th>
+                          <th>Stage</th>
                           <th>Magazzino</th>
                           <th>Note</th>
                           <th>Data prelievo</th>
@@ -277,12 +261,13 @@
                         
                       </tbody>
                     </table>
-                 </div>
-              </div>
-            </div>
+                  </div>
+                </div>
+                </div>
             </div>
         </div>
 </section>
+</div>
 <!-- Modal moviemntazione -->
  <div class="modal fade" id="movimentazioni_Mdl" tabindex="-1" role="dialog" aria-labelledby="#movimentazioni_MdlTitleId" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -351,7 +336,7 @@
  </div>
  </div>
 
- <!-- Modal Seleziona seeds-->
+ <!-- Modal seleziona Inoculo-->
 <div class="modal fade" id="inoculiModal" tabindex="-1" aria-labelledby="inoculiModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -377,174 +362,135 @@
   </div>
 </div>
 
-</div>
-
-
 <%- include ('../footer') %>
 <%- include ('../jsLoad') %>
 <script>
-  let idInoculi
-    let storagesDD= <%- JSON.stringify( storagesDD) %>
-    let sampleTypeDD= <%- JSON.stringify( sampleTypeDD) %>
-    let supplierDD= <%- JSON.stringify( supplierDD) %>
+  let idSpawn
   let redirectId= <%- JSON.stringify( redirectId) %>
+    let storagesDD= <%- JSON.stringify( storagesDD) %>
   let dataElement
-  let filterCategory="INOCULUM"
+  let filterCategory="SPAWN"
   let inoculiList
   let tempInoculiArray=[]
-  let tableInoculi
-  let fromDate
-  let toDate
-
-  async function  drawTableInoculi (fromDate="",toDate=""){
+  let tableSpawn
+  async function  drawTableSpawn (){
    await $.ajax({
         type: "GET",
-        url: "/inoculum/getAll?active=1&fromDate="+fromDate+"&toDate="+toDate,
+        url: "/spawn/getAll?active=1",
         success: async function (response) {
           console.log(response)
-            fromDate=response.fromDate
-            toDate=response.toDate
-            $("#elNum_Span").html(response.inoculum.length);
-            tableInoculi.clear()
-            for (let i = 0; i < response.inoculum.length; i++) {
-                let el=response.inoculum[i]
+            let html=""
+            tableSpawn.clear()
+            for (let i = 0; i < response.spawns.length; i++) {
+                let el=response.spawns[i]
                 let delBtnDisable=""
-                // if (el.used!=0){
-                //   delBtnDisable="disabled"
-                // }
-                const html=`<tr>
+                html=`<tr>
                            <td>
                             <button type="button" name="" id="showBtn${el.id}" 
-                            class="btn btn-primary btn-xs showInoculi" style="width:25px"
-                            idInoculi="${el.id}" >
+                            class="btn btn-primary btn-xs showSpawn" style="width:25px"
+                            idSpawn="${el.id}" >
                               <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
                           </button>
-                          <button type="button" name="" id="delete${el.id}" 
-                          class="btn btn-danger btn-xs deleteInoculi_Btn" style="width: 25px" 
-                          idInoculi="${el.id}"  ${delBtnDisable}>
+                          <button type="button" name="" id="delete_${el.id}" 
+                          class="btn btn-danger btn-xs deleteSpawn_Btn" style="width: 25px" 
+                          idSpawn="${el.id}"  ${delBtnDisable}>
                             <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
                           </button>
                         </td>
-                                <td>${el.code_inoculum}</td>
-                                <td>${el.inoculum_name}</td>
+                                <td>${el.code_spawn}</td>
+                                <td>${el.spawn_name}</td>
                                 <td>${el.n_container} - ${el.container.container_name}</td>
                                 <td>${el.strain.strain_name} ${el.strain.species_code} </td>
-                                <td  >${el.createLot}</td>
+                                <td>${el.createdAt}</td>
                             </tr>`
-                 tableInoculi.rows.add($(html))
-                
-                }
-                 tableInoculi.draw()
-                 let picker = $('#intervalData').data('daterangepicker');
-                if (picker) {
-                    // Se il daterangepicker esiste già, aggiorna solo le date senza romperlo
-                    picker.setStartDate(moment(response.fromDate).format("DD/MM"));
-                    picker.setEndDate(moment(response.toDate).format("DD/MM"));
-                } else {
-                    // Se è la primissima volta in assoluto che carichi la pagina, lo inizializzi
-                    $('#intervalData').daterangepicker({
-                        startDate: moment(response.fromDate).format("DD/MM"),
-                        endDate: moment(response.toDate).format("DD/MM"),
-                        locale: {
-                            format: 'DD/MM'
-                        }
-                    });
+                tableSpawn.rows.add($(html));
                 } 
+                tableSpawn.draw();
+                
             }
     });
-    $("#inoculi_Table").show();
-    $("#inoculi_Data").hide();
-    $("#newInoculi_Btn").show();
+    $("#spawn_Table").show();
+    $("#spawn_Data").hide();
+    $("#newSpawn_Btn").show();
 }
-// Draw table Child element 
-function drawTableChild(data,table,fields,topic,title) {
-    let html=""
-    console.log(data.length)
-    if (data.length>0){
-      for (let i = 0; i < data.length; i++) {
-        const elem = data[i];
-        html+=`<tr>
-        <td>
-          <button type="button" name="" id="showChildBtn_${elem.id}" 
-                  class="btn btn-primary btn-xs showChild_btn" style="width:25px"
-                  topic="${topic}">
-                    <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
-                </button>
-        </td>`
-        for (let y = 0; y < fields.length; y++) {
-          const fld = fields[y];
-          html+=`<td>${elem[fld]}</td>`
+  // Draw table Child element 
+  function drawTableChild(data,table,fields,topic,title) {
+      let html=""
+      console.log(data.length)
+      if (data.length>0){
+        for (let i = 0; i < data.length; i++) {
+          const elem = data[i];
+          html+=`<tr>
+          <td>
+            <button type="button" name="" id="showChildBtn_${elem.id}" 
+                    class="btn btn-primary btn-xs showChild_btn" style="width:25px"
+                    topic="${topic}">
+                      <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
+                  </button>
+          </td>`
+          for (let y = 0; y < fields.length; y++) {
+            const fld = fields[y];
+            html+=`<td>${elem[fld]}</td>`
+          }
+          html+=`</tr>`
         }
-        html+=`</tr>`
+        
+      } else {
+        html+=`<tr >
+          <td colspan="4" style="text-align:center" class="bg-danger"> Il materiale non è utilizzato in nessuno ${title}</td>
+        </tr>`
       }
-      
-    } else {
-      html+=`<tr >
-        <td colspan="4" style="text-align:center" class="bg-danger"> Il materiale non è utilizzato in nessuno ${title}</td>
-      </tr>`
+      $("#"+table).html(html).parent().show()
     }
-    $("#"+table).html(html)
-  }
-  async function drawShowInoculi(id) {
-    $("#inoculi_Data").show();
-    $("#inoculi_Table").hide();
-    await $.ajax({
-        type: "GET",
-        url: "/inoculum/getOneInoculum?id="+id,
-        success: async function (response) {
-          console.log(response)
-          let data=response.inoculum
-          let seeds=response.seeds
-          dataElement=data
-          // Populate GUI
-          for (const [key, value] of Object.entries(data)) {
-              if($("#"+key+"_Fld").attr("tp")=="textField"){
-                $("#"+key+"_Fld").val(value)
-              }
-              if($("#"+key+"_Fld").attr("tp")=="selectField"){
-                $("#"+key+"_Fld").val(value).change();
-              }
-              switch (key) {
-                case "containerId":
-                  $("#containerId_Show").html(data.container?data.container.container_name:"-")
-                  break;
-                case "storageId":
-                  $("#storageId_Show").html(data.storage?data.storage.code_storage+" "+data.storage.name_storage:"-")
-                  break;     
-                case "strainId":
-                  $("#strainId_Show").html(data.strain.species_code+" - "+ data.strain.strain_name)
-                  $("#strainId_Fld").val(data.strainId)
-                  break;
-                case "substrateId":
-                  $("#substrateId_Show").html(data.substrate.name_substrate)
-                  $("#substrateId_Fld").val(data.substrateId)
-                  break;
-                  case "exp_date":
-                    $("#exp_date_Show").html(moment(data.exp_date).format("DD-MM-YY"))
+
+  async function drawShowSpawn(id) {
+      $("#spawn_Data").show();
+      $("#spawn_Table").hide();
+      await $.ajax({
+          type: "GET",
+          url: "/spawn/getOneSpawn?id="+id,
+          success: async function (response) {
+            console.log(response)
+            let data=response.spawn
+            dataElement=data
+            // Populate GUI
+            for (const [key, value] of Object.entries(data)) {
+                if($("#"+key+"_Fld").attr("tp")=="textField"){
+                  $("#"+key+"_Fld").val(value)
+                }
+                if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                  $("#"+key+"_Fld").val(value).change();
+                }
+                switch (key) {
+                  case "containerId":
+                    $("#containerId_Show").html(data.container?data.container.container_name:"-")
                     break;
-                  case "createLot":
-                    $("#createLot_Show").html(moment(data.createLot).format("DD-MM-YY"))
+                  case "storageId":
+                    $("#storageId_Show").html(data.storage?data.storage.code_storage+" "+data.storage.name_storage:"-")
+                    break;     
+                  case "strainId":
+                    $("#strainId_Show").html(data.strain.species_code+" - "+ data.strain.strain_name)
+                    $("#strainId_Fld").val(data.strainId)
                     break;
-                  case "expected_maturation_date":
-                    $("#expected_maturation_date_Show").html(moment(data.expected_maturation_date).format("DD-MM-YY"))
+                  case "substrateId":
+                    $("#substrateId_Show").html(data.substrate.name_substrate)
+                    $("#substrateId_Fld").val(data.substrateId)
                     break;
-                   case "purchased":
-                    $("#purchased_Show").html(data.purchased===1? "Sì" : "No")
+                  case "purchased":
+                    $("#purchased_Show").html(data.purchased? "Sì" : "No")
                     $("#purchased_Fld").attr("checked",data.purchased? true : false)
                     break;
-                   case "fromSample":
-                    $("#fromSample_Show").html(data.fromSample===1? "Sì" : "No")
-                    $("#fromSample_Fld").attr("checked",data.fromSample? true : false) 
-                    break;
-                    case "sampleType":
-                      let sampleType=await sampleTypeDD.find(el=> {return el.val==data.sampleType})
-                      if((sampleType)&&(sampleType.length>0)){
-                        $("#sampleType_Show").html(sampleType.txt)
-                      } else {
-                        $("#sampleType_Show").html("-")
-                      }
-                    break;
-                    case "supplierId":
+                    case "createLot":
+                      $("#createLot_Show").html(moment(data.createLot).format("DD-MM-YY"))
+                      break;
+                    case "exp_date":
+                      $("#exp_date_Show").html(moment(data.exp_date).format("DD-MM-YY"))
+                      break;
+                    case "expected_maturation_date":
+                      $("#expected_maturation_date_Show").html(moment(data.expected_maturation_date).format("DD-MM-YY"))
+                      break;
+                      case "supplierId":
+                       case "supplierId":
                       if(data.supplierId){
                         $("#supplierId_Show").html(data.supplier.supplier_name?data.supplier.supplier_name:"-")
                       }else{
@@ -554,59 +500,67 @@ function drawTableChild(data,table,fields,topic,title) {
                       case "purchased_date":
                         $("#purchased_date_Show").html(data.purchased_date?moment(data.purchased_date).format("DD-MM-YY"):"-")
                         break;
-                default:
-                  $("#"+key+"_Show").html(value?value:"-")
-                  break;
-                }
-            }
-          $("#id_Fld").val(data.id)
-          if (response.inoculum.used>0){
-              $("#saveInoculi_Btn").hide()
-              await drawTableInoculi()
-              $("#rowInoculi").show()
-              $("#addElement_Btn").prop("disabled","true")
-              $(".delElement_Btn").prop("disabled","true")
-            } else {
-              $("#rowInoculi").hide()
-              $("#addElement_Btn").removeAttr("disabled")
-              $(".delElement_Btn").removeAttr("disabled")
-            }
-            await drawTableMushElement(response.inoculum.mushElements,"INOCULUM")
-           
-            if (seeds.length>0){
-              let html=""
-              for (let i = 0; i < seeds.length; i++) {
-                const elem = seeds[i];
-                html+=`<tr>
-                  <td>${elem.mushElementCode}</td>
-                  <td></td>
-                  </tr>`
+                      
+                  default:
+                    $("#"+key+"_Show").html(value?value:"-")
+                    break;
+                  }
               }
-             $("#setSeed_Tblb").html(html)
-             $("#setSeed_Tbl").show()
+              let uom= data.container.uom
+              $("#substrateQt_Show").closest("dl").find("dt").html("Qt substrato "+uom);
+              $("#strainWeight_Show").closest("dl").find("dt").html("Qt inoculo "+uom);
+
+              const dt = $("#substrateQt_Show").closest("dl").find("dt");
+console.log(dt.text());
+            $("#id_Fld").val(data.id)
+            if (data.used>0){
+                $("#saveSpawn_Btn").hide()
+                await drawTableSpawn()
+                $("#rowSpawn").show()
+                $("#addElement_Btn").prop("disabled","true")
+                $(".delElement_Btn").prop("disabled","true")
+              } else {
+                $("#rowSpawn").hide()
+                $("#addElement_Btn").removeAttr("disabled")
+                $(".delElement_Btn").removeAttr("disabled")
+              }
+            if(data.purchased!=1){
+              let seeds=response.seeds
+              if (seeds.length>0){
+                let html=""
+                for (let i = 0; i < seeds.length; i++) {
+                    const elem = seeds[i];
+                    html+=`<tr>
+                      <td>${elem.mushElementCode}</td>
+                      <td></td>
+                      </tr>`
+                  }
+                $("#setSeed_Tblb").html(html)
+                $("#setSeed_Tbl").show()  
+                }
             }else{
-              $("#setInoculo_Row").hide() 
+              $("#setSeed_Row").hide()
             }
+            await drawTableMushElement(response.spawn.mushElements,"SPAWN")
             
-          $("#pdfStrain_Btn").show();
-           $("#saveInoculo_Btn").hide()
-          $("#abortInoculo_Btn").hide()
-          $("#modInoculo_Btn").show();
-          $("#titoloForm").html(` ${response.inoculum.code_inoculum} 
+            $("#saveSpawn_Btn").hide()
+            $("#abortSpawn_Btn").hide()
+            $("#modSpawn_Btn").show();
+            $("#pdfStrain_Btn").show();
+            $("#titoloForm").html(` ${response.spawn.code_spawn} 
                 <button type="button" class="btn btn-xs btn-primary" id="pdfStrain_Btn"><i class="fa fa-print" aria-hidden="true"></i></button>
           `)
-          $("#backToMain_Btn").show();
-          $("#newInoculi_Btn").hide();
-          $(".inoculiForm").hide()
-          $(".inoculiText").show()
-        }
-      });   
+            $("#backToMain_Btn").show();
+            $("#newSpawn_Btn").hide();
+            $(".spawnForm").hide()
+            $(".spawnText").show()
+          }
+        });   
+    }
 
-  }
- function drawTableMushElement(data,topic) {
+  function drawTableMushElement(data,topic) {
     let html=""
     console.log(data)
-    
     if (data.length>0){
       for (let i = 0; i < data.length; i++) {
         const elem = data[i];
@@ -628,12 +582,11 @@ function drawTableChild(data,table,fields,topic,title) {
         </td>
         <td>${elem.element_code}</td>
         <td>${elem.stato}</td>
+        <td>${elem.stage==2?"Fruttificazione":"Propagazione"}</td>
         <td>${elem.storage.name_storage}</td>
         <td>${elem.mushElementNotes.length}</td>
         <td>${elem.pick_date?moment(elem.pick_date).format("DD-MM-YYYY"):"-"}</td>
-        
         `
-        
         html+=`</tr>`
       }
       
@@ -644,141 +597,81 @@ function drawTableChild(data,table,fields,topic,title) {
     }
     $("#mushElement_Tblb").html(html).parent().show()
   }
- 
+  
   $(document).ready(async function () {
-    
     $('#exp_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
-    $('#expected_maturation_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $('#purchased_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#expected_maturation_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
     $("#createLot_DT").datetimepicker({locale: 'it', format:"DD-MM-YY"})
-    // console.log("---")
-    // console.log(redirectId)
+      $("#strainPerc_Fld").val(0)
      if (redirectId!=null){
-      await drawShowInoculi(redirectId)
+      await drawShowSpawn(redirectId)
     }
     else{
-      tableInoculi=$('#inoculi_Tbl').DataTable({
-                                                pageLength: 25,
-                                                dom: 'tp',
-                                                columnDefs: [
-                                                  { targets: 0, width: "7%" },  
-                                                  { targets: 1, width: "15%" }, 
-                                                  { targets: 2, width: "20%" }, 
-                                                  { targets: 3, width: "23%" }, 
-                                                  { targets: 4, width: "25%" },
-                                                  {
-                                                      targets: 5, 
-                                                      width: "10%",
-                                                        render: function (data, type, row) {
-                                                            // Se DataTables chiede il valore per ordinare (sort) o filtrare (type)
-                                                            if (type === 'sort' || type === 'type') {
-                                                                return moment(data).format("YYYYMMDD");
-                                                            }
-                                                            // Valore visualizzato sullo schermo
-                                                            return moment(data).format("DD-MM-YY");
+
+      tableSpawn=$('#spawn_Tbl').DataTable({
+                                            pageLength: 50,
+                                            columnDefs: [
+                                                {
+                                                    targets: 5, // Indice della colonna data (parte da 0)
+                                                    render: function (data, type, row) {
+                                                        // Se DataTables chiede il valore per ordinare (sort) o filtrare (type)
+                                                        if (type === 'sort' || type === 'type') {
+                                                            return moment(data).format("YYYYMMDD");
                                                         }
+                                                        // Valore visualizzato sullo schermo
+                                                        return moment(data).format("DD-MM-YY");
                                                     }
-                                                ]
-                                            }); 
-      $("#mushElement_Div").hide()
-      await drawTableInoculi()
+                                                }
+                                            ]
+                                        }); 
+      await drawTableSpawn()
     }
-
-    // Filtro tabella
-     $('#intervalData').on('apply.daterangepicker', async function(ev, picker) {
-        fromDate=picker.startDate.format('YYYY-MM-DD')
-        toDate=picker.endDate.format('YYYY-MM-DD')
-        console.log(fromDate,toDate)
-        await drawTableInoculi(fromDate,toDate)
-      });
-    $('#customSearch').on('keyup', function () {
-        tableInoculi.search(this.value).draw();
-    });
-
-    $(document).on("click",".showInoculi",async function(){
-      let idinoculi=$(this).attr("idinoculi")
-      window.location="/inoculum?redirectId="+idinoculi
+    $(document).on("click",".showSpawn",async function(){
+      let idSpawn=$(this).attr("idSpawn")
+      window.location="/spawn?redirectId="+idSpawn
     })
-
-    $("#newInoculi_Btn").click(function (e) { 
+    $("#newSpawn_Btn").click(function (e) { 
       e.preventDefault();
-      resetForm("inoculi_FRM")
+      resetForm("spawn_FRM")
        $("#createLot_DT").datetimepicker('defaultDate',moment())
-      $('#code_inoculum_Wrp').hide();
       $("#addSeedTbl_Div").hide()
-      $("#inoculi_Data").show();
-      $("#inoculi_Table").hide();
-      $("#saveNewInoculo_Btn").show();
-      $("#selInoculo_BtnMdl").show();
-      $("#backToMain_Btn").show();
+      $("#spawn_Data").show();
+      $("#spawn_Table").hide();
+      $("#saveNewSpawn_Btn").show();
+      $("#selSeed_BtnMdl").show();
+      $("#saveNewSpawn_Btn").prop("disabled",true);
+      $("#mushElement_Div").hide();
       $(this).hide()
     });
 
-    $("#saveNewInoculo_Btn").click(function (e) { 
+    $("#saveNewSpawn_Btn").click(function (e) { 
       e.preventDefault();
-      let f=checkForm("inoculi_FRM")
-      if (f==true){
-      let c=confirm("Inserire l'elemento inoculo? L'operazione non è annullabile")
+      let f=checkForm("spawn_FRM")
+      if (containerError==false){
+        if (f==true){
+        let c=confirm("Inserire l'elemento spawn? L'operazione non è annullabile")
         if(c==true){
-        $.ajax({
-          type: "POST",
-          url: "/inoculum/newInoculum",
-          data: $("#inoculi_FRM").serialize(),
-          success: function (response) {
-            console.log(response)
-            drawTableInoculi()
-          } 
-        });
-      }}
-    });
+          $.ajax({
+            type: "POST",
+            url: "/spawn/newSpawn",
+            data: $("#spawn_FRM").serialize(),
+            success: function (response) {
+              window.location='/spawn?redirectId='+response.data.id
+            }
+          });
+        }
+      }
+      }else{
+        alert("Il numero contenitori non è congruo con la quantità substrato")
+      }
+     });
 
-    $("#modInoculo_Btn").click(function (e) { 
+    $("#modSpawn_Btn").click(function (e) { 
       e.preventDefault();
       
     });
-    //showChild_btn
-    $(document).on("click",".showChild_btn", function (e) {
-      e.preventDefault()
-      let topic=$(this).attr("topic")
-      let id=$(this).attr("id").split("_")[1]
-      console.log(topic)
-      switch (topic) {
-        case "mushElement":
-          window.open('/mushElement/singleMushElement?id='+id+'&filterCategory=INOCULUM', '_blank');
-          break;
-      }
-
-    })
-    /** Cancella lotto */
-    $(document).on("click",".deleteInoculi_Btn",async function(){
-      let idInoculi=$(this).attr("idInoculi")
-      console.log(idInoculi)
-       if(confirm("Sei siscuro di voler cancellare il lotto di inoculo? Facendo così eliminerai tutti gli elementi associati.")){
-        $.ajax({
-        type: "delete",
-        url: "/inoculum/deleteInoculum?inoculumId="+idInoculi+"&forceDelete=false",
-        success: function (response) {
-          console.log("res")
-           window.location="/inoculum"
-        },
-        error:function(err){
-          console.log(err.responseText)
-          let c=confirm("Attenzione, l'elemento è associato a uno o più elemnti, forzare l'eleiminazione? Continuando verranno eliminati tutti gli elementi collegati a questo codice")
-          if (c==true){
-            $.ajax({
-            type: "delete",
-            url: "/inoculum/deleteInoculum?inoculumId="+idInoculi+"&forceDelete=true",
-            success: function (response) {
-              window.location="/inoculum"
-            }})
-          }
-        }
-      });
-      }
-      
-    })
-
-    /** Visualizza elemento */
+//showChild_btn
     $(document).on("click",".showChild_btn", function (e) {
       e.preventDefault()
       let topic=$(this).attr("topic")
@@ -794,13 +687,179 @@ function drawTableChild(data,table,fields,topic,title) {
       }
 
     })
-     /** Live Search */
+    //Elimina spawn
+    $(document).on("click",".deleteSpawn_Btn",async function(){
+      let idSpawn=$(this).attr("idSpawn")
+      //let c=confirm("Sei siscuro di voler cancellare l'elemento spawn? Facendo così eliminerai tutti gli elementi associati.")
+      if(confirm("Sei siscuro di voler cancellare l'elemento spawn? Facendo così eliminerai tutti gli elementi associati.")){
+        $.ajax({
+        type: "delete",
+        url: "/spawn/deleteSpawn?id="+idSpawn,
+        success: function (response) {
+          console.log("res")
+           window.location="/spawn"
+        },
+        error:function(err){
+          console.log(err)
+        }
+      });
+      }
+      
+    })
+    
+     /** Gestione date */
+    let incubation_len=0
+    let creationDate=moment().format("DD-MM-YY")
+    $("#strainId_Fld").change(async function (e) { 
+      e.preventDefault();
+      let val=$(this).val()
+      await $.ajax({
+        type: "GET",
+        url: "/strain/getOneStrain?id="+val,
+        success: function (response) {
+          incubation_len=response.strain.incubation_len?parseInt(response.strain.incubation_len.length>0?response.strain.incubation_len.split("-")[0]:response.strain.incubation_len):0
+           creationDate=$('#createLot_DT').datetimepicker('defaultDate')
+           $('#expected_maturation_date_DT [name="expected_maturation_date"]').attr("value",moment(creationDate,"DD-MM-YY").add(incubation_len,'d').format("DD-MM-YY"))
+
+        }
+      });
+    });
+    
+    $("#createLot_DT").on("change.datetimepicker", function (e) {
+      e.preventDefault();
+      creationDate=e.date
+      $('#expected_maturation_date_DT [name="expected_maturation_date"]').attr("value",moment(creationDate,"DD-MM-YY").add(incubation_len,'d').format("DD-MM-YY"))
+    });
+
+    /** 
+    * Gestione calcoli qtSubstrato,% inoculo,qt inoculo
+    */
+    let uomContainer
+    let capacityContainer
+    let strainPerc
+    let qtInoculo
+    let nContainer
+    let qtSubstrato
+    let numContainer
+    let containerError=false
+    // Acquistato
+    $("#purchased_Fld").change(function (e) { 
+      e.preventDefault();
+      let val=$(this).prop("checked")
+      if (val){
+        $("#selSeed_BtnMdl").prop("disabled",true)
+        $("#saveNewSpawn_Btn").prop("disabled",false)
+        $("#setSeed_Row").hide();
+        $("#supplierId_Fld").prop("disabled",false)
+        $("#strainWeight_Fld").val(capacityContainer).prop("disabled",true)
+        $("#strainPerc_Fld").val("100").prop("disabled",true)
+        $("#substrateQt_Fld").val(0).prop("disabled",true)
+         $('#substrateId_Fld option').each(function() {
+                          let forPurchased = $(this).val()
+                          console.log(forPurchased)
+                          if (forPurchased.split("|")[2]==0){
+                            $(this).css('display', 'none');
+                          }
+                      });
+      }else{
+        $("#supplierId_Fld").prop("disabled",true)
+        $("#selSeed_BtnMdl").prop("disabled",false)
+        $("#saveNewSpawn_Btn").prop("disabled",true)
+        // qtSubstrato=capacityContainer*nContainer
+        // qtInoculo=qtSubstrato*strainPerc/100
+        $("#strainWeight_Fld").val(qtInoculo).prop("disabled",false)
+        $("#strainPerc_Fld").val(strainPerc).prop("disabled",false)
+        $("#substrateQt_Fld").val(qtSubstrato).prop("disabled",false)
+
+        //$('#substrateId_Fld option').each(function() {$(this).css('display', 'contents');})
+        $("#setSeed_Row").show();
+         $('#substrateId_Fld option').each(function() {
+                          let forPurchased = $(this).val()
+                            $(this).css('display', 'contents');
+                      });
+      }
+    });
+    // Select container
+    $("#containerId_Fld").change(function (e) { 
+      e.preventDefault();
+      let val=$(this).val()
+      
+      if(val.length>0){
+        capacityContainer=val.split("|")[1]
+        uomContainer=val.split("|")[2]
+        nContainer=$("#n_container_Fld").val()?$("#n_container_Fld").val():0
+        strainPerc=$("#strainPerc_Fld").val()?$("#strainPerc_Fld").val():0
+        
+        qtSubstrato=capacityContainer*nContainer
+        qtInoculo=qtSubstrato*strainPerc/100
+
+        $("#strainPerc_Fld").val(strainPerc)
+        $("#strainWeight_Fld").val(qtInoculo)
+        $("#substrateQt_Show").closest('.col-md-2.col-sm-6')
+                              .find('dt')
+                              .text("Qt substrato "+uomContainer);
+        $("#strainWeight_Show").closest('.col-md-2.col-sm-6')
+                              .find('dt')
+                              .text("Qt inoculo "+uomContainer);
+                              
+        $("#substrateQt_Fld").val(qtSubstrato)
+        $("#n_container_Fld").prop("disabled",false)
+      }else{
+        $("#n_container_Fld").prop("disabled",true)
+      }
+    });
+    // Numero container
+    $("#n_container_Fld").change(function (e) { 
+      e.preventDefault();
+      let val=$(this).val()
+      strainPerc=$("#strainPerc_Fld").val()?$("#strainPerc_Fld").val():0
+      numContainer=val
+      qtSubstrato=capacityContainer*val
+      qtInoculo=qtSubstrato*strainPerc/100
+      $("#substrateQt_Fld").val(qtSubstrato)
+        $("#strainPerc_Fld").val(strainPerc)
+        $("#strainWeight_Fld").val(qtInoculo)
+    });
+    // Gestione percentuale
+    $("#strainPerc_Fld").change(function (e) { 
+      e.preventDefault();
+      strainPerc=$(this).val()
+      qtSubstrato=$("#substrateQt_Fld").val()
+      qtInoculo=parseFloat(qtSubstrato)*parseFloat(strainPerc)/100
+      $("#strainWeight_Fld").val(qtInoculo)
+      
+    });
+    // Qt Substrato
+    $("#substrateQt_Fld").change(function (e) { 
+      e.preventDefault();
+      qtSubstrato=$(this).val()
+      qtInoculo=qtSubstrato*strainPerc/100
+      let newQtContainer=qtSubstrato/capacityContainer
+      console.log(newQtContainer,numContainer)
+      if (newQtContainer!=numContainer){
+        $("#n_container_Fld").addClass("border-warning")
+        containerError=true
+      }else{
+        $("#n_container_Fld").removeClass("border-warning")
+        containerError=false
+      }
+      $("#strainWeight_Fld").val(qtInoculo)
+    });
+    // Qt inoculo
+    $("#strainWeight_Fld").change(function (e) { 
+      e.preventDefault();
+      qtInoculo=$(this).val()
+      qtSubstrato=qtSubstrato*strainPerc/100
+      $("#strainWeight_Fld").val(qtInoculo)
+    });
+    
+    //Live search
     $("#liveSearch").keyup(function (e) { 
       e.preventDefault();
       let str=$(this).val()
       let strainFilter=$("#strainId_Fld").val().split("|")[0]
-      // console.log(strainFilter)
-      // console.log(str)
+      console.log(strainFilter)
+      console.log(str)
       if(str!=""){
          $.ajax({
         type: "GET",
@@ -881,9 +940,10 @@ function drawTableChild(data,table,fields,topic,title) {
     
       }
      });
-     /** Gestione seeds */
+     // Add Inoculo
     $(document).on("click",".addSeed", function (e) {
        e.preventDefault();
+
       let elementCode=$(this).attr("element_code")
       let requestQt=$("#inoculo_"+elementCode).val()
       var element = inoculiList.filter(a => {
@@ -928,6 +988,7 @@ function drawTableChild(data,table,fields,topic,title) {
       $("#liveSearch").val("")
 
     });
+    // Delete inoculo dalla lista seed
     $(document).on("click",".deleteSeed", function (e) {
        e.preventDefault();
        let idArrayInoculi=$(this).attr("id").split("_")[1]
@@ -936,78 +997,13 @@ function drawTableChild(data,table,fields,topic,title) {
 
     });
     
-     /** Gestione date */
-    let incubation_len=0
-    let creationDate=moment().format("DD-MM-YY")
-    $("#strainId_Fld").change(async function (e) { 
-      e.preventDefault();
-      let val=$(this).val()
-      await $.ajax({
-        type: "GET",
-        url: "/strain/getOneStrain?id="+val,
-        success: function (response) {
-          incubation_len=response.strain.incubation_len?parseInt(response.strain.incubation_len.length>0?response.strain.incubation_len.split("-")[0]:response.strain.incubation_len):0
-          creationDate=$('#createLot_DT').datetimepicker('defaultDate')
-         $('#expected_maturation_date_DT [name="expected_maturation_date"]').attr("value",moment(creationDate,"DD-MM-YY").add(incubation_len,'d').format("DD-MM-YY"))
-        }
-      });
-    });
     
-    $("#createLot_DT").on("change.datetimepicker", function (e) {
-      e.preventDefault();
-      creationDate=e.date
-      $('#expected_maturation_date_DT [name="expected_maturation_date"]').attr("value",moment(creationDate,"DD-MM-YY").add(incubation_len,'d').format("DD-MM-YY"))
-    });
 
-    /** Gestione elemento acquistato */
-    $("#purchased_Fld").change(function (e) { 
-      e.preventDefault();
-      let val=$(this).prop("checked")
-      console.log(val)
-      if (val){
-        $("#selInoculo_BtnMdl").prop("disabled",true)
-        $("#saveNewSpawn_Btn").prop("disabled",false)
-        $("#setInoculo_Row").hide();
-        $("#fromSample_Fld").prop("disabled",true)
-        $("#sampleType_Fld").prop("disabled",true)
-        $("#supplierId_Fld").prop("disabled",false)
-      }else{
-        $("#fromSample_Fld").prop("disabled",false)
-        $("#sampleType_Fld").prop("disabled",true)
-        $("#supplierId_Fld").prop("disabled",true)
-        $("#selInoculo_BtnMdl").prop("disabled",false)
-        $("#saveNewSpawn_Btn").prop("disabled",true)
-        //$('#substrateId_Fld option').each(function() {$(this).css('display', 'contents');})
-        $("#setInoculo_Row").show();
-      }
-    });
-
-    $("#fromSample_Fld").change(function (e) { 
-      e.preventDefault();
-      let val=$(this).prop("checked")
-      console.log(val)
-      if (val){
-        $("#selInoculo_BtnMdl").prop("disabled",true)
-        $("#saveNewSpawn_Btn").prop("disabled",false)
-        $("#setInoculo_Row").hide();
-        $("#purchased_Fld").prop("disabled",true)
-        $("#sampleType_Fld").prop("disabled",false)
-        $("#supplierId_Fld").prop("disabled",true)
-      }else{
-        $("#selInoculo_BtnMdl").prop("disabled",false)
-        $("#saveNewSpawn_Btn").prop("disabled",true)
-        $("#purchased_Fld").prop("disabled",false)
-        $("#sampleType_Fld").prop("disabled",true)
-        $("#supplierId_Fld").prop("disabled",true)
-        $("#setInoculo_Row").show();
-      }
-    });
-
-    /** Movimentazione elementi */
+/// Area movimentazione elementi
     $(document).on("click",".movimentazioneBtn",function(){
       $("#movimentaIdElement").val(dataElement.id)
       $("#movimentaTypeElement").val(dataElement.mushElements[0].type)
-      $("#movimentazioni_MdlTitleId").html("Lotto Spawn:"+dataElement.code_inoculum)
+      $("#movimentazioni_MdlTitleId").html("Lotto Spawn:"+dataElement.code_spawn)
       let storageSelectOption
       storagesDD.forEach(elem => {
         storageSelectOption+= `
@@ -1080,12 +1076,11 @@ function drawTableChild(data,table,fields,topic,title) {
         url: "/mushElement/movimentazioneElement",
         data: $("#movimentazioni_Frm").serialize(),
         success: function (response) {
-         window.location='inoculum?redirectId='+dataElement.id
+         window.location='spawn?redirectId='+dataElement.id
         }
       });
     });
     
-    /** Utility */
     $("#exportCsv_Btn").click(function (e) { 
       e.preventDefault();
       let url="/mushElement/csvLotto?relatedId="+dataElement.id+"&filterCategory="+filterCategory
@@ -1094,13 +1089,12 @@ function drawTableChild(data,table,fields,topic,title) {
 
     $("#pdfStrain_Btn").click(function (e) { 
       e.preventDefault();
-       window.open('/inoculum/pdf?idInoculum='+dataElement.id, '_blank');
+       window.open('/spawn/pdf?idSpawn='+dataElement.id, '_blank');
     });
 
-    /** back to main */
     $("#backToMain_Btn").click(function (e) { 
         e.preventDefault();
-         window.location='/inoculum'
+         window.location='/spawn'
       });
   });
  

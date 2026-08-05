@@ -23,6 +23,26 @@
         <div class="row" style="width: 100%;" id="spawn_Table" style="display: none;">
           <div class="card w-100" id="tableSpawn_Crd">
             <div class="card-body">
+              <div class="row">
+                 <div class="row w-100 p-2">
+                <div class="pt-1">
+                  Intervallo spawn 
+                </div>
+                <div class="col-md-2 col-sm-9">
+                  <input type="text" class="form-control form-control-sm" id="intervalData" name="intervalData" value="" style="width: 100px;">
+                </div>
+                <div class="col text-center">
+                  <div class="form-group form-inline">
+                    <div class="mr-2">Cerca:</div>
+                    <input type="text" id="customSearch" class="form-control form-control-sm" placeholder="Digita per cercare...">
+                </div>
+                </div>
+                <div class="col text-right ">
+                  N° spawn: <span id="elNum_Span"></span>
+                </div>
+              </div>
+              </div>
+               <div class="table-responsive pb-3">
               <table class="display table table-striped table-bordered compact" id="spawn_Tbl" style="width: 100%;">
                 <thead>
                     <tr>
@@ -31,12 +51,13 @@
                         <th style="max-width:100px">Nome</th>
                         <th style="max-width:250px">Qt</th>
                         <th style="max-width:100px">Strain</th>
-                        <th style="max-width:50px">Creato il</th>
+                        <th style="max-width:5%">Creato il</th>
                     </tr>
                 </thead>
                 <tbody id="spawn_Tblb">  
                 </tbody>
             </table>
+            </div>
             </div>
           </div>
         </div>
@@ -372,17 +393,25 @@
   let filterCategory="SPAWN"
   let inoculiList
   let tempInoculiArray=[]
-  async function  drawTableSpawn (){
+  let tableSpawn
+  let fromDate
+  let toDate
+
+  async function  drawTableSpawn (fromDate="",toDate=""){
    await $.ajax({
         type: "GET",
-        url: "/spawn/getAll?active=1",
+        url: "/spawn/getAll?active=1&fromDate="+fromDate+"&toDate="+toDate,
         success: async function (response) {
-          console.log(response)
+            console.log(response)
+            fromDate=response.fromDate
+            toDate=response.toDate
+            $("#elNum_Span").html(response.spawns.length);
             let html=""
+            tableSpawn.clear()
             for (let i = 0; i < response.spawns.length; i++) {
                 let el=response.spawns[i]
                 let delBtnDisable=""
-                html+=`<tr>
+                html=`<tr>
                            <td>
                             <button type="button" name="" id="showBtn${el.id}" 
                             class="btn btn-primary btn-xs showSpawn" style="width:25px"
@@ -399,11 +428,26 @@
                                 <td>${el.spawn_name}</td>
                                 <td>${el.n_container} - ${el.container.container_name}</td>
                                 <td>${el.strain.strain_name} ${el.strain.species_code} </td>
-                                <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                                <td >${el.createLot}</td>
                             </tr>`
-                
-                }
-                await $('#spawn_Tbl').DataTable().clear().rows.add($(html)).draw();
+                tableSpawn.rows.add($(html));
+                } 
+                tableSpawn.draw();
+                let picker = $('#intervalData').data('daterangepicker');
+                if (picker) {
+                    // Se il daterangepicker esiste già, aggiorna solo le date senza romperlo
+                    picker.setStartDate(moment(response.fromDate).format("DD/MM"));
+                    picker.setEndDate(moment(response.toDate).format("DD/MM"));
+                } else {
+                    // Se è la primissima volta in assoluto che carichi la pagina, lo inizializzi
+                    $('#intervalData').daterangepicker({
+                        startDate: moment(response.fromDate).format("DD/MM"),
+                        endDate: moment(response.toDate).format("DD/MM"),
+                        locale: {
+                            format: 'DD/MM'
+                        }
+                    });
+                } 
             }
     });
     $("#spawn_Table").show();
@@ -605,13 +649,47 @@ console.log(dt.text());
       await drawShowSpawn(redirectId)
     }
     else{
-      tableSpawn=$('#spawn_Tbl').DataTable({responsive: true,pageLength: 50})
+      tableSpawn=$('#spawn_Tbl').DataTable({
+                                            pageLength: 25,
+                                            dom: 'tp',
+                                            columnDefs: [
+                                                { targets: 0, width: "7%" },  
+                                                  { targets: 1, width: "15%" }, 
+                                                  { targets: 2, width: "20%" }, 
+                                                  { targets: 3, width: "23%" }, 
+                                                  { targets: 4, width: "25%" },
+                                                  {
+                                                      targets: 5, 
+                                                      width: "10%",
+                                                    render: function (data, type, row) {
+                                                        // Se DataTables chiede il valore per ordinare (sort) o filtrare (type)
+                                                        if (type === 'sort' || type === 'type') {
+                                                            return moment(data).format("YYYYMMDD");
+                                                        }
+                                                        // Valore visualizzato sullo schermo
+                                                        return moment(data).format("DD-MM-YY");
+                                                    }
+                                                }
+                                            ]
+                                        }); 
       await drawTableSpawn()
     }
     $(document).on("click",".showSpawn",async function(){
       let idSpawn=$(this).attr("idSpawn")
       window.location="/spawn?redirectId="+idSpawn
     })
+
+    // Filtro tabella
+     $('#intervalData').on('apply.daterangepicker', async function(ev, picker) {
+        fromDate=picker.startDate.format('YYYY-MM-DD')
+        toDate=picker.endDate.format('YYYY-MM-DD')
+        console.log(fromDate,toDate)
+        await drawTableSpawn(fromDate,toDate)
+      });
+    $('#customSearch').on('keyup', function () {
+        tableSpawn.search(this.value).draw();
+    });
+
     $("#newSpawn_Btn").click(function (e) { 
       e.preventDefault();
       resetForm("spawn_FRM")

@@ -63,27 +63,33 @@ router.get('/',async  (req, res) => {
  * @returns 200 - Lista inoculi con join dei dati collegati
  */
 router.get('/getAll',async  (req, res) => {
-let propagations=await Propagation.findAll({
-    include: [
-        {model:db.strain,attributes:["species","species_code","strain_name"]},
-        {model: db.container,attributes:["container_name"]},
-        {model: db.substrate},
-            { model: db.mushElement, 
-              include: [{model:db.storage},
-                        {model:db.mushElementHarvest}],
-                attributes:["id","element_code"]},
-    ],
-    order:[["createLot","DESC"]]})
+    console.log(req.query.fromDate)
+    let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(2, 'months').startOf('month')
+    let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
+    console.log(fromDate,toDate)
+    let propagations=await Propagation.findAll({
+        where: {
+                createLot: {
+                    [Op.between]: [fromDate.toDate(), toDate.toDate()] 
+                    }
+                },
+        attributes:["id","code_propagation","propagation_name","n_container","createLot"],
+        include: [
+            {model:db.strain,attributes:["species","species_code","strain_name"]},
+            {model: db.container,attributes:["container_name"]},
+        ],
+        order:[["createLot","DESC"]]})
 
     propagations=JSON.parse(JSON.stringify(propagations))
-    
+    console.log(propagations)
     for (const propagation of propagations) {
-    const mushElements = propagation.mushElement || [];
-    propagation.totHarvest = mushElements
-        .flatMap(mu => (mu.mushElementHarvests || []))
-        .reduce((sum, h) => sum + (h.harvest_weight || 0), 0);
+        const mushElements = propagation.mushElement || [];
+        propagation.totHarvest = mushElements
+            .flatMap(mu => (mu.mushElementHarvests || []))
+            .reduce((sum, h) => sum + (h.harvest_weight || 0), 0);
     }
-    res.status(200).json({propagations:propagations})
+
+    res.status(200).json({propagations:propagations,fromDate:fromDate,toDate:toDate})
 });
 
 /**

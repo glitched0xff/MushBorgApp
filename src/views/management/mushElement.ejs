@@ -25,30 +25,54 @@
           <!-- Table card -->
           <div class="card w-100" id="tableMushElement_Crd">
             <div class="card-body">
-              <div class="row my-2 ">
-                <div class="col-6" id="totalElement">
-
+              <div class="row">
+                 <div class="row w-100 p-2">
+                <div class="col-md-1 pt-1">
+                  Data 
                 </div>
-                <div class="col-6 text-right">
-                  <div class="btn-group " role="group" aria-label="Filtro">
-                    <button type="button" class="btn btn-secondary btn-sm">Mostra elementi eliminati</button>
+                <div class="col-md-2 col-sm-9">
+                  <input type="text" class="form-control form-control-sm" id="intervalData" name="intervalData" value="" style="width: 150px;">
+                </div>
+                <div class="col-md-4 text-center">
+                  <div class="form-group form-inline">
+                    <div class="mr-2">Cerca:</div>
+                    <input type="text" id="customSearch" class="form-control form-control-sm" placeholder="Digita per cercare..." style="width: 200px;">
                   </div>
                 </div>
-            </div>
+                <%
+                  let filteredUrl="" 
+                  if(typeof filterCategory !== 'undefined' && filterCategory){
+                    filteredUrl="&filterCategory="+filterCategory
+                 }%>
+                <% if (active==1){%>
+                <div class="col-md-3 text-center">
+                  <a  class="btn btn-danger btn-sm" href="/mushElement?active=0<%= filteredUrl %>" role="button">Vedi elementi eliminati</a>
+                </div>
+                <% } else if(active==0) { %>
+                <div class="col-md-3 text-center">
+                  <a  class="btn btn-primary btn-sm" href="/mushElement?active=1<%= filteredUrl %>" role="button">Vedi elementi attivi</a>
+                </div>
+                <% } %>
+                
+                <div class="col-md-2 text-right ">
+                  N° propagazioni: <span id="elNum_Span"></span>
+                </div>
+              </div>
+              </div>
+               <div class="table-responsive pb-3">
+              
               <table class="display table table-striped table-bordered compact" id="mushElement_Tbl" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th style="width: 45px; "></th>
-                        <th style="width: 15%">Codice</th>
+                        <th ></th>
+                        <th >Codice</th>
                         <th>Strain</th>
-                        <th style="width: 10%">Tipo</th>
-                        
-                        <th style="width: 10%">Stato</th>
-                        <th style="width: 10%">Stage</th>
-                        <th style="width: 8%;">Tot note</th>
-                        <th style="width: 8%;">Tot raccolto</th>
-                        <!-- <th>Contenitori</th> -->
-                        <th style="width: 10%">Creato il</th>
+                        <th >Tipo</th>
+                        <th >Stato</th>
+                        <th >Stage</th>
+                        <th >Note</th>
+                        <th >Raccolto</th>
+                        <th >Creato il</th>
                     </tr>
                 </thead>
                 <tbody id="mushElement_Tblb">
@@ -57,6 +81,7 @@
                     
                 </tbody>
             </table>
+            </div>
             </div>
           </div>
           
@@ -144,16 +169,17 @@
 
 <script>
   let filterCategory= <%- JSON.stringify( filterCategory) %>
-  let active= 1
+  let active= <%- active %>
 let tableMushElement
-
+let fromDate
+  let toDate
 // Draw and update table
-async function  drawTable (){
+async function  drawTable (fromDate="",toDate=""){
   let url
   if(filterCategory==false){
-    url="/mushElement/getAll?active="+active
+    url="/mushElement/getAll?active="+active+"&fromDate="+fromDate+"&toDate="+toDate
   } else{
-    url="/mushElement/getAll?filterCategory="+filterCategory+"&active="+active
+    url="/mushElement/getAll?filterCategory="+filterCategory+"&active="+active+"&fromDate="+fromDate+"&toDate="+toDate
      switch (filterCategory) {
       case "INOCULUM":
         $("#titoloFiltro").html("inoculi");
@@ -165,21 +191,25 @@ async function  drawTable (){
         $("#titoloFiltro").html("di coltivazione");
         break;
     }
+    
   }
-  
+  if(active==0){
+      $("#titoloFiltro").append(" <span class=\"small\">(eliminati)</span>")
+    }else{
+      $("#titoloFiltro").append(" <span class=\"small\">(attivi)</span>")
+    }
    await $.ajax({
         type: "GET",
         url: url,
         success: async function (response) {
           console.log(response)
-            let html=""
-            $("#totalElement").html("Elementi totali: "+response.mushElements.length)
+            $("#elNum_Span").html(response.mushElements.length);
+            tableMushElement.clear()
+            fromDate=response.fromDate
+          toDate=response.toDate
             for (let i = 0; i < response.mushElements.length; i++) {
                 let el=response.mushElements[i]
                 let delBtnDisable=""
-                // if (el.used!=0){
-                //   delBtnDisable="disabled"
-                // }
                 let stage="--"
                 if(el.type=="CULTIVATION"){
                   if(el.stage=="1"){
@@ -188,7 +218,7 @@ async function  drawTable (){
                     stage="FRUCT"
                   }
                 }
-                html+=`<tr>
+                let html=`<tr>
                            <td>
                             <a name="" id="" class="btn btn-xs btn-primary" href="/mushElement/singleMushElement?id=${el.id}&filterCategory=${el.type}" role="button">
                               <i class="fa fa-eye fa-sm" aria-hidden="true"></i>
@@ -198,7 +228,7 @@ async function  drawTable (){
                 if (el.active>0){
                     html+=`<button type="button" name="" id="delete${el.id}" 
                               class="btn btn-danger btn-xs deleteMushElement_Btn" style="width: 25px" 
-                              idMushElement="${el.id}" mushElementName="${el.mushElement_name }" spawnId="${el.spawnId }" ${delBtnDisable}>
+                              idMushElement="${el.id}" mushElementName="${el.element_code }"  ${delBtnDisable}>
                                <i class="fas fa-arrow-up fa-sm"></i>
                               </button>`
                             }
@@ -214,13 +244,26 @@ async function  drawTable (){
                                 <td>${stage} </td>
                                 <td>${el.totalNote}</td>
                                 <td>${el.totalHarvestWeight?el.totalHarvestWeight:"0"} g</td>
-                                <td data-order="${moment(el.load_date).valueOf()}">${moment(el.load_date).format("DD-MM-YYYY HH:mm")}</td>
+                                <td >${el.load_date}</td>
                             </tr>`
-                
-                } //${el.substrate.cod_substrate} ${el.substrate.name_substrate}
-                 tableMushElement.clear()
-                 const $rows = $(html)
-                 tableMushElement.rows.add($rows).draw();
+                tableMushElement.rows.add($(html))
+                } 
+                 tableMushElement.draw();
+                 let picker = $('#intervalData').data('daterangepicker');
+                if (picker) {
+                    // Se il daterangepicker esiste già, aggiorna solo le date senza romperlo
+                    picker.setStartDate(moment(response.fromDate).format("DD/MM"));
+                    picker.setEndDate(moment(response.toDate).format("DD/MM"));
+                } else {
+                    // Se è la primissima volta in assoluto che carichi la pagina, lo inizializzi
+                    $('#intervalData').daterangepicker({
+                        startDate: moment(response.fromDate).format("DD/MM"),
+                        endDate: moment(response.toDate).format("DD/MM"),
+                        locale: {
+                            format: 'DD/MM' // È consigliabile usare il formato completo internamente per evitare bug
+                        }
+                    });
+                } 
             }
     });
 
@@ -234,17 +277,59 @@ $(document).ready(async function () {
     $('#pickDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
 
   // init   
-    tableMushElement=$('#mushElement_Tbl').DataTable({responsive: true,
-                                                      lengthMenu: [25, 50, 100],
-                                                      pageLength: 50
-                                                    }) //columnDefs: [
-                                                       // { targets: 7, type: 'datetime-moment' }
-                                                      //]order: [[2, 'asc']]
+    tableMushElement=$('#mushElement_Tbl').DataTable({
+                                    pageLength: 25,
+                                    dom: 'tp',
+                                    columnDefs: [{ targets: 0, width: "5%" },  
+                                                  { targets: 1, width: "10%" }, 
+                                                  { targets: 2, width: "20%" }, 
+                                                  { targets: 3, width: "10%" }, 
+                                                  { targets: 4, width: "15%" }, 
+                                                  { targets: 5, width: "10%" }, 
+                                                  { targets: 6, width: "8%" },
+                                                  { targets: 7, 
+                                                    width: "10%",
+                                                    render: function (data, type, row) {
+                                                        // Se DataTables deve ordinare o filtrare, estrae solo il numero
+                                                        if (type === 'sort' || type === 'type') {
+                                                            // Rimuove la 'g', gli spazi e converte in numero intero
+                                                            let numero = parseInt(data.replace(/[^0-9]/g, ''), 10);
+                                                            return isNaN(numero) ? 0 : numero;
+                                                        }
+                                                        // Sullo schermo mostra il testo originale (es: "592 g")
+                                                        return data;
+                                                      }
+                                                   }, 
+                                                  {
+                                                      targets: 8, 
+                                                      width: "10%",
+                                                      render: function (data, type, row) {
+                                                          // Se DataTables chiede il valore per ordinare (sort) o filtrare (type)
+                                                          if (type === 'sort' || type === 'type') {
+                                                              return moment(data).format("YYYYMMDD");
+                                                          }
+                                                          // Valore visualizzato sullo schermo
+                                                          return moment(data).format("DD-MM-YY");
+                                                      }
+                                                  }
+                                              ]
+                                          });   
     await drawTable()
   
   $("#dt_start_DT").on("change.datetimepicker", function (e) {
             $('#dt_end_DT').datetimepicker('date', moment(e.date).add(15, 'd'));
         });
+        // Filtro tabella
+     $('#intervalData').on('apply.daterangepicker', async function(ev, picker) {
+        fromDate=picker.startDate.format('YYYY-MM-DD')
+        toDate=picker.endDate.format('YYYY-MM-DD')
+        console.log(fromDate,toDate)
+        await drawTable(fromDate,toDate)
+      });
+    $('#customSearch').on('keyup', function () {
+        tableMushElement.search(this.value).draw();
+    });
+     
 
     // Delete mushElement
     $(document).on("click",".deleteMushElement_Btn", async function(e){

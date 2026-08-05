@@ -25,19 +25,23 @@ const { v4: uuidv4 } = require('uuid');
 
 
 router.get('/',async  (req, res) => {
+    
     let searchCode=req.query.searchCode?req.query.searchCode:false
     let filterCategory=req.query.filterCategory?req.query.filterCategory:false
     let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
-    
+    let active=req.query.active?parseInt(req.query.active):1
     
     res.render("management/mushElement",{searchCode:searchCode,
                                         pickReasonDD:pickReasonDD,
-                                        filterCategory:filterCategory})
+                                        filterCategory:filterCategory,
+                                        active:active})
   });
 
 router.get('/getAll',async  (req, res) => {
     //let filterCategory=req.query.filterCategory?req.query.filterCategory:false
     console.log(req.query)
+    let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(2, 'months').startOf('month')
+    let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
     let mushElements
     if(req.query.filterCategory || req.query.active || req.query.lotto){
         let where={}
@@ -52,39 +56,42 @@ router.get('/getAll',async  (req, res) => {
                 [Op.like]: req.query.lotto+'%'
                 }       
         }
+        where.load_date={
+                    [Op.between]: [fromDate.toDate(), toDate.toDate()] 
+                    }
          mushElements=await db.mushElement.findAll({
                     where:where,
                     include: [{model: db.mushElementNote,attributes:[]},
-                              {model: db.mushElementHarvest,attributes:[]},
-                            ],
-         attributes: {
-            include: [[fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
-                    [fn("COUNT", col("mushElementNotes.id")), "totalNote"]]
-        },
-        group: ["mushElement.id"] // serve il group by per fare l’aggregazione
+                              {model: db.mushElementHarvest,attributes:[]},],
+                    attributes: [
+                                "id",
+                                "element_code",
+                                "type",
+                                "stato",
+                                "load_date",
+                                "strainId",
+                                "active",
+                             [fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
+                                [fn("COUNT", col("mushElementNotes.id")), "totalNote"]
+                    ],
+                    group: ["mushElement.id"] // serve il group by per fare l’aggregazione
         },{ order:[['load_date', 'ASC']]})
-    }else{
-        mushElements=await db.mushElement.findAll({
-        include: [{model: db.mushElementNote,attributes:[]},{model: db.mushElementHarvest,attributes:[]}],
-         attributes: {
-            include: [[fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
-                    [fn("COUNT", col("mushElementNotes.id")), "totalNote"]]
-        },
-        group: ["mushElement.id"] // serve il group by per fare l’aggregazione
-        },{ order:['load_date', 'ASC']})
     }
     if(mushElements){
         mushElements=JSON.parse(JSON.stringify(mushElements))
         
         for (let i = 0; i < mushElements.length; i++) {
+            if (mushElements[i].strainId){
             let strain=await db.strain.findOne({where:{id:mushElements[i].strainId}, attributes:["species"],raw:true})
-            //console.log(strain)
-            
             mushElements[i].strainName=strain?strain.species:null
+            }
         }
     }
-    res.status(200).json({mushElements:mushElements})
+    res.status(200).json({mushElements:mushElements,fromDate:fromDate, toDate:toDate})
 });
+
+
+
 
 router.put('/updateMushElement', async(req,res) => {
     console.log(req.body)

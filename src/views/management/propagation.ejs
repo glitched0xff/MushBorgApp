@@ -25,20 +25,41 @@
         <div class="row" style="width: 100%;" id="propagation_Table" style="display: none;">
           <div class="card w-100" id="tablePropagation_Crd">
             <div class="card-body">
+              <div class="row">
+                 <div class="row w-100 p-2">
+                <div class="pt-1">
+                  Intervallo spawn 
+                </div>
+                <div class="col-md-2 col-sm-9">
+                  <input type="text" class="form-control form-control-sm" id="intervalData" name="intervalData" value="" style="width: 100px;">
+                </div>
+                <div class="col text-center">
+                  <div class="form-group form-inline">
+                    <div class="mr-2">Cerca:</div>
+                    <input type="text" id="customSearch" class="form-control form-control-sm" placeholder="Digita per cercare...">
+                </div>
+                </div>
+                <div class="col text-right ">
+                  N° propagazioni: <span id="elNum_Span"></span>
+                </div>
+              </div>
+              </div>
+               <div class="table-responsive pb-3">
               <table class="display table table-striped table-bordered compact" id="propagation_Tbl" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th style="width: 30px; "></th>
-                        <th style="max-width:50px">Codice</th>
-                        <th style="max-width:100px">Nome</th>
-                        <th style="max-width:250px">Qt</th>
-                        <th style="max-width:100px">Strain</th>
-                        <th style="max-width:50px">Creato il</th>
+                        <th></th>
+                        <th>Codice</th>
+                        <th >Nome</th>
+                        <th >Qt</th>
+                        <th >Strain</th>
+                        <th>Creato il</th>
                     </tr>
                 </thead>
                 <tbody id="propagation_Tblb">  
                 </tbody>
             </table>
+            </div>
             </div>
           </div>
         </div>
@@ -441,7 +462,10 @@
   let dataElement
   let filterCategory="CULTIVATION"
   let inoculiList
+  let tablePropagation
   let tempInoculiArray=[]
+   let fromDate
+  let toDate
  // Draw table Child element 
   function drawTableChild(data,table,fields,topic,title) {
     let html=""
@@ -533,18 +557,23 @@
     $("#mushElement_Tblb").html(html).parent().show()
   }
 
-  async function  drawTablePropagation (){
+  async function  drawTablePropagation (fromDate="",toDate=""){
    await $.ajax({
         type: "GET",
-        url: "/propagation/getAll?active=1",
+        url: "/propagation/getAll?active=1&fromDate="+fromDate+"&toDate="+toDate,
         success: async function (response) {
           console.log(response)
+          tablePropagation.clear();
+          fromDate=response.fromDate
+          toDate=response.toDate
           let delBtnDisable=""
-            let html=""
+          $("#elNum_Span").html(response.propagations.length);
             for (let i = 0; i < response.propagations.length; i++) {
                 let el=response.propagations[i]
-                html+=`<tr>
-                           <td style="width:5%">
+                let dataOrder = moment(el.createLot).format("YYYYMMDD");
+                let dataVisualizzata = moment(el.createLot).format("DD-MM-YY");
+                html=`<tr>
+                           <td>
                             <button type="button" name="" id="showBtn${el.id}" 
                             class="btn btn-primary btn-xs showPropagation" style="width:25px"
                             idPropagation="${el.id}" >
@@ -556,16 +585,32 @@
                             <i class="fa fa-trash fa-sm " aria-hidden="true"></i>
                           </button>
                         </td>
-                                <td style="width:12%">${el.code_propagation}</td>
-                                <td style="width:14%">${el.propagation_name}</td>
-                                <td style="width:14%">${el.n_container} - ${el.container.container_name}</td>
-                                <td style="width:14%">${el.strain.strain_name} ${el.strain.species_code} </td>
-                                <td style="width:9%">${moment(el.createLot).format("DD-MM-YY")}</td>
+                                <td >${el.code_propagation}</td>
+                                <td >${el.propagation_name}</td>
+                                <td >${el.n_container} - ${el.container.container_name}</td>
+                                <td >${el.strain.strain_name} ${el.strain.species_code} </td>
+                                <td  >${el.createLot}</td>
                             </tr>`
-                
+                tablePropagation.rows.add($(html));
                 }
-                await $('#propagation_Tbl').DataTable().clear().rows.add($(html)).draw();
+              tablePropagation.draw();
+              let picker = $('#intervalData').data('daterangepicker');
+                if (picker) {
+                    // Se il daterangepicker esiste già, aggiorna solo le date senza romperlo
+                    picker.setStartDate(moment(response.fromDate).format("DD/MM"));
+                    picker.setEndDate(moment(response.toDate).format("DD/MM"));
+                } else {
+                    // Se è la primissima volta in assoluto che carichi la pagina, lo inizializzi
+                    $('#intervalData').daterangepicker({
+                        startDate: moment(response.fromDate).format("DD/MM"),
+                        endDate: moment(response.toDate).format("DD/MM"),
+                        locale: {
+                            format: 'DD/MM' // È consigliabile usare il formato completo internamente per evitare bug
+                        }
+                    });
+                } 
             }
+            
     });
     $("#propagation_Table").show();
     $("#propagation_Data").hide();
@@ -735,7 +780,29 @@
       await getTotalWeight(redirectId)
     }
     else{
-      tablePropagation=$('#propagation_Tbl').DataTable({pageLength: 50})
+      tablePropagation = $('#propagation_Tbl')
+                         .DataTable({
+                                    pageLength: 25,
+                                    dom: 'tp',
+                                    columnDefs: [{ targets: 0, width: "7%" },  
+                                                  { targets: 1, width: "15%" }, 
+                                                  { targets: 2, width: "20%" }, 
+                                                  { targets: 3, width: "23%" }, 
+                                                  { targets: 4, width: "25%" },
+                                                  {
+                                                      targets: 5, 
+                                                      width: "10%",
+                                                      render: function (data, type, row) {
+                                                          // Se DataTables chiede il valore per ordinare (sort) o filtrare (type)
+                                                          if (type === 'sort' || type === 'type') {
+                                                              return moment(data).format("YYYYMMDD");
+                                                          }
+                                                          // Valore visualizzato sullo schermo
+                                                          return moment(data).format("DD-MM-YY");
+                                                      }
+                                                  }
+                                              ]
+                                          });   
       await drawTablePropagation()
     }
 
@@ -743,6 +810,17 @@
       let idPropagation=$(this).attr("idPropagation")
       window.location="/propagation?redirectId="+idPropagation
     })
+
+     // Filtro tabella
+     $('#intervalData').on('apply.daterangepicker', async function(ev, picker) {
+        fromDate=picker.startDate.format('YYYY-MM-DD')
+        toDate=picker.endDate.format('YYYY-MM-DD')
+        console.log(fromDate,toDate)
+        await drawTablePropagation(fromDate,toDate)
+      });
+    $('#customSearch').on('keyup', function () {
+        tablePropagation.search(this.value).draw();
+    });
      
     $("#newPropagation_Btn").click(function (e) { 
       e.preventDefault();

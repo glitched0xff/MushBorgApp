@@ -24,6 +24,26 @@
           <!-- Substrate card -->
           <div class="card w-100" id="tableSubstrate_Crd">
             <div class="card-body">
+              <div class="row">
+                 <div class="row w-100 p-2">
+                <div class="pt-1">
+                  Intervallo substrati 
+                </div>
+                <div class="col-md-2 col-sm-9">
+                  <input type="text" class="form-control form-control-sm" id="intervalData" name="intervalData" value="" style="width: 100px;">
+                </div>
+                <div class="col text-center">
+                  <div class="form-group form-inline">
+                    <div class="mr-2">Cerca:</div>
+                    <input type="text" id="customSearch" class="form-control form-control-sm" placeholder="Digita per cercare...">
+                </div>
+                </div>
+                <div class="col text-right ">
+                  N° substrati: <span id="elNum_Span"></span>
+                </div>
+              </div>
+              </div>
+               <div class="table-responsive pb-3">
               <table class="display table table-striped table-bordered compact" id="substrate_Tbl" style="width: 100%;">
                 <thead>
                     <tr>
@@ -42,6 +62,7 @@
                     
                 </tbody>
             </table>
+            </div>
             </div>
           </div>
           <!-- Show/mod substrates Card -->
@@ -346,14 +367,20 @@ let udmDD= <%- JSON.stringify( udmDD ) %>
 let pretreatmentDD= <%- JSON.stringify( pretreatmentDD ) %>
 let recipe
   let uomTxt
+  let fromDate
+  let toDate
 
-  async function  drawTable (){
+  async function  drawTable (fromDate="",toDate=""){
    await $.ajax({
         type: "GET",
-        url: "/substrate/getAll",
+        url: "/substrate/getAll?fromDate="+fromDate+"&toDate="+toDate,
         success: async function (response) {
           console.log(response)
+          fromDate=response.fromDate
+          toDate=response.toDate
+          tableSubstrate.clear()
             let html=""
+            $("#elNum_Span").html(response.substrates.length);
             for (let i = 0; i < response.substrates.length; i++) {
                 let el=response.substrates[i]
                 let delBtnDisable=""
@@ -368,7 +395,7 @@ let recipe
                 }
                 let udmTxt=response.udmDD.find(e => {return e.val==el.uom} )
                 udmTxt=udmTxt.txt
-                html+=`<tr>
+                html=`<tr>
                            <td>
                             <button type="button" name="" id="showBtn${el.id}" 
                             class="btn btn-primary btn-xs showSubstrate" style="width:25px"
@@ -388,13 +415,30 @@ let recipe
                                 <td>${countUsedInoculum}</td>
                                 <td>${countUsedSpawn}</td>
                                 <td>${countUsedPropagation}</td>
-                                <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                                <td>${el.createdAt}</td>
                             </tr>`
-                
+                tableSubstrate.rows.add($(html))
                 }
-                await $('#substrate_Tbl').DataTable().clear().rows.add($(html)).draw();
+                tableSubstrate.draw()
+                let picker = $('#intervalData').data('daterangepicker');
+                if (picker) {
+                    // Se il daterangepicker esiste già, aggiorna solo le date senza romperlo
+                    picker.setStartDate(moment(response.fromDate).format("DD/MM"));
+                    picker.setEndDate(moment(response.toDate).format("DD/MM"));
+                } else {
+                    // Se è la primissima volta in assoluto che carichi la pagina, lo inizializzi
+                    $('#intervalData').daterangepicker({
+                        startDate: moment(response.fromDate).format("DD/MM"),
+                        endDate: moment(response.toDate).format("DD/MM"),
+                        locale: {
+                            format: 'DD/MM' // È consigliabile usare il formato completo internamente per evitare bug
+                        }
+                    });
+                } 
             }
+
     });
+    
     $("#newSubstrate_Btn").show();
 }
 // Show child Function
@@ -530,13 +574,29 @@ function drawShowSubstrate(id) {
           
 $(document).ready(async function () {
   // init
-  tableSubstrate=$('#substrate_Tbl').DataTable({responsive: true,pageLength: 50});
-
+  
   if (redirectId!=null){
     drawShowSubstrate(redirectId)
   }
   else{
-    await drawTable()
+    tableSubstrate=$('#substrate_Tbl').DataTable({
+                                            pageLength: 25,
+                                            dom: 'tp', 
+                                            columnDefs: [
+                                                {
+                                                    targets: 8, // Indice della colonna data (parte da 0)
+                                                    render: function (data, type, row) {
+                                                        // Se DataTables chiede il valore per ordinare (sort) o filtrare (type)
+                                                        if (type === 'sort' || type === 'type') {
+                                                            return moment(data).format("YYYYMMDD");
+                                                        }
+                                                        // Valore visualizzato sullo schermo
+                                                        return moment(data).format("DD-MM-YY");
+                                                    }
+                                                }
+                                            ]
+                                        }); 
+    await drawTable()  
   }
   // Show substrate data
   $(document).on("click",".showSubstrate", async function(e){
@@ -544,6 +604,17 @@ $(document).ready(async function () {
       window.location="/substrate?redirectId="+id
   })
 
+  // Filtro date
+
+  $('#intervalData').on('apply.daterangepicker', async function(ev, picker) {
+        fromDate=picker.startDate.format('YYYY-MM-DD')
+        toDate=picker.endDate.format('YYYY-MM-DD')
+        console.log(fromDate,toDate)
+        await drawTable(fromDate,toDate)
+      });
+$('#customSearch').on('keyup', function () {
+    tableSubstrate.search(this.value).draw();
+});
     // $("#modSubstrate_Btn").click(function (e) { 
     //   e.preventDefault();
     //   $(".substrateForm").show()

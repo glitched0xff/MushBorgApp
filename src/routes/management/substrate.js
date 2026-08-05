@@ -40,20 +40,29 @@ router.get('/',async  (req, res) => {
   });
 
 router.get('/getAll',async  (req, res) => {
+let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(2, 'months').startOf('month')
+let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
+
 let substrates=await Substrate.findAll({
-    include: [{
-        model: SubstrateElements,
-        include:[{model:db.rawMaterial,attributes:["material_name"]}
-                ,{model:db.materialCategory}]
+        where: {
+        createdAt: {
+            [Op.between]: [fromDate.toDate(), toDate.toDate()] 
+            }
         },
-        {model:Spawn,attributes:["id","spawn_name","code_spawn"]},
-        {model:Propagation,attributes:["id","propagation_name","code_propagation","substrateId"]},
-        {model:db.inoculum,attributes:["id"]}
-    ]
+        attributes:["id","cod_substrate","name_substrate","destination","qt","uom","createdAt"],
+        include: [{
+            model: SubstrateElements,
+            include:[{model:db.rawMaterial,attributes:["material_name"]}
+                    ,{model:db.materialCategory}]
+            },
+            {model:Spawn,attributes:["id","spawn_name","code_spawn"]},
+            {model:Propagation,attributes:["id","propagation_name","code_propagation","substrateId"]},
+            {model:db.inoculum,attributes:["id"]}
+        ]
     },{raw:true, order:['id']})
     let udmDD=await db.dDOption.findAll({where:{ddMenu:"udmSelect"}})
     
-    res.status(200).json({substrates:substrates,udmDD:udmDD})
+    res.status(200).json({substrates:substrates,udmDD:udmDD,fromDate:fromDate,toDate:toDate})
 });
 
 router.post('/newSubstrate', async(req,res) => {

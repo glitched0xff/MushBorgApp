@@ -1,4 +1,5 @@
 node_modules
+src/node_modules
 npm-debug.log
 out
 dbBkup
@@ -6,3 +7,5 @@ dbBkup
 Dockerfile
 .dockerignore
 .git
+*.md
+*.html

@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: Mushborg.v1
+    build: . # Fa il build usando il Dockerfile presente nella root
+    ports: 
+      - "3006:3000"
+    env_file:
+      - .env                  # Cerca il file .env nella root
+    environment:
+      - HOST=mariadb          
+    volumes:
+      # Mappatura corretta: la cartella public ora è direttamente dentro /app
+      - mushborg_images:/app/public/imgMushEleNote   
+    depends_on: 
+      - mariadb
+
+# Definisco il container di maria db
+  mariadb: 
+    build: ./mariadb    # Assicurati che la cartella mariadb sia anch'essa nella root
+    environment:
+      - MYSQL_ROOT_PASSWORD=mushborg0x0
+      - MYSQL_DATABASE=mushborg
+      - MYSQL_USER=mushborg
+      - MYSQL_PASSWORD=mushborg0x0
+    ports:
+      - "3307:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      
+volumes: 
+  mariadb_data:
+  mushborg_images:
