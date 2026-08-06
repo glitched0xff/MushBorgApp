@@ -5,11 +5,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
+    "db-reset": "node resetData.js",
     "docs": "jsdoc -c jsdoc.json",
     "jsdoc": "jsdoc -a all -c jsdoc.json -r -R README.md index.js -d docs/jsdoc && jsdoc2md --files index.js > docs/API.md"
   },
   "author": "Glitched0xff",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "description": "Mushroom farming manager",
   "dependencies": {
     "bcryptjs": "^2.4.3",
