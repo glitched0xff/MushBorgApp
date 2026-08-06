@@ -28,18 +28,44 @@
                   
                   <div class="card-body ">
                     <div class="row ">
-                      <form class="form-inline" id="searchElement_Frm">
-                        <div class="form-group">
-                        <label for=""></label>
-                        <select class="form-control" name="" id="elementType_DD">
-                          <option value="">Seleziona il tipo di lotto</option>
-                          <option value="INOCULUM">Lotti inoculo</option>
-                          <option value="SPAWN">Lotti spawn</option>
-                          <option value="CULTIVATION">Lotti coltivazione</option>
-                        </select>
-                      </div>
-                      <button type="button" class="btn btn-primary bt-sm" id="searchElement_Btn"> Cerca elementi</button>
+                      <form class="form-inline w-100" id="searchElement_Frm">
+                        <div class="row align-items-center w-75">
+                          <div class="col-12 col-md-3 my-2">
+                            <label class="sr-only" for="textareaData">Data</label>
+                            <input type="text" class="form-control form-control-sm w-100" id="intervalData" name="intervalData" value="" style="width: 200px;">
+                          </div>
+
+                          <div class="col-6 col-md-2 my-2">
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" id="checkInoculi" checked>
+                              <label class="form-check-label small" for="checkInoculi">
+                                Inoculi
+                              </label>
+                            </div>
+                          </div>
+                          <div class="col-6 col-md-2 my-2">
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" id="checkSpawn" checked>
+                              <label class="form-check-label small" for="checkSpawn">
+                                Spawn
+                              </label>
+                            </div>
+                          </div>
+
+                          <div class="col-6 col-md-2 my-2">
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" id="checkPropagation" checked>
+                              <label class="form-check-label small" for="checkPropagation">
+                                Propagazioni
+                              </label>
+                            </div>
+                          </div>
+
+                      <button type="button" class="btn btn-primary btn-sm" id="searchElement_Btn"> Cerca elementi</button>
+                          
+                        </div>
                       </form>
+                     
                       
                     </div>
                     <div class="row mt-2" id="elementList_Wrp">
@@ -47,6 +73,7 @@
 
                       </form>
                      <button type="button" class="btn btn-xs btn-primary" id="createCsv" style="display: none;"> <i class="fas fa-file-csv    "></i> Crea CSV</button>
+
                     </div>
                   </div>
                 </div>
@@ -64,46 +91,146 @@
   <%- include ('footer') %>
   <%- include ('jsLoad') %>
   <script>
-    $(document).ready(async function () {
+    let fromDate,toDate
 
-      $("#searchElement_Btn").click(function (e) { 
-        e.preventDefault();
-        let elementType=$("#elementType_DD").val()
-        if(elementType!=""){
-          $.ajax({
-            type: "GET",
-            url: "/print/getElementByType?elementType="+elementType,
-            success: function (response) {
-              console.log(response.result)
-              let html=""
-               response.result.forEach(async elem => {
-                
-                html+=`<div class="row w-100 p-2 m-1 border-bottom">
-                        <div class="col-12 h5">
-                        ${elem.name}
+    async function  drawList (fromDate="",toDate=""){
+      let inoculi_CHK=$("#checkInoculi").is(":checked")?1:0
+      let spawn_CHK=$("#checkSpawn").is(":checked")?1:0
+      let propagation_CHK=$("#checkPropagation").is(":checked")?1:0
+   await $.ajax({
+        type: "GET",
+        url: "/print/getElementToPrint?fromDate="+fromDate+"&toDate="+toDate+"&inoculi_CHK="+inoculi_CHK+"&spawn_CHK="+spawn_CHK+"&propagation_CHK="+propagation_CHK,
+        success: async function (response) {
+            console.log(response)
+            fromDate=response.fromDate
+            toDate=response.toDate
+            let html=""
+            // Inoculi
+            if(response.result.inoculum.length>0){
+              html+="<div class=\"h4\">Inoculi<div>"
+            for (let i = 0; i < response.result.inoculum.length; i++) {
+                const elem=response.result.inoculum[i]
+                html+=`<div class="row w-100 p-2 m-1 border-bottom" id="section_${elem.code_inoculum}">
+                        <div class="col-12 h5 selectChild" >
+                        <a  code="${elem.code_inoculum}" class="selectChild">${elem.inoculum_name}</a>
                         </div>`
                         for (let y = 0; y < elem.mushElements.length; y++) {
                           const el = elem.mushElements[y];
                       html+=`<div class="col-2">
                           <div class="form-check">
-                                  <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input" name="elementCode" id="${el.element_code}" value="${el.element_code}" >
+                                  <label class="form-check-label small" style="font-size:1rem">
+                                    <input type="checkbox" class="form-check-input ${elem.code_inoculum}" name="elementCode" id="${el.element_code}" value="${el.element_code}" >
                                   ${el.element_code}
                                   </label>
                                 </div>
                                 </div>`
                         }
                   html+="</div>"  
-               });
+                } $("#createCsv").show()
+                 } 
+            // Spawn
+            if(response.result.spawn.length>0){
+              html+="<div class=\"h4\">Spawn<div>"
+            for (let i = 0; i < response.result.spawn.length; i++) {
+                const elem=response.result.spawn[i]
+                html+=`<div class="row w-100 p-2 m-1 border-bottom" id="section_${elem.code_spawn}">
+                        <div class="col-12 h5 selectChild" >
+                        <a  code="${elem.code_spawn}" class="selectChild">${elem.spawn_name}</a>
+                        </div>`
+                        for (let y = 0; y < elem.mushElements.length; y++) {
+                          const el = elem.mushElements[y];
+                      html+=`<div class="col-2">
+                          <div class="form-check">
+                                  <label class="form-check-label small" style="font-size:1rem">
+                                    <input type="checkbox" class="form-check-input ${elem.code_spawn}" name="elementCode" id="${el.element_code}" value="${el.element_code}" >
+                                  ${el.element_code}
+                                  </label>
+                                </div>
+                                </div>`
+                        }
+                  html+="</div>"  
+                } 
+                $("#createCsv").show()
+                 } 
+            // Propagation
+            if(response.result.propagation.length>0){
+              html+="<div class=\"h4\">Propagazioni<div>"
+            for (let i = 0; i < response.result.propagation.length; i++) {
+                const elem=response.result.propagation[i]
+                html+=`<div class="row w-100 p-2 m-1 border-bottom" id="section_${elem.code_propagation}">
+                        <div class="col-12 h5 selectChild" id="section_${elem.code_propagation}">
+                        <a  code="${elem.code_propagation}" class="selectChild">${elem.propagation_name}</a>
+                        </div>`
+                        for (let y = 0; y < elem.mushElements.length; y++) {
+                          const el = elem.mushElements[y];
+                      html+=`<div class="col-2">
+                          <div class="form-check">
+                                  <label class="form-check-label small" style="font-size:1rem">
+                                    <input type="checkbox" class="form-check-input ${elem.code_propagation}" name="elementCode" id="${el.element_code}" value="${el.element_code}" >
+                                  ${el.element_code}
+                                  </label>
+                                </div>
+                                </div>`
+                        }
+                  html+="</div>"  
+                } 
+                $("#createCsv").show()
+                 } 
+            
+           if(response.result.inoculum.length==0 && response.result.spawn.length==0 && response.result.propagation.length==0){
+              html+=`<div class="alert alert-danger" role="alert"">Non ci sono dati disponibili, prova a cambiare i filtri<div>`
+                $("#createCsv").hide()
+              }
             $("#elementList_Frm").html(html)
-            $("#createCsv").show()
+            
+                let picker = $('#intervalData').data('daterangepicker');
+                if (picker) {
+                    // Se il daterangepicker esiste già, aggiorna solo le date senza romperlo
+                    picker.setStartDate(moment(response.fromDate).format("DD/MM"));
+                    picker.setEndDate(moment(response.toDate).format("DD/MM"));
+                } else {
+                    // Se è la primissima volta in assoluto che carichi la pagina, lo inizializzi
+                    $('#intervalData').daterangepicker({
+                      autoApply: true,
+                        startDate: moment(response.fromDate).format("DD/MM"),
+                        endDate: moment(response.toDate).format("DD/MM"),
+                        locale: {
+                            format: 'DD/MM'
+                        }
+                  });
+                } 
             }
-          });
-        } else {
-          alert("Selezionare il tipo di elemento")
-        }
-        
+    });
+}
+  
+
+    $(document).ready(async function () {
+      await drawList()
+
+      $("#searchElement_Btn").click(async function (e) { 
+        let drp = $('#intervalData').data('daterangepicker');
+        fromDate = drp.startDate.format('YYYY-MM-DD');
+        toDate = drp.endDate.format('YYYY-MM-DD');
+        await drawList(fromDate,toDate)
       });
+      
+      $(document).on("click",".selectChild", async function (e) { 
+        e.preventDefault();
+        let code=$(this).attr("code")
+        if(code!=undefined){
+                console.log(code)
+                console.log("---")
+                $("."+code).prop("checked", true)}
+        //section_
+      });
+
+
+
+      $("#createCsv").click(async function (e) { 
+        e.preventDefault();
+        await drawList()
+      })
+      
 
       $("#createCsv").click(function (e) { 
         e.preventDefault();
@@ -123,7 +250,8 @@
         //   }
         // });
       });
-    });
+   
+     });
 
   </script>
   <%- include ('closeTag') %>

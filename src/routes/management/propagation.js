@@ -63,10 +63,10 @@ router.get('/',async  (req, res) => {
  * @returns 200 - Lista inoculi con join dei dati collegati
  */
 router.get('/getAll',async  (req, res) => {
-    console.log(req.query.fromDate)
+    //console.log(req.query.fromDate)
     let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(2, 'months').startOf('month')
     let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
-    console.log(fromDate,toDate)
+    //console.log(fromDate,toDate)
     let propagations=await Propagation.findAll({
         where: {
                 createLot: {

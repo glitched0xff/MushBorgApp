@@ -3,22 +3,25 @@ version: '3.8'
 services:
   app:
     container_name: Mushborg.v1
-    build: . # Fa il build usando il Dockerfile presente nella root
-    ports: 
+    build: . # Fa il build del Dockerfile nella root
+    ports: # Porta di reindirizzamento 3006= riferimento del localhost per aggiungere l'app
       - "3006:3000"
     env_file:
-      - .env                  # Cerca il file .env nella root
+      - .env                  # 1. Carica tutte le variabili dal file locale (.env)
     environment:
-      - HOST=mariadb          
+      - HOST=mariadb          # 2. SOVRASCRIVE SOLO L'HOST: dice a Docker di usare il container mariadb
     volumes:
-      # Mappatura corretta: la cartella public ora è direttamente dentro /app
+      # Usa il volume logico per mappare la cartella interna del container
       - mushborg_images:/app/public/imgMushEleNote   
-    depends_on: 
+      # 🟢 AGGIUNTA AGGIORNAMENTO GIT: Mappando la root, i "git pull" dell'utente aggiorneranno l'app all'istante
+      - .:/app
+      - /app/node_modules # Protegge i moduli node interni di Alpine dal venire sovrascritti da Windows/Mac
+    depends_on: # Attiva la dipendenza dal contanier mariaDb
       - mariadb
 
-# Definisco il container di maria db
-  mariadb: 
-    build: ./mariadb    # Assicurati che la cartella mariadb sia anch'essa nella root
+#Definisco il container di maria db
+  mariadb: # Nome del container
+    build: ./mariadb    # <-- Corretto per la root: punta alla cartella /mariadb del progetto
     environment:
       - MYSQL_ROOT_PASSWORD=mushborg0x0
       - MYSQL_DATABASE=mushborg
@@ -29,6 +32,10 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
       
-volumes: 
-  mariadb_data:
-  mushborg_images:
+volumes:
+      # Usa il volume logico per mappare la cartella interna del container
+      - mushborg_images:/app/public/imgMushEleNote   
+      # Sincronizza tutta la root del progetto (per gli aggiornamenti Git automatici)
+      - .:/app
+      # Protegge i moduli node interni di Alpine dentro la cartella src
+      - /app/src/node_modules

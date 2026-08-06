@@ -22,10 +22,10 @@ router.get('/massivePrintCSV',async (req,res)=>{
     let csvObj=[]
       for (let i = 0; i < elementCodes.length; i++) {
         const el = elementCodes[i];
-        let elem= await db.mushElement.findOne({where:{element_code: el}})
+        let elem= await db.mushElement.findOne({where:{element_code: el},attributes:["element_code","createdAt"]})
       csvObj.push({
                   element_code:elem.element_code,
-                  createAt:moment(elem.createdAt).format("DD-MM-YY"),
+                  createAt:moment(elem.createLot).format("DD-MM-YY"),
                   qrCode:"/mushElement/mushElementLanding?elementCode="+elem.element_code
               })
       }
@@ -86,6 +86,47 @@ router.get('/getElementByType',async (req,res)=>{
         break;
     }
   }
+})
+
+router.get('/getElementToPrint',async (req,res)=>{
+  let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().startOf('month')
+  let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
+  let inoculi_CHK=req.query.inoculi_CHK
+  let spawn_CHK=req.query.spawn_CHK
+  let propagation_CHK=req.query.propagation_CHK
+  let inoculum=[]
+  let spawn=[]
+  let propagation=[]
+
+  console.log(req.query)
+
+  if(inoculi_CHK==1){
+    inoculum=await db.inoculum.findAll({ where:{createLot: {[Op.between]: [fromDate.toDate(), toDate.toDate()] }},
+                                        include:{model:db.mushElement,
+                                                where:{type:"INOCULUM",active:1,},
+                                                attributes:["id","element_code"]},
+                                        attributes: ['code_inoculum','inoculum_name']})
+  }
+  
+  if(spawn_CHK==1){
+    spawn=await db.spawn.findAll({where:{createLot: {[Op.between]: [fromDate.toDate(), toDate.toDate()] }},
+                                  include:{model:db.mushElement,
+                                          where:{type:"SPAWN",active:1},
+                                          attributes:["id","element_code"]},
+                                  attributes: ['code_spawn','spawn_name']})
+  }
+
+  if(propagation_CHK==1){
+    propagation=await db.propagation.findAll({where:{createLot: {[Op.between]: [fromDate.toDate(), toDate.toDate()] }},
+                                              include:{model:db.mushElement,
+                                                      where:{type:"CULTIVATION",active:1,},
+                                                      attributes:["id","element_code"]},
+                                              attributes: ['code_propagation','propagation_name']})
+  }
+  let result={inoculum:inoculum,
+              spawn:spawn,
+              propagation:propagation}
+  res.status(200).json({fromDate:fromDate,toDate:toDate,result:result})
 })
 
 router.get('/printElement',async (req,res)=>{

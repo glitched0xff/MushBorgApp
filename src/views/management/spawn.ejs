@@ -944,7 +944,8 @@ console.log(dt.text());
                         </tr>
                       </thead>
                       <tbody>`
-          element.forEach(elem=>{
+            // Default seed non conosciuto
+    element.forEach(elem=>{
             elem.requestQt=0
             let disableBtn=""
             let inList=[]
@@ -1025,6 +1026,7 @@ console.log(dt.text());
                         </tr>
                       </thead>
                       <tbody>`
+      
      tempInoculiArray.forEach((elem,i)=>{
         html+=`<tr id="rowInoculo_${i}">
 

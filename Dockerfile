@@ -1,14 +1,14 @@
-# Immagine linux con nodejs 24
+# 1. Base image con Node.js 24 su Alpine Linux
 FROM node:24-alpine 
 
-# Imposta variabili d'ambiente cruciali per Puppeteer su Alpine
+# 2. Imposta variabili d'ambiente cruciali per Puppeteer su Alpine
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Directory di lavoro sul Docker dove verranno copiati i file dell'app
+# 3. Directory di lavoro principale all'interno del container
 WORKDIR /app 
 
-# Installa le dipendenze per Canvas E Chromium per Puppeteer con i font necessari
+# 4. Installa le dipendenze di sistema necessarie per Canvas, Chromium e Git
 RUN apk add --no-cache \
     python3 \
     make \
@@ -23,19 +23,27 @@ RUN apk add --no-cache \
     freetype \
     harfbuzz \
     ca-certificates \
-    ttf-freefont
+    ttf-freefont \
+    git
 
-# Copia i file dei pacchetti prendendoli dalla cartella src
-COPY src/package*.json ./
+# 5. Copia i file dei pacchetti dalla cartella src locale a quella del container
+COPY src/package*.json ./src/
 
-# Sblocca gli script di post-installazione e installa i moduli Node.js
-RUN apk add --no-cache git && \
-    npm config set ignore-scripts false && \
+# 6. Ci spostiamo in /app/src per installare i moduli di Node.js
+WORKDIR /app/src
+
+# 7. Abilita gli script post-installazione e installa i moduli Node.js (comprese le devDependencies)
+RUN npm config set ignore-scripts false && \
     npm install
 
-# Copia l'intero contenuto della cartella src dentro il container
-COPY src/ .
+# 8. Ritorniamo alla directory radice /app
+WORKDIR /app
 
+# 9. Copia il resto dell'applicazione dal computer locale a /app
+COPY . .
+
+# 10. Espone la porta interna dell'applicazione
 EXPOSE 3000
 
-CMD ["npm", "start"]
+# 11. Avvia l'app entrando in src ed eseguendo npm start
+CMD ["sh", "-c", "cd src && npm start"]
