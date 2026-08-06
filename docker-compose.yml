@@ -4,6 +4,7 @@ services:
   app:
     container_name: Mushborg.v1
     build: . # Fa il build del Dockerfile nella root
+    working_dir: /app/src
     ports: # Porta di reindirizzamento 3006= riferimento del localhost per aggiungere l'app
       - "3006:3000"
     env_file:
