@@ -38,7 +38,6 @@ async function runReset() {
       }
     }
 
-    // Riabilita i vincoli delle chiavi esterne
     await db.sequelize.query("SET FOREIGN_KEY_CHECKS = 1;");
     console.log("🔗 Vincoli chiavi esterne riabilitati.");
 
@@ -48,12 +47,20 @@ async function runReset() {
       let deletedCount = 0;
 
       for (const file of files) {
-        if (file !== ".gitkeep" && file !== ".DS_Store") {
+        // 🟢 MODIFICATO: Proteggiamo anche il file marcatore .db_resetted dal venire cancellato se si lancia il reset più volte
+        if (file !== ".gitkeep" && file !== ".DS_Store" && file !== ".db_resetted") {
           fs.unlinkSync(path.join(IMAGES_DIR, file));
           deletedCount++;
         }
       }
       console.log(`✅ Cartella immagini svuotata (${deletedCount} file rimossi).`);
+      
+      // 🟢 AGGIUNTA: Crea il file di log persistente che attesta il reset
+      const logPath = path.join(IMAGES_DIR, ".db_resetted");
+      const logContent = `Database resettato con successo in data: ${new Date().toISOString()}\n`;
+      fs.writeFileSync(logPath, logContent, "utf8");
+      console.log("📝 File di stato '.db_resetted' salvato nella cartella immagini.");
+
     } else {
       console.log("⚠️ Cartella immagini non trovata.");
     }
@@ -66,6 +73,7 @@ async function runReset() {
     process.exit(1);
   }
 }
+
 
 // Funzione principale che chiede la conferma all'utente
 function askConfirmation() {
