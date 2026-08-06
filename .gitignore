@@ -54,6 +54,7 @@ pids
 *.pid
 *.seed
 *.pid.lock
+*.DB_Store
 
 # ==============================================================================
 # 3. ENVIRONMENT & DATABASE BACKUPS
