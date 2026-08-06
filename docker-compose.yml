@@ -7,7 +7,7 @@ services:
     ports: # Porta di reindirizzamento 3006= riferimento del localhost per aggiungere l'app
       - "3006:3000"
     env_file:
-      - .env                  # 1. Carica tutte le variabili dal file locale (.env)
+      - src/.env                # 1. Carica tutte le variabili dal file locale (.env)
     environment:
       - HOST=mariadb          # 2. SOVRASCRIVE SOLO L'HOST: dice a Docker di usare il container mariadb
     volumes:
