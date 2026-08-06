@@ -87,7 +87,20 @@ router.get('/getAll',async  (req, res) => {
                                                 {model: db.substrate, attributes: ['id','name_substrate']},
                                                 ],
                                     order:[['createLot', 'DESC']]
-                                })   
+                                })
+    if(inoculum.length==0){
+        inoculum=await Inoculum.findAll({
+                                        attributes:["id","code_inoculum","inoculum_name","n_container","createLot","createdAt"],
+                                        include:[{model: db.strain, attributes: ['strain_name','species_code']},
+                                                {model: db.container, attributes: ['container_name']},
+                                                {model: db.substrate, attributes: ['id','name_substrate']},
+                                                ],
+                                    order:[['createLot', 'DESC']],
+                                    limit:15
+                                }) 
+        toDate=inoculum[0].createLot
+        fromDate=inoculum[inoculum.length-1].createLot
+    }
     res.status(200).json({inoculum:inoculum,fromDate:fromDate,toDate:toDate})
 });
 

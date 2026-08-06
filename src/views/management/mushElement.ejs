@@ -8,7 +8,7 @@
       <div class="mushElement-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Gestione elementi <span id="titoloFiltro"> </span>  
+            <h1 class="m-0"> <span id="titoloFiltro"> </span>  
             <!-- <button class="btn btn-xs btn-primary" id="modMushElement_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca lotto</button>
               <button type="button" class="btn btn-xs btn-primary" id="newMushElement_Btn"><i class="fas fa-plus"></i> Nuova lotto</button> -->
               <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna all'elenco</button>
@@ -39,20 +39,16 @@
                     <input type="text" id="customSearch" class="form-control form-control-sm" placeholder="Digita per cercare..." style="width: 200px;">
                   </div>
                 </div>
-                <%
-                  let filteredUrl="" 
-                  if(typeof filterCategory !== 'undefined' && filterCategory){
-                    filteredUrl="&filterCategory="+filterCategory
-                 }%>
-                <% if (active==1){%>
-                <div class="col-md-3 text-center">
-                  <a  class="btn btn-danger btn-sm" href="/mushElement?active=0<%= filteredUrl %>" role="button">Vedi elementi eliminati</a>
+
+                
+                <div class="col-md-3 text-center" id="viewPicked_BTN_WRP">
+                  <a  class="btn btn-danger btn-sm activeFilter_BTN" href="#" role="button" id="viewPicked_BTN" >Vedi elementi eliminati</a>
                 </div>
-                <% } else if(active==0) { %>
-                <div class="col-md-3 text-center">
-                  <a  class="btn btn-primary btn-sm" href="/mushElement?active=1<%= filteredUrl %>" role="button">Vedi elementi attivi</a>
+                
+                <div class="col-md-3 text-center" id="viewActive_BTN_WRP">
+                  <a  class="btn btn-primary btn-sm activeFilter_BTN" href="#" role="button" id="viewActive_BTN" >Vedi elementi attivi</a>
                 </div>
-                <% } %>
+               
                 
                 <div class="col-md-2 text-right ">
                   N° propagazioni: <span id="elNum_Span"></span>
@@ -81,6 +77,9 @@
                     
                 </tbody>
             </table>
+            <div class="alert alert-danger text-center" role="alert" id="mushElement_Alr">
+              <strong>Non ci sono elementi per l'intervallo di date selezionato</strong>
+            </div>
             </div>
             </div>
           </div>
@@ -176,28 +175,38 @@ let fromDate
 // Draw and update table
 async function  drawTable (fromDate="",toDate=""){
   let url
+  let htmlToAppend=""
+    if(active==0){
+      htmlToAppend="<span class=\"small\">(eliminati)</span>"
+    }else{
+      htmlToAppend="<span class=\"small\">(attivi)</span>"
+    } 
+  let categoriaTesto = "";
+
   if(filterCategory==false){
     url="/mushElement/getAll?active="+active+"&fromDate="+fromDate+"&toDate="+toDate
+    categoriaTesto = ""
   } else{
     url="/mushElement/getAll?filterCategory="+filterCategory+"&active="+active+"&fromDate="+fromDate+"&toDate="+toDate
-     switch (filterCategory) {
+    
+    switch (filterCategory) {
       case "INOCULUM":
-        $("#titoloFiltro").html("inoculi");
+        categoriaTesto = "inoculi";
         break;
       case "SPAWN":
-        $("#titoloFiltro").html("spawn");
+        categoriaTesto = "spawn";
         break;
       case "CULTIVATION":
-        $("#titoloFiltro").html("di coltivazione");
+        categoriaTesto = "di coltivazione";
         break;
-    }
-    
+      // Il default qui serve solo se non è nessuna delle tre stringhe sopra
+      default:
+        categoriaTesto = ""; 
+        break;
+    }    
   }
-  if(active==0){
-      $("#titoloFiltro").append(" <span class=\"small\">(eliminati)</span>")
-    }else{
-      $("#titoloFiltro").append(" <span class=\"small\">(attivi)</span>")
-    }
+    $("#titoloFiltro").html(`Gestione elementi ${categoriaTesto} ${htmlToAppend}`);
+  
    await $.ajax({
         type: "GET",
         url: url,
@@ -207,6 +216,7 @@ async function  drawTable (fromDate="",toDate=""){
             tableMushElement.clear()
             fromDate=response.fromDate
           toDate=response.toDate
+          if (response.mushElements.length>0){
             for (let i = 0; i < response.mushElements.length; i++) {
                 let el=response.mushElements[i]
                 let delBtnDisable=""
@@ -246,9 +256,24 @@ async function  drawTable (fromDate="",toDate=""){
                                 <td>${el.totalHarvestWeight?el.totalHarvestWeight:"0"} g</td>
                                 <td >${el.load_date}</td>
                             </tr>`
-                tableMushElement.rows.add($(html))
+                      tableMushElement.rows.add($(html))
                 } 
                  tableMushElement.draw();
+                 $("#mushElement_Tbl").show();
+                 $("#mushElement_Alr").hide();
+              }
+              // Non ci sono dati
+              else{
+                $("#mushElement_Tbl").hide();
+                $("#mushElement_Alr").show();
+              }
+              if (active==1){
+                $("#viewPicked_BTN_WRP").show();
+                $("#viewActive_BTN_WRP").hide();
+              }else if(active==0){
+                $("#viewPicked_BTN_WRP").hide();
+                $("#viewActive_BTN_WRP").show();
+              }
                  let picker = $('#intervalData').data('daterangepicker');
                 if (picker) {
                     // Se il daterangepicker esiste già, aggiorna solo le date senza romperlo
@@ -274,7 +299,7 @@ async function  drawTable (fromDate="",toDate=""){
 $(document).ready(async function () {
   //$.fn.dataTable.moment('DD-MM-YYYY HH:mm');
   //console.log(typeof $.fn.dataTable.moment);
-    $('#pickDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+    $('#pickDate_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
 
   // init   
     tableMushElement=$('#mushElement_Tbl').DataTable({
@@ -326,10 +351,30 @@ $(document).ready(async function () {
         console.log(fromDate,toDate)
         await drawTable(fromDate,toDate)
       });
-    $('#customSearch').on('keyup', function () {
+     $('#customSearch').on('keyup', function () {
         tableMushElement.search(this.value).draw();
     });
-     
+    
+    // filtro elementi attvi
+    $(".activeFilter_BTN").click(async function (e) { 
+      e.preventDefault();
+      e.stopPropagation();
+      let id=$(this).attr("id")
+      let url
+      let dt = $('#intervalData').data('daterangepicker');
+      fromDate = dt.startDate.format('YYYY-MM-DD'); 
+      toDate = dt.endDate.format('YYYY-MM-DD');
+      console.log(fromDate,toDate)
+      if(id=="viewActive_BTN"){
+        active=1
+        await drawTable(fromDate,toDate)
+      }
+      if(id=="viewPicked_BTN"){
+        active=0
+        await drawTable(fromDate,toDate)
+      }
+    });               
+
 
     // Delete mushElement
     $(document).on("click",".deleteMushElement_Btn", async function(e){

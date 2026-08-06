@@ -11,7 +11,7 @@ const path = require("path");
 const {Jimp} = require("jimp")
 const moment=require("moment")
 const db = require("../../models");
-const { where,fn,col } = require('sequelize');
+const { where,fn,col,literal } = require('sequelize');
 const { type } = require('os');
 const { CLIENT_RENEG_LIMIT } = require('tls');
 const QRCode = require('qrcode')
@@ -39,7 +39,7 @@ router.get('/',async  (req, res) => {
 
 router.get('/getAll',async  (req, res) => {
     //let filterCategory=req.query.filterCategory?req.query.filterCategory:false
-    console.log(req.query)
+     console.log(req.query)
     let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(2, 'months').startOf('month')
     let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
     let mushElements
@@ -77,7 +77,9 @@ router.get('/getAll',async  (req, res) => {
                     group: ["mushElement.id"],
                     order:[['load_date', 'DESC']]
         })
+
     }
+    // console.log(mushElements)
     if(mushElements){
         mushElements=JSON.parse(JSON.stringify(mushElements))
         

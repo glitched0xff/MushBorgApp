@@ -78,10 +78,24 @@ router.get('/getAll',async  (req, res) => {
             {model:db.strain,attributes:["species","species_code","strain_name"]},
             {model: db.container,attributes:["container_name"]},
         ],
-        order:[["createLot","DESC"]]})
+        order:[["createLot","DESC"]]
+    })
+    if (propagations.length==0){
+            propagations=await Propagation.findAll({
+                            attributes:["id","code_propagation","propagation_name","n_container","createLot"],
+                            include: [
+                                {model:db.strain,attributes:["species","species_code","strain_name"]},
+                                {model: db.container,attributes:["container_name"]},
+                            ],
+                            order:[["createLot","DESC"]],
+                            limit:15
+                        })
+            toDate=propagations[0].createLot
+            fromDate=propagations[propagations.length-1].createLot
+        } 
 
     propagations=JSON.parse(JSON.stringify(propagations))
-    console.log(propagations)
+    //console.log(propagations)
     for (const propagation of propagations) {
         const mushElements = propagation.mushElement || [];
         propagation.totHarvest = mushElements

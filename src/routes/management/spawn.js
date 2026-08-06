@@ -86,7 +86,20 @@ router.get('/getAll',async  (req, res) => {
                                         {model: db.container, attributes: ['container_name']},
                                     ],
                                     order:[['createLot', 'DESC']]
-                                })   
+                                })  
+    if (spawns.length==0){
+        spawns=await Spawn.findAll({attributes:["id","code_spawn","spawn_name","n_container","createLot","createdAt"],
+                                    include:[
+                                        {model: db.strain, attributes:["strain_name","species_code"]},
+                                        {model: db.container, attributes: ['container_name']},
+                                    ],
+                                    order:[['createLot', 'DESC']],
+                                    limit:15
+                                })  
+
+        fromDate=spawns[0].createLot
+        toDate=spawns[spawns.length-1].createLot
+    } 
     res.status(200).json({spawns:spawns,fromDate:fromDate,toDate:toDate})
 });
 
