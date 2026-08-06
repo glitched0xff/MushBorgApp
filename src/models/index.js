@@ -1,6 +1,9 @@
 const dbConfig = require("../config/db.config.js");
 
-const HOST=process.env.HOST
+// Se process.env.HOST è "localhost" o non è definito, ma siamo dentro Docker (dove il database si chiama mariadb),
+// oppure se vogliamo dare priorità a una configurazione Docker.
+const HOST = process.env.HOST === "localhost" && process.env.IS_DOCKER ? "mariadb" : (process.env.HOST || "localhost");
+
 const USER=process.env.USERDB
 const PASSWORD=process.env.PASSWORDDB
 const DB=process.env.DB

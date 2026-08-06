@@ -9,7 +9,8 @@ services:
     env_file:
       - src/.env                # 1. Carica tutte le variabili dal file locale (.env)
     environment:
-      - HOST=mariadb          # 2. SOVRASCRIVE SOLO L'HOST: dice a Docker di usare il container mariadb
+      - HOST=mariadb              
+      - IS_DOCKER=true            # 🟢 AGGIUNGI QUESTA RIGA
     volumes:
       # Usa il volume logico per mappare la cartella interna del container
       - mushborg_images:/app/public/imgMushEleNote   
