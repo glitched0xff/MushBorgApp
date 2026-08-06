@@ -91,3 +91,53 @@ docker compose exec -it app npm run db-reset
 Il terminale bloccherà l'esecuzione e chiederà una conferma digitando `y/N`:
 * Digita `y` o `yes` e premi Invio per procedere con il reset selettivo.
 * Premi Invio o digita qualsiasi altro carattere per annullare l'operazione in totale sicurezza.
+
+---
+
+## Comandi utili per la gestione di Docker
+
+Di seguito l'elenco dei comandi principali da eseguire nella root del progetto per gestire l'infrastruttura nel quotidiano.
+
+### 🟢 Avviare e Fermare i Container
+* **Avviare i container esistenti** (senza ricompilare):
+  ```bash
+  docker compose start
+  ```
+* **Fermare i container temporaneamente** (senza perdere i dati del DB):
+  ```bash
+  docker compose stop
+  ```
+* **Spegnere e rimuovere i container** (i dati del DB rimangono comunque al sicuro nei volumi):
+  ```bash
+  docker compose down
+  ```
+
+### 📊 Monitoraggio e Log
+* **Controllare lo stato dei container attivi:**
+  ```bash
+  docker compose ps
+  ```
+* **Leggere i log in tempo reale (tutti i servizi):**
+  ```bash
+  docker compose logs -f
+  ```
+* **Leggere i log in tempo reale solo dell'app Node.js:**
+  ```bash
+  docker compose logs -f app
+  ```
+* **Leggere i log in tempo reale solo del database MariaDB:**
+  ```bash
+  docker compose logs -f mariadb
+  ```
+
+### 🛠️ Accesso e Controllo Diretto
+* **Entrare nella riga di comando (shell Alpine Linux) dell'app:**
+  ```bash
+  docker compose exec -it app sh
+  ```
+* **Uscire dalla shell del container:**
+  Digitare `exit` e premere Invio.
+* **Verificare la presenza del file marcatore del reset del DB:**
+  ```bash
+  docker compose exec app cat ../public/imgMushEleNote/.db_resetted
+  ```
