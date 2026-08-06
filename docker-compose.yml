@@ -13,15 +13,16 @@ services:
     volumes:
       # Usa il volume logico per mappare la cartella interna del container
       - mushborg_images:/app/public/imgMushEleNote   
-      # 🟢 AGGIUNTA AGGIORNAMENTO GIT: Mappando la root, i "git pull" dell'utente aggiorneranno l'app all'istante
+      # Mappando la root, i "git pull" dell'utente aggiorneranno l'app all'istante
       - .:/app
-      - /app/node_modules # Protegge i moduli node interni di Alpine dal venire sovrascritti da Windows/Mac
+      # Protegge i moduli node interni di Alpine dentro la cartella src (visto che il package.json è lì)
+      - /app/src/node_modules
     depends_on: # Attiva la dipendenza dal contanier mariaDb
       - mariadb
 
 #Definisco il container di maria db
   mariadb: # Nome del container
-    build: ./mariadb    # <-- Corretto per la root: punta alla cartella /mariadb del progetto
+    build: ./mariadb    # Cerca il Dockerfile dentro la cartella /mariadb del progetto
     environment:
       - MYSQL_ROOT_PASSWORD=mushborg0x0
       - MYSQL_DATABASE=mushborg
@@ -31,11 +32,8 @@ services:
       - "3307:3306"
     volumes:
       - mariadb_data:/var/lib/mysql
-      
+
+# 🟢 SEZIONE CORRETTA: Elenco dei volumi condivisi sul disco fisso
 volumes:
-  # Usa il volume logico per mappare la cartella interna del container
-  - mushborg_images:/app/public/imgMushEleNote   
-  # Sincronizza tutta la root del progetto (per gli aggiornamenti Git automatici)
-  - .:/app
-  # Protegge i moduli node interni di Alpine dentro la cartella src
-  - /app/src/node_modules
+  mariadb_data:
+  mushborg_images:
