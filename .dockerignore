@@ -1,0 +1,34 @@
+# Dipendenze locali (vengono installate direttamente nel container)
+node_modules/
+src/node_modules/
+npm-debug.log*
+
+# Cartelle e file di configurazione dell'IDE / Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Backup del Database e file di inizializzazione
+dbBkup/
+mariadb/db.sql
+
+# Log e file temporanei
+logs/
+*.log
+.npm
+.eslintcache
+
+# File di controllo versione e documentazione non necessari in produzione
+.git/
+.gitignore
+out/
+docs/
+
+# File di configurazione di Docker stessi
+Dockerfile
+docker-compose.yml
+.dockerignore
