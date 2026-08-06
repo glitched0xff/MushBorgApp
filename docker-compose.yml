@@ -32,10 +32,10 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
       
-volumes:
-      # Usa il volume logico per mappare la cartella interna del container
-      - mushborg_images:/app/public/imgMushEleNote   
-      # Sincronizza tutta la root del progetto (per gli aggiornamenti Git automatici)
-      - .:/app
-      # Protegge i moduli node interni di Alpine dentro la cartella src
-      - /app/src/node_modules
+  volumes:
+        # Usa il volume logico per mappare la cartella interna del container
+        - mushborg_images:/app/public/imgMushEleNote   
+        # Sincronizza tutta la root del progetto (per gli aggiornamenti Git automatici)
+        - .:/app
+        # Protegge i moduli node interni di Alpine dentro la cartella src
+        - /app/src/node_modules
