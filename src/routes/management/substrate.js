@@ -59,7 +59,7 @@ let substrates=await Substrate.findAll({
             {model:Propagation,attributes:["id","propagation_name","code_propagation","substrateId"]},
             {model:db.inoculum,attributes:["id"]}
         ]
-    },{raw:true, order:['id']})
+    },{raw:true, order:['createdAt','ASC']})
     let udmDD=await db.dDOption.findAll({where:{ddMenu:"udmSelect"}})
     
     res.status(200).json({substrates:substrates,udmDD:udmDD,fromDate:fromDate,toDate:toDate})
