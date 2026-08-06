@@ -46,4 +46,4 @@ COPY . .
 EXPOSE 3000
 
 # 11. Avvia l'app entrando in src ed eseguendo npm start
-CMD ["sh", "-c", "cd src && npm start"]
+CMD ["npm", "start"]
