@@ -1,15 +1,11 @@
 const db = require("./models/index");
 const fs = require("fs");
 const path = require("path");
-const readline = require("readline"); // Modulo nativo di Node.js per l'input da terminale
+const readline = require("readline");
 
-// Percorso della cartella immagini (dentro src/public/...)
 const IMAGES_DIR = path.join(__dirname, "public", "imgMushEleNote");
-
-// Inserisci qui i nomi ESATTI dei modelli Sequelize da NON cancellare (esclusi dal reset)
 const EXCLUDED_MODELS = ["calendarCategories", "dDOptions"];
 
-// Configurazione dell'interfaccia di lettura da terminale
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
@@ -19,11 +15,11 @@ async function runReset() {
   console.log("🔄 Avvio del reset totale (mantenendo le categorie e le opzioni)...");
 
   try {
-    // 1. Disabilita i vincoli delle chiavi esterne per evitare blocchi durante i TRUNCATE
+    // 1. Disabilita i vincoli delle chiavi esterne
     await db.sequelize.query("SET FOREIGN_KEY_CHECKS = 0;");
     console.log("🔗 Vincoli chiavi esterne temporaneamente disabilitati.");
 
-    // 2. Cicla su tutti i modelli registrati in Sequelize
+    // 2. Cicla e svuota i modelli Sequelize
     for (const modelName of Object.keys(db)) {
       if (modelName === "Sequelize" || modelName === "sequelize" || EXCLUDED_MODELS.includes(modelName)) {
         if (EXCLUDED_MODELS.includes(modelName)) {
@@ -41,21 +37,23 @@ async function runReset() {
     await db.sequelize.query("SET FOREIGN_KEY_CHECKS = 1;");
     console.log("🔗 Vincoli chiavi esterne riabilitati.");
 
-    // 3. Svuota la cartella delle immagini senza eliminarla
+    // 3. Svuota la cartella delle immagini (Gestendo file e sottocartelle)
     if (fs.existsSync(IMAGES_DIR)) {
       const files = fs.readdirSync(IMAGES_DIR);
       let deletedCount = 0;
 
       for (const file of files) {
-        // 🟢 MODIFICATO: Proteggiamo anche il file marcatore .db_resetted dal venire cancellato se si lancia il reset più volte
         if (file !== ".gitkeep" && file !== ".DS_Store" && file !== ".db_resetted") {
-          fs.unlinkSync(path.join(IMAGES_DIR, file));
+          const itemPath = path.join(IMAGES_DIR, file);
+          
+          // 🟢 MODIFICATO: Usa rmSync con recursive per eliminare sia file che cartelle (es. 786_C)
+          fs.rmSync(itemPath, { recursive: true, force: true });
           deletedCount++;
         }
       }
-      console.log(`✅ Cartella immagini svuotata (${deletedCount} file rimossi).`);
+      console.log(`✅ Cartella immagini svuotata (${deletedCount} elementi rimossi).`);
       
-      // 🟢 AGGIUNTA: Crea il file di log persistente che attesta il reset
+      // Crea il file di log persistente
       const logPath = path.join(IMAGES_DIR, ".db_resetted");
       const logContent = `Database resettato con successo in data: ${new Date().toISOString()}\n`;
       fs.writeFileSync(logPath, logContent, "utf8");
@@ -74,15 +72,12 @@ async function runReset() {
   }
 }
 
-
-// Funzione principale che chiede la conferma all'utente
 function askConfirmation() {
   rl.question("⚠️ ATTENZIONE: Questa operazione svuoterà tutte le tabelle (escluse categorie e opzioni) e cancellerà tutte le immagini. Vuoi continuare? (y/N): ", (answer) => {
     const formattedAnswer = answer.trim().toLowerCase();
-    
     if (formattedAnswer === "y" || formattedAnswer === "yes") {
       rl.close();
-      runReset(); // Avvia la cancellazione vera e propria
+      runReset();
     } else {
       console.log("❌ Reset annullato dall'utente.");
       rl.close();
@@ -91,5 +86,4 @@ function askConfirmation() {
   });
 }
 
-// Avvia la richiesta di conferma
 askConfirmation();
