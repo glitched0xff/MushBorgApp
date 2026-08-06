@@ -84,7 +84,9 @@ router.get('/getAll',async  (req, res) => {
                                     include:[
                                         {model: db.strain, attributes:["strain_name","species_code"]},
                                         {model: db.container, attributes: ['container_name']},
-                                    ]})   
+                                    ],
+                                    order:[['createLot', 'DESC']]
+                                })   
     res.status(200).json({spawns:spawns,fromDate:fromDate,toDate:toDate})
 });
 

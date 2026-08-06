@@ -85,7 +85,9 @@ router.get('/getAll',async  (req, res) => {
                                         include:[{model: db.strain, attributes: ['strain_name','species_code']},
                                                 {model: db.container, attributes: ['container_name']},
                                                 {model: db.substrate, attributes: ['id','name_substrate']},
-                                                ]})   
+                                                ],
+                                    order:[['createLot', 'DESC']]
+                                })   
     res.status(200).json({inoculum:inoculum,fromDate:fromDate,toDate:toDate})
 });
 

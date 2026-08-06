@@ -46,8 +46,9 @@ let rawMaterials=await RawMaterial.findAll({
             model:SubstrateElement,attributes:["id"],include:[{model: Substrate,attributes:["id","cod_substrate","name_substrate"]}]
         },{
             model: db.storage,attributes:["name_storage","code_storage"]
-        }]
-                },{raw:true, order:['createdAt']})
+        }],
+        order:[['createdAt', 'DESC']]
+        })
     rawMaterials=JSON.parse(JSON.stringify(rawMaterials))
     for (let i = 0; i < rawMaterials.length; i++) {
         const elem = rawMaterials[i];

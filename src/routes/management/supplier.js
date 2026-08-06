@@ -43,7 +43,8 @@ router.post('/newSupplier', async(req,res) => {
 })
 
 router.get('/getAll',async  (req, res) => {
-    let suppliers=await Supplier.findAll({order:['supplier_name']})
+    let suppliers=await Supplier.findAll({order:['supplier_name'],
+                                  order:[["createdAt","DESC"]]})
     res.status(200).json({suppliers:suppliers})
   });
 

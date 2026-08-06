@@ -60,7 +60,7 @@ let substrates=await Substrate.findAll({
             {model:db.inoculum,attributes:["id"]}
         ],
         order: [
-        ['createdAt', 'ASC']
+        ['createdAt', 'DESC']
     ],
     })
     let udmDD=await db.dDOption.findAll({where:{ddMenu:"udmSelect"}})

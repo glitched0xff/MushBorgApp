@@ -74,8 +74,9 @@ router.get('/getAll',async  (req, res) => {
                              [fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
                                 [fn("COUNT", col("mushElementNotes.id")), "totalNote"]
                     ],
-                    group: ["mushElement.id"] // serve il group by per fare l’aggregazione
-        },{ order:[['load_date', 'ASC']]})
+                    group: ["mushElement.id"],
+                    order:[['load_date', 'DESC']]
+        })
     }
     if(mushElements){
         mushElements=JSON.parse(JSON.stringify(mushElements))

@@ -30,8 +30,9 @@ router.get('/getAll',async  (req, res) => {
 let recipes=await Recipe.findAll({
     include: [{model: RecipeElement},
         {model:Substrate}
-    ]
-    },{raw:true, order:['createdAt']})
+    ],
+    order:[['createdAt', 'ASC']]
+    })
     res.status(200).json({recipes:recipes})
 });
 
