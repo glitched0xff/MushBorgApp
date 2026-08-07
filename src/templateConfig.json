@@ -13,7 +13,7 @@
     "propagation":true,
     "statistic":true,
     "material":true,
-    "ordini":true,
+    "ordini":false,
     "print":true,
     "HomeAssistant":true,
     "homeAssistantURL":"http://homeassistant.local:8123/",

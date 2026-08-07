@@ -39,10 +39,14 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER},
       note:{
         type: Sequelize.STRING,
-      },
-      showInHome:{
-        type: Sequelize.INTEGER
-      }
+      }, 
+      indoor:{type: Sequelize.INTEGER}, 
+      address:{type: Sequelize.STRING}, 
+      city:{type: Sequelize.STRING}, 
+      province:{type: Sequelize.STRING}, 
+      cap:{type: Sequelize.STRING}, 
+      lat:{type: Sequelize.STRING}, 
+      long:{type: Sequelize.STRING}, 
     });
     Storage.associate = (models) => {
          Storage.hasMany(models.mushElement, {foreignKey: "storageId"});
