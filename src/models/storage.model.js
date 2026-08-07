@@ -37,6 +37,8 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER},
       propagation: {
         type: Sequelize.INTEGER},
+        inoculum: {
+        type: Sequelize.INTEGER},
       note:{
         type: Sequelize.STRING,
       }, 

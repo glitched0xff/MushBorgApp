@@ -63,10 +63,8 @@ router.delete('/deleteStorage',async (req,res)=>{
 
 router.get('/getOneStorage',async (req,res)=>{
     let storageId=req.query.storageId?req.query.storageId:null
-    const storage=await Storage.findOne({where:{id:storageId},
-                                            include:[{model:db.associateActuator},
-                                                     {model:db.associateAllarm},
-                                                     {model:db.associateSensor}]})
+    console.log(storageId)
+    const storage=await Storage.findOne({where:{id:storageId}})
     res.status(200).json({storage:storage})
 })
 

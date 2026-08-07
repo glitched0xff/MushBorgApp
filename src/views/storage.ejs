@@ -22,6 +22,7 @@
     <section class="content">
       <div class="container-fluid">
           <div class="row">
+            <!-- Tabella Storage -->
               <div class="col-12"  id="tableStorage_Crd" >
                 <div class="card">
                   <div class="card-header">
@@ -51,10 +52,11 @@
                   </div>
                 </div>
               </div>
+              <!-- Visualizza/inserisci storage -->
               <div class="col-12" id="newStorage_Crd" style="display: none;">
                 <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Nuovo magazzino</h3>
+                    <h3 class="card-title ">Nuovo magazzino</h3>
                 </div>
                   <div class="card-body  p-0">
                     <div class="row">
@@ -96,21 +98,66 @@
                     },
                     {
                       type:"text",
-                      classBox:"col-md-2 col-sm-6",
+                      classBox:"col-md-3 col-sm-6",
                       fieldName:"area_HomeAssistant",
                       label:"Codice area Home assistant",
                       required:true, 
-
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"indoor",
+                      label:"Magazzino indoor",
+                      required:true, 
                     },
                     { type:"endRow"},
-                    
-                     {type:"startRow"},
-                    {
-                      type:"textarea",
-                      classBox:"col-md-3 col-sm-6",
-                      fieldName:"data_storage",
-                      label:"Dati magazzino"
+                    {type:"startRow"},
+                      {
+                        type:"text",
+                        classBox:"col-md-2 col-sm-6",
+                        fieldName:"address",
+                        label:"Indirizzo",
+                        required:true, 
+                      },
+                      {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"city",
+                      label:"Città",
+                      required:true, 
                     },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"province",
+                      label:"Provincia",
+                      required:true, 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"cap",
+                      label:"C.A.P.",
+                      required:true, 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"lat",
+                      label:"Latitudine",
+                      required:true, 
+                    },
+                    {
+                      type:"text",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"long",
+                      label:"Longitudine",
+                      required:true, 
+                    },
+
+                    { type:"endRow"},
+                     {type:"startRow"},
+                    
                     {
                       type:"textarea",
                       classBox:"col-md-3 col-sm-6",
@@ -224,14 +271,68 @@
             $("#storage_TBL").hide();
             $("#storage_ALT").show();
           }
+          $("#tableStorage_Crd").show();
+          $("#newStorage_Crd").hide();
           }
         })
     }
 
+    function drawShowStorage(id) {
+   $.ajax({
+        type: "GET",
+        url: "/storage/getOneStorage?storageId="+id,
+        success: async function (response) {
+          console.log(response)
+          let data=response.storage
+          
+            // Populate GUI
+            for (const [key, value] of Object.entries(data)) {
+              if($("#"+key+"_Fld").attr("tp")=="textField"){
+                $("#"+key+"_Fld").val(value)
+              }
+              if($("#"+key+"_Fld").attr("tp")=="selectField"){
+                $("#"+key+"_Fld").val(value).change();
+              }
+              console.log(key,data[key])
+              switch (key) {
+              case "indoor":
+                  $("#"+key+"_Show").html((value===1)?"Sì":"No")
+                break;
+              case "rawmaterial":
+                  $("#"+key+"_Show").html((value===1)?"Sì":"No")
+                break;
+              case "container":
+                  $("#"+key+"_Show").html((value===1)?"Sì":"No")
+                break;
+              case "inoculum":
+                  $("#"+key+"_Show").html((value===1)?"Sì":"No")
+                break;
+              case "spawn":
+                  $("#"+key+"_Show").html((value===1)?"Sì":"No")
+                break;
+              case "propagation":
+                  $("#"+key+"_Show").html((value===1)?"Sì":"No")
+                break;
+              default:
+                $("#"+key+"_Show").html(value?value:"-")
+                break;
+              }
+            }
+            let html=""
+            $(".storageForm").hide()
+            $(".storageText").show()
+            $("#tableStorage_Crd").hide();
+            $("#newStorage_Crd").show();
+            $("#newStorage_Btn").hide();
+            $("#backToMain_Btn").show();
+        }
+      });   
+}    
+  
 
     $(document).ready(async function () {
       if (redirectId!=null){
-        drawShowSubstrate(redirectId)
+        drawShowStorage(redirectId)
       } else {
         await drawTable()  
       }
@@ -240,7 +341,7 @@
       $(document).on("click",".showStorage", function (e) { 
         e.preventDefault();
         let id=$(this).attr("id").split("_")[1]
-         window.location='/storage/storageZoom?storageId='+id
+        window.location="/storage?redirectId="+id
       });
 
       $("#newStorage_Btn").click(function (e) { 
@@ -304,6 +405,12 @@
           }
         });}
       });
+
+      // Back to main
+    $("#backToMain_Btn").click(function (e) { 
+          e.preventDefault();
+          window.location='/storage'
+        });
     });
 
 
