@@ -9,26 +9,26 @@ const bodyParser = require('body-parser');
 const app = express();
 const cors = require("cors");
 var path = require("path");
-const i18n = require('i18n');
-//require('dotenv').config()
 require('dotenv').config({ override: true });
 // soket
 const http = require('http');
 const initSocket = require("./socketServer.js");
 
-// Configure multilingual
-i18n.configure({
-  locales: ['it', 'en'],
-  directory: path.join(__dirname, 'locales'),
-  defaultLocale: 'en',
-  queryParameter: 'lang',     // ?lang=en
-  cookie: 'lang',
-  autoReload: true,
-  updateFiles: false,
-  syncFiles: false
-});
+// // Configure multilingual
+// const i18n = require('i18n');
+//
+// i18n.configure({
+//   locales: ['it', 'en'],
+//   directory: path.join(__dirname, 'locales'),
+//   defaultLocale: 'en',
+//   queryParameter: 'lang',     // ?lang=en
+//   cookie: 'lang',
+//   autoReload: true,
+//   updateFiles: false,
+//   syncFiles: false
+// });
 
-app.use(i18n.init);
+// app.use(i18n.init);
 
 //
 // Middleware
@@ -74,8 +74,6 @@ let routeIndex = require('./routes/routeIndex');
 app.use('/', routeIndex);
 let user = require('./routes/user');
 app.use('/user', user);
-// let telemetry = require('./routes/telemetry');
-// app.use('/telemetry', telemetry);
 
 let toDo = require('./routes/todo');
 app.use('/toDo', toDo);
