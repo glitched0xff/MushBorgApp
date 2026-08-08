@@ -126,9 +126,6 @@ app.use('/destination', orderDestination);
 let productionOrder = require('./routes/management/productionOrder.js');
 app.use('/productionOrder', productionOrder);
 
-let api = require('./routes/testApi.js');
-app.use('/api', api);
-
 /** Route gestione messaggi da Home assistant */
 let sensorDataHa=require('./routes/sensorDataHa.js')
 app.use('/sensorDataHa',sensorDataHa)
