@@ -1,0 +1,16 @@
+Kit di Emergenza per il Backup di Home Assistant
+
+Questo kit di emergenza contiene la tua chiave di crittografia di backup. Hai bisogno di questa chiave per poter ripristinare i tuoi backup di Home Assistant.
+
+Data: 25 giugno 2026 alle ore 16:43
+
+Istanza:
+Mushborg
+
+URL:
+http://homeassistant.local:8123
+
+Chiave di crittografia:
+4SDA-919J-YN5Z-32VO-RDWG-S2SB-RCD4
+
+Per ulteriori informazioni, visita https://www.home-assistant.io/more-info/backup-emergency-kit

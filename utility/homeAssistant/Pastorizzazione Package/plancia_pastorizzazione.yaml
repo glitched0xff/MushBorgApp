@@ -1,0 +1,147 @@
+views:
+  - type: sections
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Batch Pastorizzazione
+            heading_style: title
+          - type: tile
+            entity: input_select.lista_substrati
+            features:
+              - type: select-options
+            visibility:
+              - condition: state
+                entity: input_boolean.batchon
+                state: "off"
+            grid_options:
+              columns: 9
+              rows: auto
+          - type: horizontal-stack
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Aggiorna lista
+                show_state: false
+                tap_action:
+                  action: perform-action
+                  perform_action: script.ask_substrate
+                  target: {}
+                icon: mdi:note-search-outline
+            grid_options:
+              columns: 6
+              rows: auto
+            visibility:
+              - condition: state
+                entity: input_boolean.batchon
+                state: "off"
+          - type: horizontal-stack
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Start Batch
+                show_state: false
+                tap_action:
+                  action: perform-action
+                  perform_action: script.start_batch
+                  target: {}
+                icon: mdi:clipboard-text-play-outline
+            grid_options:
+              columns: 6
+              rows: auto
+            visibility:
+              - condition: state
+                entity: input_boolean.batchon
+                state: "off"
+          - type: horizontal-stack
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Stop Batch
+                show_state: false
+                tap_action:
+                  action: perform-action
+                  perform_action: script.stop_batch
+                  target: {}
+                icon: mdi:clipboard-text-off-outline
+            grid_options:
+              columns: 6
+              rows: auto
+            visibility:
+              - condition: state
+                entity: input_boolean.batchon
+                state: "on"
+          - type: tile
+            grid_options:
+              columns: 9
+              rows: 1
+            entity: input_datetime.batch_start_date
+            show_entity_picture: false
+            hide_state: false
+            vertical: false
+            features_position: bottom
+          - type: tile
+            entity: input_boolean.batchon
+            grid_options:
+              columns: 9
+              rows: 1
+          - type: tile
+            entity: automation.update_batch_pastorizzazione_2
+            grid_options:
+              columns: 9
+              rows: 1
+
+          - type: tile
+            entity: sensor.stato_pastorizzazione_2
+            grid_options:
+              columns: 9
+              rows: 1
+
+          - type: heading
+            icon: mdi:alarm-panel-outline
+            heading: Parametri
+            heading_style: title
+          - type: tile
+            entity: input_number.durata_pastorizzazione
+            features:
+              - type: numeric-input
+            grid_options:
+              columns: 12
+              rows: 2
+          - type: tile
+            entity: input_number.campionamento_pastorizzazione
+            features:
+              - type: numeric-input
+            grid_options:
+              columns: 12
+              rows: 2
+          - type: tile
+            entity: input_number.soglia_temperatura_pastorizzazione
+            name: Temperatura soglia
+            vertical: false
+            features:
+              - type: numeric-input
+            features_position: bottom
+            grid_options:
+              columns: 12
+              rows: 2
+          - type: tile
+            entity: input_number.max_temperatura_pastorizzazione
+            name: "Temperatura massima "
+            vertical: false
+            features:
+              - type: numeric-input
+            features_position: bottom
+            grid_options:
+              columns: 12
+              rows: 2
+        column_span: 4
+    header:
+      card:
+        type: markdown
+        content: |-
+          # Pastorizzazione lotto 
+          # {{ states("input_select.lista_substrati") }}

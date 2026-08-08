@@ -1,0 +1,219 @@
+# ==============================================================================
+# PACCHETTO PASTORIZZAZIONE VIA REST API
+# Spostando questo singolo file su un'altra istanza installerai l'intera logica.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. AIUTANTI (Creati automaticamente dal pacchetto)
+# ------------------------------------------------------------------------------
+input_boolean:
+  batchon:
+    name: Stato Batch Pastorizzazione
+
+input_datetime:
+  batch_start_date:
+    name: Data inizio Batch
+    has_date: true
+    has_time: true
+
+  batch_end_date:
+    name: Data fine Batch
+    has_date: true
+    has_time: true
+
+input_select:
+  lista_substrati:
+    name: Lista Substrati
+    options:
+      - "-> Seleziona un codice"
+
+input_number:
+  durata_pastorizzazione:
+    name: "Durata Pastorizzazione"
+    min: 30
+    max: 120
+    step: 1
+    mode: box
+
+  campionamento_pastorizzazione:
+    name: "Campionamento Pastorizzazione"
+    min: 1
+    max: 30
+    step: 1
+    mode: box
+
+  soglia_temperatura_pastorizzazione:
+    name: "Temperatura Soglia"
+    min: 60
+    max: 85
+    step: 0.1
+    mode: box
+
+  max_temperatura_pastorizzazione:
+    name: "Temperatura Massima"
+    min: 60
+    max: 90
+    step: 1
+    mode: box
+# ------------------------------------------------------------------------------
+# 2. REST COMMANDS
+# ------------------------------------------------------------------------------
+rest_command:
+  ask_substrate:
+    url: "http://MacBook-Pro-di-Mauro.local:3000/sensorDataHa/ask_substrate"
+    method: GET
+
+  start_batch:
+    url: "http://MacBook-Pro-di-Mauro.local:3000/sensorDataHa/startBatch"
+    method: PUT
+    content_type: "application/json"
+    payload: >
+      {
+        "substrateCode":"{{ states('input_select.lista_substrati') }}"
+      }
+
+  stop_batch:
+    url: "http://MacBook-Pro-di-Mauro.local:3000/sensorDataHa/stopBatch"
+    method: POST
+    content_type: "application/json"
+    payload: >
+      {
+          "substrateCode": "{{ states('input_select.lista_substrati') }}",
+          "stato": "stop"
+      }
+
+  update_batch:
+    url: "http://MacBook-Pro-di-Mauro.local:3000/sensorDataHa/updateBatch"
+    method: POST
+    content_type: "application/json"
+    payload: >
+      {
+          "substrateCode": "{{ states('input_select.lista_substrati') }}",
+          "tempValue": "{{ states('sensor.wh2650a_ecowitt_temperatura_esterna') }}",
+          "last_updated": "{{ as_timestamp(states.sensor.wh2650a_ecowitt_temperatura_esterna.last_changed) }}",
+          "state": "{{ states('sensor.stato_pastorizzazione_2')}}"
+      }
+
+# ------------------------------------------------------------------------------
+# 3. SCRIPT
+# ------------------------------------------------------------------------------
+script:
+  start_batch:
+    alias: Crea batch pastorizzazione
+    sequence:
+      - action: rest_command.start_batch
+        response_variable: responseApi
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.batchon
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.batch_start_date
+        data:
+          datetime: >-
+            {% set d = responseApi['content']['date'] if responseApi is defined and 'content' in responseApi and 'date' in responseApi['content'] else '' %}
+            {{ d if d not in ['', 'unknown', 'unavailable'] else now().strftime('%Y-%m-%d %H:%M:%S') }}
+      - action: automation.turn_on
+        target:
+          entity_id: automation.update_batch_pastorizzazione_2
+
+  stop_batch:
+    alias: Stop batch pastorizzazione
+    sequence:
+      - action: automation.turn_off
+        target:
+          entity_id: automation.update_batch_pastorizzazione_2
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.batchon
+      - action: rest_command.stop_batch
+        response_variable: responseApi
+      - action: input_select.set_options
+        target:
+          entity_id: input_select.lista_substrati
+        data:
+          options: >-
+            {{ [ states('input_select.lista_substrati'), '-> Seleziona un codice' ] }}
+      - action: input_select.select_option
+        target:
+          entity_id: input_select.lista_substrati
+        data:
+          option: "-> Seleziona un codice"
+      - action: input_select.set_options
+        target:
+          entity_id: input_select.lista_substrati
+        data:
+          options: ["-> Seleziona un codice"]
+
+  update_batch:
+    alias: Update batch pastorizzazione
+    sequence:
+      - action: rest_command.update_batch
+        response_variable: responseApi
+
+  ask_substrate:
+    alias: Aggiorna lista substrati
+    sequence:
+      - action: rest_command.ask_substrate
+        response_variable: substratiList
+      - action: input_select.set_options
+        target:
+          entity_id: input_select.lista_substrati
+        data:
+          options: >-
+            {% set lista_raw = substratiList.content if substratiList is defined and 'content' in substratiList else [] %}
+            {% if lista_raw is iterable and lista_raw | length > 0 %}
+              {{ ['-> Seleziona un codice'] + (lista_raw | map(attribute='cod_substrate') | list) }}
+            {% else %}
+              {{ ['-> Seleziona un codice', 'Nessun substrato trovato'] }}
+            {% endif %}
+      - action: input_select.select_first
+        target:
+          entity_id: input_select.lista_substrati
+
+# ------------------------------------------------------------------------------
+# 4. SENSORI TEMPLATE
+# ------------------------------------------------------------------------------
+template:
+  - sensor:
+      - name: "Stato Pastorizzazione"
+        unique_id: stato_pastorizzazione
+        state: >-
+          {% set valore = states('sensor.wh2650a_ecowitt_umidita_vaso1') | float(0) %}
+          {% set max_pastorizzazione = states('input_number.max_temperatura_pastorizzazione') | float(0) %}
+          {% set soglia_pastorizzazione = states('input_number.soglia_temperatura_pastorizzazione') | float(0) %}
+
+          {% if valore < soglia_pastorizzazione %}
+            TEMP_DOWN
+          {% elif valore >= soglia_pastorizzazione and valore < max_pastorizzazione %}
+            TEMP_OK
+          {% else %}
+            TEMP_MAX
+          {% endif %}
+        icon: mdi:thermostat
+
+# ------------------------------------------------------------------------------
+# 5. AUTOMAZIONI
+# ------------------------------------------------------------------------------
+automation:
+  - id: update_batch_pastorizzazione
+    alias: Update batch pastorizzazione
+    description: Aggiorna i dati in mushborg
+    initial_state: false
+    triggers:
+      - trigger: time_pattern
+        minutes: /1
+    conditions:
+      - condition: state
+        entity_id: input_boolean.batchon
+        state: "on"
+      - condition: template
+        value_template: >-
+          {{ now().minute % (states('input_number.campionamento_pastorizzazione') | int(1)) == 0 }}
+      - condition: template
+        value_template: >-
+          {% set sel = states('input_select.lista_substrati') %}
+          {{ sel not in ['...', '-> Seleziona un codice', 'Nessun substrato trovato', 'unknown', 'unavailable'] }}
+    actions:
+      - action: script.update_batch
+    mode: single
