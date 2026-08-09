@@ -93,7 +93,7 @@ router.post('/newSubstrate', async(req,res) => {
             note:data.note
             })
         .then(result=>{
-            console.log(JSON.parse(JSON.stringify(result)))
+           // console.log(JSON.parse(JSON.stringify(result)))
             res.status(200).json({data:result})
         })
         .catch(err =>{
@@ -147,7 +147,7 @@ router.get('/getOneSubstrate',async  (req, res) => {
                     {model:db.inoculum,attributes:["id","inoculum_name","code_inoculum"]}
                 ]})
         substrate=JSON.parse(JSON.stringify(substrate))
-        console.log(substrate)
+       // console.log(substrate)
         let pret=await db.pretreatment.findOne({where:{id:substrate.recipe.pretreatmentId},attributes:["pretreatment_name"]})
         substrate.recipe.pretreatmentTxt=pret.pretreatment_name
         // for (let i = 0; i < substrate.recipe.recipeElements.length; i++) {

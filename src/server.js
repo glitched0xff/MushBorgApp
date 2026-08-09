@@ -15,20 +15,20 @@ const http = require('http');
 const initSocket = require("./socketServer.js");
 
 // // Configure multilingual
-// const i18n = require('i18n');
-//
-// i18n.configure({
-//   locales: ['it', 'en'],
-//   directory: path.join(__dirname, 'locales'),
-//   defaultLocale: 'en',
-//   queryParameter: 'lang',     // ?lang=en
-//   cookie: 'lang',
-//   autoReload: true,
-//   updateFiles: false,
-//   syncFiles: false
-// });
+const i18n = require('i18n');
 
-// app.use(i18n.init);
+i18n.configure({
+  locales: ['it', 'en'],
+  directory: path.join(__dirname, 'locales'),
+  defaultLocale: 'en',
+  queryParameter: 'lang',     // ?lang=en
+  cookie: 'lang',
+  autoReload: true,
+  updateFiles: false,
+  syncFiles: false
+});
+
+ app.use(i18n.init);
 
 //
 // Middleware

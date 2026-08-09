@@ -178,12 +178,6 @@
                       label:"Pretrattamento",
                     },
                     {
-                      type:"plainText",
-                      classBox:"col-md-2 col-sm-6",
-                      fieldName:"drain",
-                      label:"Drain substrato",
-                    },
-                    {
                       type:"hidden",
                       fieldName:"recipeSubCode",
                     },
@@ -255,7 +249,7 @@
                         <th>Materiale</th>
                         <th>Fornitore</th>
                         <th>Qt mat. umido</th>
-                        <th >Qt materiale </th>
+                        <th >Qt mat. secco</th>
                       </tr>
                     </thead>
                     <tbody id="substrateElem_Tblb">
@@ -303,7 +297,7 @@
                         <th>Nome inoculum</th>
                       </tr>
                     </thead>
-                    <tbody id="usedInInoculum_Tblb">
+                    <tbody id="usedInSpawn_Tblb">
                       
                     </tbody>
                   </table>
@@ -452,9 +446,7 @@ let recipe
     let html=""
     if (data.length>0){
       for (let i = 0; i < data.length; i++) {
-        
         const elem = data[i];
-        //console.log(elem)
         html+=`<tr>
         <td>
           <button type="button" name="" id="showChildBtn_${elem.id}" 
@@ -524,7 +516,6 @@ function drawShowSubstrate(id) {
               }
             }
             $("#pretreatment_Show").html(data.recipe.pretreatmentTxt)
-            $("#drain_Show").html(data.recipe.drain?"Sì":"No")
             let html=""
             
             let totDry=0
@@ -553,11 +544,12 @@ function drawShowSubstrate(id) {
                 <td>${parseFloat(totHum.toFixed(2))} ${uomTxt.txt}</td>
                 <td>${parseFloat(totDry.toFixed(2))} ${uomTxt.txt}</td>
               </tr>`
-              
-            $("#substrateElem_Tblb").html(html)
-              if ((data.recipe.drain==null)||(data.recipe.drain==0)){
-                $('#substrate_Tbl th:nth-child(4), #substrate_Tbl td:nth-child(4)').hide();
+            console.log(data.recipe.drain)
+              if (data.recipe.drain==null){
+                $(".umidiTd").hide();
               }
+            $("#substrateElem_Tblb").html(html)
+
             if (data.spawns.length>0){
               drawTableChild(data.spawns,"usedInSpawn_Tblb",["code_spawn","spawn_name"],"spawn","Spawn")
               $("#rowSpawn").show();             
