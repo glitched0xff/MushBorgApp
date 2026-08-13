@@ -11,7 +11,7 @@ async function getGroupedNotes(dtFrom,dtTo) {
 
 
   let notes = await DiaryNote.findAll({
-    where:{createdAt: {
+    where:{dataNota: {
           [Op.gte]: dtFrom,
           [Op.lte]: dtTo},
       },
@@ -19,10 +19,11 @@ async function getGroupedNotes(dtFrom,dtTo) {
       "nota",
       "area",
       "tag",
+      "dataNota",
       "createdAt"
     ],
     
-    order: [["createdAt", "DESC"]],
+    order: [["dataNota", "DESC"]],
     raw: true
   });
 
@@ -30,7 +31,7 @@ async function getGroupedNotes(dtFrom,dtTo) {
   let grouped = {};
 
   notes.forEach(n => {
-    const date = new Date(n.createdAt);
+    const date = new Date(n.dataNota);
     const giorno = date.getDate();
     const mese = date.getMonth() + 1; // mesi da 0-11
     const key = `${giorno}-${mese}`;
@@ -46,6 +47,7 @@ async function getGroupedNotes(dtFrom,dtTo) {
       nota: n.nota,
       area: n.area,
       tag: n.tag,
+      dataNota: n.dataNota,
       createdAt: n.createdAt
     });
   });
@@ -61,9 +63,11 @@ router.get('/',async  (req, res) => {
 
 router.get('/getall',async (req, res) => {
   console.log(req.query)
-  let dtFrom=req.query.dtFrom?req.query.dtFrom:moment().startOf("day").subtract(7,'days')
-  let dtTo=req.query.dtTo?req.query.dtTo:moment()
-  let data=await getGroupedNotes(dtFrom,dtTo)
+  let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(1, 'months').startOf('month')
+  let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
+  let data=await getGroupedNotes(fromDate,toDate)
+  data.fromDate=fromDate
+  data.toDate=toDate
   res.status(200).json(data);
 });
 
@@ -72,7 +76,8 @@ router.post('/newNota',async (req,res)=>{
   console.log(data)
   await DiaryNote.create({
       nota:data.nota,
-        tag:data.tag
+        tag:data.tag,
+        dataNota:moment(data.dataNota, "DD-MM-YY hh:mm")
     })
     .then(result=>{
       res.status(200).json({result:result})
