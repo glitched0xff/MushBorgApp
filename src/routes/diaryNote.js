@@ -62,7 +62,7 @@ router.get('/',async  (req, res) => {
 });
 
 router.get('/getall',async (req, res) => {
-  console.log(req.query)
+  //console.log(req.query)
   let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(1, 'months').startOf('month')
   let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
   let data=await getGroupedNotes(fromDate,toDate)
@@ -73,7 +73,7 @@ router.get('/getall',async (req, res) => {
 
 router.post('/newNota',async (req,res)=>{
   let data=req.body
-  console.log(data)
+  //console.log(data)
   await DiaryNote.create({
       nota:data.nota,
         tag:data.tag,
