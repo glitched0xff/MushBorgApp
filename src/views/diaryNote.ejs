@@ -97,6 +97,23 @@
       </div>
     </div>
   </div>
+ <!-- Modal addNote to day -->
+  <div class="modal fade" id="addNote_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nuova nota</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      
+    </div>
+  </div>
+ </div>
   
   <%- include ('footer') %>
   <%- include ('jsLoad') %>
@@ -139,7 +156,10 @@ async function drawTableNote(dtFrom=moment().startOf("day").subtract(7,'days').t
             const nt = elem.note[n];
             html+=`<li>${moment(nt.createdAt).format("HH:mm")} ${nt.nota}</li>`
           }
-          html+=`</ul></div></div>
+          html+=`</ul>
+                    </div>
+                    <div class="col w-100 text-right"> <i class="fa fa-plus-circle addNote" aria-hidden="true"></i></div>
+                    </div>
                           </div>`      
         }
       html+=`</div>`     
@@ -201,6 +221,8 @@ async function drawTableNote(dtFrom=moment().startOf("day").subtract(7,'days').t
         $("#saveNota_Btn").click(function (e) { 
           e.preventDefault();        
         });
+
+        // aggiunge la nota ad un giorno definito
 
         $("#abortNota_Btn").click(function (e) { 
           e.preventDefault();

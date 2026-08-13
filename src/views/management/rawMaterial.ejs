@@ -48,22 +48,43 @@
           <!-- Table rawMaterial -->
           <div class="card w-100" id="tableRawMaterial_Crd">
             <div class="card-body">
+              <div class="row">
+                 <div class="row w-100 p-2">
+                <div class="pt-1">
+                  Intervallo inoculi 
+                </div>
+                <div class="col-md-2 col-sm-9">
+                  <input type="text" class="form-control form-control-sm" id="intervalData" name="intervalData" value="" style="width: 100px;">
+                </div>
+                <div class="col text-center">
+                  <div class="form-group form-inline">
+                    <div class="mr-2">Cerca:</div>
+                    <input type="text" id="customSearch" class="form-control form-control-sm" placeholder="Digita per cercare...">
+                </div>
+                </div>
+                <div class="col text-right ">
+                  N° inoculi: <span id="elNum_Span"></span>
+                </div>
+              </div>
+              </div>
+               <div class="table-responsive pb-3">
               <table class="display table table-striped table-bordered compact" id="rawMaterials_Tbl" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th style="width: 45px; "></th>
-                        <th style="width: 180px;">Nome materiale</th>
-                        <th style="width: 100px;">Categoria</th>
-                        <th style="width: 50px;">Quantità</th>
-                        <th style="width: 60px;">N. substrati</th>
-                        <th style="width: 150px;">Magazzino</th>
-                        <th style="width: 150px;">Creato il</th>
+                        <th></th>
+                        <th>Nome materiale</th>
+                        <th>Categoria</th>
+                        <th>Quantità</th>
+                        <th>N. substrati</th>
+                        <th>Magazzino</th>
+                        <th>Creato il</th>
                     </tr>
                 </thead>
                 <tbody id="rawMaterials_Tblb">
                     
                 </tbody>
-            </table>
+              </table>
+            </div>
             </div>
           </div>
           <!-- Data rawMaterial -->
@@ -256,7 +277,8 @@ let tableRawMaterial
 let redirectId= <%- JSON.stringify( redirectId) %>
 let rawMaterialId
 
-
+let fromDate
+let toDate
   
 // Draw able substrate
 function drawMaterialCategoryTable(materialCategory){
@@ -284,20 +306,23 @@ function drawMaterialCategoryTable(materialCategory){
     $("#materialCategory_Tblb").html(html)
 }
 // Draw and update table
-async function  drawTable (){    
+async function  drawTable (fromDate="",toDate=""){    
    await $.ajax({
         type: "GET",
-        url: "/rawMaterial/getAll",
+        url: "/rawMaterial/getAll?fromDate="+fromDate+"&toDate="+toDate,
         success: async function (response) {
-            let html=""
+            tableRawMaterial.clear();
             console.log(response)
+            fromDate=response.fromDate
+            toDate=response.toDate
+            $("#elNum_Span").html(response.rawMaterials.length);
             for (let i = 0; i < response.rawMaterials.length; i++) {
                 let el=response.rawMaterials[i]
                 let delBtnDisable=""
                 if (el.usedElement>0){
                   delBtnDisable="disabled"
                 }
-                html+=`<tr>
+                let html=`<tr>
                            <td>
                             <button type="button" name="" id="showBtn${el.id}" 
                             class="btn btn-primary btn-xs showMaterialBtn" style="width:25px"
@@ -315,10 +340,27 @@ async function  drawTable (){
                                 <td>${el.quantity} ${el.uomText}</td>
                                 <td>${el.usedElement} </td>
                                 <td>${el.storage.code_storage} ${el.storage.name_storage} </td>
-                                <td>${moment(el.createdAt).format("DD-MM-YY HH:SS")}</td>
+                                <td>${el.createdAt}</td>
                             </tr>`
+                 tableRawMaterial.rows.add($(html))
+
                 }
-                await $('#rawMaterials_Tbl').DataTable().clear().rows.add($(html)).draw();
+                tableRawMaterial.draw()
+                 let picker = $('#intervalData').data('daterangepicker');
+                if (picker) {
+                    // Se il daterangepicker esiste già, aggiorna solo le date senza romperlo
+                    picker.setStartDate(moment(response.fromDate).format("DD/MM"));
+                    picker.setEndDate(moment(response.toDate).format("DD/MM"));
+                } else {
+                    // Se è la primissima volta in assoluto che carichi la pagina, lo inizializzi
+                    $('#intervalData').daterangepicker({
+                        startDate: moment(response.fromDate).format("DD/MM"),
+                        endDate: moment(response.toDate).format("DD/MM"),
+                        locale: {
+                            format: 'DD/MM'
+                        }
+                    });
+                } 
             }
     });
     $("#newRawMaterial_Btn").show()
@@ -415,16 +457,52 @@ async function drawShowRawMaterial(id) {
 
 $(document).ready(async function () {
  
-  tableRawMaterial=$('#rawMaterials_Tbl').DataTable({responsive: true,pageLength: 50});
   if (redirectId!=null){
     await drawShowRawMaterial(redirectId)
   }
   else{
-    tableInoculi=$('#inoculi_Tbl').DataTable({responsive: true,pageLength: 50})
+    tableRawMaterial = $('#rawMaterials_Tbl')
+                         .DataTable({
+                                    pageLength: 25,
+                                    dom: 'tp',
+                                    columnDefs: [{ targets: 0, width: "7%" },  
+                                                  { targets: 1, width: "15%" }, 
+                                                  { targets: 2, width: "10%" }, 
+                                                  { targets: 3, width: "15%" }, 
+                                                  { targets: 4, width: "15%" },
+                                                  { targets: 4, width: "10%" },
+                                                  {
+                                                      targets: 5, 
+                                                      width: "25%",
+                                                  },
+                                                  { targets: 6, width: "13%",
+                                                    render: function (data, type, row) {
+                                                          // Se DataTables chiede il valore per ordinare (sort) o filtrare (type)
+                                                          if (type === 'sort' || type === 'type') {
+                                                              return moment(data).format("YYYYMMDD");
+                                                          }
+                                                          // Valore visualizzato sullo schermo
+                                                          return moment(data).format("DD-MM-YY");
+                                                      }
+                                                  },
+
+                                              ]
+                                          }); 
     await drawTable()
   } 
   await drawMaterialCategoryTable(materialCategory)
     
+      // Filtro tabella
+     $('#intervalData').on('apply.daterangepicker', async function(ev, picker) {
+        fromDate=picker.startDate.format('YYYY-MM-DD')
+        toDate=picker.endDate.format('YYYY-MM-DD')
+        console.log(fromDate,toDate)
+        await drawTable(fromDate,toDate)
+      });
+    $('#customSearch').on('keyup', function () {
+        tableRawMaterial  .search(this.value).draw();
+    });
+
 
     // Card
     // New rawMAterial

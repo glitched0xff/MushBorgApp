@@ -28,15 +28,14 @@
               <table class="display table table-striped table-bordered compact" id="strain_Tbl" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th style="width: 40px; "></th>
+                        <th ></th>
                         <th>Codice strain</th>
                         <th>Nome strain</th>
-                        <th style="width: 200px; ">Specie</th>
+                        <th >Specie</th>
                         <th>Fornitore</th>
-                        <th>Generazione</th>
-                        <th>El. inoculi</th>
-                        <th>El. spawn</th>
-                        <th>El. coltivazione</th>
+                        <th>Inoculi</th>
+                        <th>Spawn</th>
+                        <th>Coltiv.</th>
                         <th>Creata il</th>
                     </tr>
                 </thead>
@@ -523,14 +522,14 @@ async function  drawTable (){
       url: "/strain/getAll",
       success: async function (response) {
         console.log(response)
-          let html=""
+              tableStrain.clear()
           for (let i = 0; i < response.strains.length; i++) {
               let el=response.strains[i]
               let delBtnDisable=""
               if ((el.spawnCount!=0)||(el.inoculumCount!=0)||(el.propagationCount!=0)){
                 delBtnDisable="disabled"
               }
-              html+=`<tr>
+              let html=`<tr>
                           <td>
                           <button type="button" name="" id="showBtn${el.id}" 
                           class="btn btn-primary btn-xs showStrain" style="width:25px"
@@ -547,15 +546,14 @@ async function  drawTable (){
                               <td>${el.strain_name}</td>
                               <td>${el.species}</td>
                               <td>${el.supplier!=null?el.supplier.supplier_name?el.supplier.supplier_name:"-":"-"}</td>
-                              <td>${el.generation}</td>
                               <td>${el.spawnCount}</td>
                               <td>${el.inoculumCount}</td>
                               <td>${el.propagationCount}</td>
-                              <td>${moment(el.createdAt).format("DD-MM-YY HH:mm")}</td>
+                              <td>${el.createdAt}</td>
                           </tr>`
-              
+                          tableStrain.rows.add($(html))
               }
-              await $('#strain_Tbl').DataTable().clear().rows.add($(html)).draw();
+              tableStrain.draw();
           }
   });
 }
@@ -639,7 +637,28 @@ $(document).ready(async function () {
       $("#pdfStrain_Btn").show();
     }
     else{
-      tableStrain=$('#strain_Tbl').DataTable({responsive: true, pageLength: 50});
+      tableStrain=$('#strain_Tbl').DataTable({pageLength: 15,
+                                                columnDefs: [
+                                                  { targets: 0, width: "5%" },  
+                                                  { targets: 1, width: "5%" }, 
+                                                  { targets: 2, width: "15%" }, 
+                                                  { targets: 3, width: "15%" }, 
+                                                  { targets: 4, width: "10%" },
+                                                  { targets: 4, width: "15%" },
+                                                  {targets: 5, width: "5%",orderable: false,className: 'dt-center' },
+                                                  {targets: 6, width: "5%",orderable: false,className: 'dt-center' },
+                                                  {targets: 7, width: "5%",orderable: false,className: 'dt-center' },
+                                                { targets: 8, width: "5%",
+                                                    render: function (data, type, row) {
+                                                          // Se DataTables chiede il valore per ordinare (sort) o filtrare (type)
+                                                          if (type === 'sort' || type === 'type') {
+                                                              return moment(data).format("YYYYMMDD");
+                                                          }
+                                                          // Valore visualizzato sullo schermo
+                                                          return moment(data).format("DD-MM-YY");
+                                                      }
+                                                  }],
+                                                });
       await drawTable()
       $("#idStrain_Fld").val("");
       $("#idStrainParameter_Fld").val("");
@@ -766,8 +785,14 @@ $(document).ready(async function () {
 
     $("#modStrain_Btn").click(function (e) { 
       e.preventDefault();
-      $(".strainForm").show()
-      $(".strainText").hide()
+      // Campi da abilitare
+      var fields = $("#strain_name_Wrp, #description_Wrp, #note_Wrp");
+
+      fields.find(".strainForm").show();
+      fields.find(".strainText").hide();
+
+      //$(".strainForm").show()
+      //$(".strainText").hide()
       $("#strain_Frm_Btn").show();
       
     });

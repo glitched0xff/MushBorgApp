@@ -50,6 +50,7 @@ let strains=await Strain.findAll({attributes: [ "id",
                                                 "strain_name",
                                                 "species",
                                                 "generation",
+                                                "createdAt",
                                                 [fn("COUNT", col("spawns.id")), "spawnCount"],
                                                 [fn("COUNT", col("inoculums.id")), "inoculumCount"],
                                                 [fn("COUNT", col("propagations.id")), "propagationCount"],
@@ -60,18 +61,19 @@ let strains=await Strain.findAll({attributes: [ "id",
                                             },
                                             {
                                             model: db.spawn,
-                                            attributes: [],
+                                            attributes: ["id"],
                                             },
                                             {
                                             model: db.inoculum,
-                                            attributes: [],
+                                            attributes: ["id"],
                                             },
                                             {
                                             model: db.propagation,
-                                            attributes: [],
+                                            attributes: ["id"],
                                             }],
                                   group: ["strain.id"],
                                   order:[["createdAt","DESC"]]})
+    console.log(JSON.parse(JSON.stringify(strains)))
     res.status(200).json({strains:strains})
 });
 

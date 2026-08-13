@@ -15,6 +15,9 @@ module.exports = (sequelize, Sequelize) => {
       area:{
         type: Sequelize.STRING,
       },
+      dataNota:{
+        type: Sequelize.DATE,
+      },
       tag:{
         type: Sequelize.STRING,
       },

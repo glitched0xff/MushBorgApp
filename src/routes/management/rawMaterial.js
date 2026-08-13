@@ -36,42 +36,62 @@ router.get('/',async  (req, res) => {
   });
   
 router.get('/getAll',async  (req, res) => {
-let rawMaterials=await RawMaterial.findAll({
-    //logging: console.log,
+let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(2, 'months').startOf('month')
+let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
+let rawMaterials
+console.log(fromDate,toDate)
+    rawMaterials=await RawMaterial.findAll({
+    where: { createdAt: { [Op.between]: [fromDate.toDate(), toDate.toDate()] }},
+    attributes:["id","material_name","quantity","uom","createdAt"],
     include: [{
             model: MaterialCategory,
-        },{
-            model: Supplier,
-        },{
-            model:SubstrateElement,attributes:["id"],include:[{model: Substrate,attributes:["id","cod_substrate","name_substrate"]}]
-        },{
-            model: db.storage,attributes:["name_storage","code_storage"]
-        }],
+            attributes:["id","category_name"]
+        },
+        //{model: Supplier,},
+        { model:SubstrateElement,attributes:["id"],include:[{model: Substrate,attributes:["id","cod_substrate","name_substrate"]}]},
+        { model: db.storage,attributes:["name_storage","code_storage"] }],
         order:[['createdAt', 'DESC']]
-        })
+    })
+    if(rawMaterials.length==0){
+        rawMaterials=await RawMaterial.findAll({
+                        attributes:["id","material_name","quantity","uom","createdAt"],
+                        include: [{
+                                model: MaterialCategory,
+                                attributes:["id","category_name"]
+                            },
+                            {model: Supplier,},
+                            { model:SubstrateElement,attributes:["id"],include:[{model: Substrate,attributes:["id","cod_substrate","name_substrate"]}]},
+                            { model: db.storage,attributes:["name_storage","code_storage"] }],
+                            order:[['createdAt', 'DESC']],
+                            limit:15
+                        })
+        toDate=rawMaterials[0].createdAt
+        fromDate=rawMaterials[rawMaterials.length-1].createdAt
+    }
+
     rawMaterials=JSON.parse(JSON.stringify(rawMaterials))
     for (let i = 0; i < rawMaterials.length; i++) {
         const elem = rawMaterials[i];
         elem.usedElement=elem.substrateElements.length
     }
     // Recupero dati
-const udmDD = await db.dDOption.findAll({
-  where: { ddMenu: "udmSelect" },
-  raw: true
-});
+    const udmDD = await db.dDOption.findAll({
+        where: { ddMenu: "udmSelect" },
+        raw: true
+    });
 
-// Creo una mappa val -> txt
-const udmMap = new Map(
-  udmDD.map(item => [Number(item.val), item.txt])
-);
+    // Creo una mappa val -> txt
+    const udmMap = new Map(
+        udmDD.map(item => [Number(item.val), item.txt])
+    );
 
-// Associo uomText in O(n)
-for (const material of rawMaterials) {
-  const key = Number(material.uom);
-  material.uomText = udmMap.get(key) ?? null;
-}
+    // Associo uomText in O(n)
+    for (const material of rawMaterials) {
+         const key = Number(material.uom);
+         material.uomText = udmMap.get(key) ?? null;
+    }
     //console.log(rawMaterials)
-    res.status(200).json({rawMaterials:rawMaterials})
+    res.status(200).json({rawMaterials:rawMaterials,fromDate:fromDate,toDate:toDate})
 });
 
 router.post('/newRawMaterial', async(req,res) => {
