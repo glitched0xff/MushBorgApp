@@ -39,14 +39,13 @@
                     <div class="card-header"  >
                       <h3 class="card-title">Raccolto (<span id="countHarvest"></span>) </h3>
                       <div class="card-tools">
+                        <% if (mushElement.active==1){%>
                         <button class="btn btn-xs btn-primary mx-1" id="insertHarvest_Btn"
-                        <% if (mushElement.active==0){%>
-                          disabled
-                        <% } %>
                         <% if (mushElement.stage!=2){%>
                           disabled
                         <% } %>
                         > <i class="fas fa-plus"></i> Inserisci raccolto</button>
+                        <% } %>
                         <!-- <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button> -->
                       </div>
                     </div>
@@ -128,12 +127,11 @@
                       <h3 class="card-title">Note (<span id="countNote"></span>) </h3>
                         
                       <div class="card-tools">
-                        <button class="btn btn-xs btn-primary mx-1" id="insertNote_Btn"
-                        <% if (mushElement.active==0){%>
-                          disabled
-                        <% } %>
-                        > <i class="fas fa-plus"></i> Inserisci nota</button>
-<!--                       
+                        <% if (mushElement.active==1){%>
+                        <button class="btn btn-xs btn-primary mx-1" id="insertNote_Btn"> 
+                          <i class="fas fa-plus"></i>Inserisci nota
+                        </button>
+<!--                       <% } %>
                           <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button> -->
                       </div>
                     </div>
@@ -287,8 +285,10 @@
                             </div>
                           </div>
                      </div>
+                     <% if (mushElement.active==1){%>
                      <button type="button" name="" id="movimentationElement_Btn" class="btn btn-success btn-block"> 
                       Movimenta l'elemento <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></button>
+                      <% } %>
                   </div>
                   <!-- Btn Visualizza dati -->
                   <div class="col-12 mx-auto my-2">
@@ -298,16 +298,14 @@
                     </a>
                   </div>
                   <!-- Btn Pick elemento -->
+                   <% if (mushElement.active==1){%>
                   <div class="col-12 mx-auto my-2">
-                    <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-block"
-                    <% if (mushElement.active==0){%>
-                    disabled
-                    <% } %>
-                    >Pick elemento
+                    <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-block">
+                      Pick elemento
                       <i class="fa fa-minus-circle" aria-hidden="true"></i>
                     </button>
                   </div>
-
+                  <% } %>
                 </div>
             </div>
           </div>

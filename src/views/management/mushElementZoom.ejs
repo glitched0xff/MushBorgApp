@@ -83,49 +83,61 @@
       <% } else { %>
         
       <div class="card w-100" id="showMushElement_Crd">
-        <div class="row m-3">
-
-          <div class="col-12">
-            <!-- Visual -->
-            <div id="showElement_Div">
-              <h2>  <%= mushElement.element_code %>
+        <div class="row m-3 my-4">
+          <!-- Bottoni -->
+              <div class="col-12 mb-3">
+                <div class="btn-group" role="group" aria-label="Basic example">
                 <% if(mushElement.active!=0) { %>
-                
-              <button type="button" name="" id="modElement_Btn" class="btn btn-primary btn-xs mx-2">Modifica elemento</button>
-              <button type="button" name="" id="moveElement_Btn" class="btn btn-primary btn-xs mx-2">Sposta elemento</button>
-              <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-xs mx-2">Elimina elemento</button>
+
+              <button type="button" name="" id="modElement_Btn" class="btn btn-secondary btn-xs"><i class="fas fa-pencil fa-sm  "></i> Modifica elemento</button>
+              <button type="button" name="" id="moveElement_Btn" class="btn btn-secondary btn-xs"><i class="fas fa-route fa-sm  "></i> Sposta elemento</button>
+              <button type="button" name="" id="delElement_Btn" class="btn btn-secondary btn-xs"><i class="fa fa-trash" aria-hidden="true"></i> Elimina elemento</button>
               <% if(filterCategory=="INOCULUM") {%>
-              <a href="/inoculum?incoulumCode=<% %>">
-                    <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-xs mx-2">Vai al lotto</button>
+              <a href="/inoculum?incoulumCode=<%= parentElement.code_inoculum %>" class="btn btn-secondary btn-xs">
+                <i class="fas fa-boxes fa-sm  "></i>Vai al lotto
                     </a>
                 <% } %>
               <% if(filterCategory=="SPAWN") {%>
-              <a href="/spawn?spawnCode=<% %>">
-                    <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-xs mx-2">Vai al lotto</button>
+              <a href="/spawn?spawnCode=<%= parentElement.code_spawn %>" class="btn btn-secondary btn-xs">
+                <i class="fas fa-boxes fa-sm  "></i>Vai al lotto
                     </a>
                 <% } %>
                 <% if(filterCategory=="CULTIVATION") {%>
-              <a href="/propagation?propagationCode=<% %>">
-                    <button type="button" name="" id="delElement_Btn" class="btn btn-danger btn-xs mx-2">Vai al lotto</button>
+              <a href="/propagation?propagationCode=<%= parentElement.code_propagation %>" class="btn btn-secondary btn-xs">
+                        <i class="fas fa-boxes fa-sm  "></i> Vai al lotto
                     </a>
                 <% } %>
               <% if((filterCategory=="SPAWN")&&(mushElement.stage==null)){ %>
                   
-                  <button type="button" name="" id="fructElement_Btn" class="btn btn-success btn-xs mx-2">Metti in fruttificazione</button>
+                  <button type="button" name="" id="fructElement_Btn" class="btn btn-secondary btn-xs">Metti in fruttificazione</button>
               <% } else if((filterCategory=="SPAWN")&&(mushElement.stage==2)){%>
                 <!-- <div class="col mx-auto text-center">Elemento in fruttificazione</div> -->
                 <%}%>
                 <% if((filterCategory=="CULTIVATION")&&(mushElement.stage==1)){ %>
-                  <button type="button" name="" id="fructElement_Btn" class="btn btn-success btn-xs mx-2">Metti in fruttificazione</button>
+                  <button type="button" name="" id="fructElement_Btn" class="btn btn-secondary btn-xs">Metti in fruttificazione</button>
               <% }  else if((filterCategory=="CULTIVATION")&&(mushElement.stage==2)){%>
                 <!-- <div class="col mx-auto text-center">Elemento in fruttificazione</div> -->
                 <%}%>
-              <button type="button" name="" id="printCode_Btn" class="btn btn-danger btn-xs mx-2">Stampa codice</button>
+              <button type="button" name="" id="printCode_Btn" class="btn btn-secondary p-1 btn-xs"><i class="fas fa-qrcode    "></i> Stampa codice</button>
               <% } else {%>
-                <i class="fa fa-times-circle text-danger" aria-hidden="true"></i> <span class="small"> <%= mushElement.pickReasonDesc %> <%= mushElement.pick_date %> </span>
+                <i class="fa fa-times-circle text-secondary p-1" aria-hidden="true"></i> <span class="small"> <%= mushElement.pickReasonDesc %> <%= mushElement.pick_date %> </span>
               <% }%>
-              <button type="button" name="" id="printDataSheet_Btn" class="btn btn-danger btn-xs mx-2">Stampa scheda</button>
+              <button type="button" name="" id="printDataSheet_Btn" class="btn btn-secondary p-1 btn-xs">
+                <i class="fas fa-file-pdf"></i> Stampa scheda  
+              </button>
+              <button type="button" name="" id="printDataSheet_Btn" class="btn btn-secondary p-1 btn-xs">
+                <i class="fas fa-mobile fa-sm  "></i> Interfaccia semplificata 
+              </button>
+              </div> 
+              </div>
+          <div class="col-12">
+          
+            <!-- Visual -->
+            <div id="showElement_Div">
+              <h2>  <%= mushElement.element_code %>
+                 
             </h2>
+            
               <div class="row w-100">
               <div class="col">
                 <div class="row w-100">
@@ -489,10 +501,12 @@
           <div class="card w-100 ">
             <div class="card-header"  >
               <h3 class="card-title">Annotazioni elemento
-              <button class="btn btn-xs btn-primary mx-1" <% if(mushElement.active==0) { %> disabled <% }%>id="addMushElementNote_Btn"> 
+                <% if (mushElement.active==1){%>
+              <button class="btn btn-xs btn-primary mx-1" id="addMushElementNote_Btn"> 
               <i class="fas fa-plus"></i> 
                 Aggiungi una nota
               </button>
+              <% } %>
               </h3>
               <div class="card-tools">
                 <!-- <div class="btn-group">

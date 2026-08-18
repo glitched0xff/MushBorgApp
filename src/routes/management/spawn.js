@@ -249,7 +249,7 @@ router.post('/newSpawn', async(req,res) => {
             strainWeight:data.strainWeight?data.strainWeight:0,
             supplierId:data.supplierId?data.supplierId:null,
             qt:data.qt,
-            exp_date: data.expected_maturation_date?moment(data.exp_date,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"):null,
+            exp_date: data.exp_date?moment(data.exp_date,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"):null,
             expected_maturation_date:data.expected_maturation_date?moment(data.expected_maturation_date,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"):null,
             purchased_date: data.purchased_date?moment(data.purchased_date,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"):null,
             storageId: data.storageId,

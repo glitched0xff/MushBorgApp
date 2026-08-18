@@ -148,7 +148,7 @@ router.post('/newInoculum', async(req,res) => {
         substrateId: data.substrateId.split("|")[0],
         supplierId:data.supplierId?data.supplierId:null,
         cultivation_media: data.cultivation_media,
-        exp_date: data.expected_maturation_date?moment(data.exp_date,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"):null,
+        exp_date: data.exp_date?moment(data.exp_date,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"):null,
         expected_maturation_date:data.expected_maturation_date?moment(data.expected_maturation_date,"DD-MM-YY").format("YYYY-MM-DD hh:mm:ss"):null,
         storageId: data.storageId,
         purchased: data.purchased,
