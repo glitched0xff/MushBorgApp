@@ -2,6 +2,56 @@
 <%- include ('../navbar') %>
 <%- include ('../sidebar') %>
 
+<!-- Overlay di caricamento -->
+<style>
+  /* Sfondo oscurato a tutto schermo */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Sfondo semi-trasparente */
+    z-index: 9999; /* Sopra a qualsiasi altro elemento */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* La rotella (Spinner) */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3; /* Grigio chiaro */
+    border-top: 5px solid #007bff; /* Blu (puoi cambiarlo con il colore del tuo brand) */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Testo sotto la rotella */
+.loading-text {
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* Animazione della rotella */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+</style>
+
+<div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+    <p class="loading-text">Caricamento in corso...</p>
+</div>
+<!--  -->
+
   <div class="content-wrapper">
     <div class="content-header">
       <div class="mushElement-fluid">
@@ -1521,75 +1571,75 @@ $(document).ready(async function () {
   console.log(mushElement)
    await getMovimentation()
     
-    switch (filterCategory) {
-      case "INOCULUM":
-        letterElement="_I"
-        $("#titoloFiltro").html(`elemento inoculo`)
-        $("#cultivation_info_Show").html(parentElement.inoculum_name)
-        $("#lottoExpDate").html(parentElement.exp_date)
-        $("#lottoName").html(parentElement.inoculum_name)
-        $("#lottoCode").html(parentElement.code_inoculum)
+  switch (filterCategory) {
+    case "INOCULUM":
+      letterElement="_I"
+      $("#titoloFiltro").html(`elemento inoculo`)
+      $("#cultivation_info_Show").html(parentElement.inoculum_name)
+      $("#lottoExpDate").html(parentElement.exp_date)
+      $("#lottoName").html(parentElement.inoculum_name)
+      $("#lottoCode").html(parentElement.code_inoculum)
+      $("#harvest_Crd").hide()
+      break;
+
+    case "SPAWN":
+      letterElement="_S"
+      $("#titoloFiltro").html("elemento spawn")
+      $("#cultivation_info_Show").html(parentElement.spawn_name)
+      // $("#storageId_Show").parent().parent().hide()
+      $("#lottoName").html(parentElement.spawn_name)
+      $("#lottoCode").html(parentElement.code_spawn)
+      $('#lottoExpDate').closest('div').hide();
+      if (mushElement.mushElementHarvests.length>0){
+      $("#harvest_Crd").show()
+      }
+      else{
         $("#harvest_Crd").hide()
-        break;
+      }
+      break;
 
-      case "SPAWN":
-        letterElement="_S"
-        $("#titoloFiltro").html("elemento spawn")
-        $("#cultivation_info_Show").html(parentElement.spawn_name)
-       // $("#storageId_Show").parent().parent().hide()
-        $("#lottoName").html(parentElement.spawn_name)
-        $("#lottoCode").html(parentElement.code_spawn)
-        $('#lottoExpDate').closest('div').hide();
-        if (mushElement.mushElementHarvests.length>0){
-        $("#harvest_Crd").show()
-        }
-        else{
-          $("#harvest_Crd").hide()
-        }
-        break;
+    case "CULTIVATION":
+      letterElement="_C"
+      $('#lottoExpDate').closest('div').hide();
+      $("#titoloFiltro").html("elemento coltivazione")
+      $("#cultivation_info_Show").html(parentElement.propagation_name)
+      $("#lottoName").html(parentElement.propagation_name)
+      $("#lottoCode").html(parentElement.code_propagation)
+      $("#harvest_Crd").show()
+      break;
+  }
+  $("#lottoStrain").html(parentElement.strain.code_strain)
+  $("#lottoPurchased").html(parentElement.purchased?"Si":"No")
+  $("#lottoContainer").html(parentElement.container.code_container+" "+parentElement.container.container_name)
+  $("#lottoNContainer").html(parentElement.n_container)
+  $("#lottoSubQt").html(parentElement.substrateQt?parentElement.substrateQt:"-")
+  $("#lottoSpnQt").html(parentElement.spawnQt?parentElement.spawnQt:"-")
+  $("#lottoPercInoc").html(parentElement.percInoculo?parentElement.percInoculo:"-")
+  
 
-      case "CULTIVATION":
-        letterElement="_C"
-        $('#lottoExpDate').closest('div').hide();
-        $("#titoloFiltro").html("elemento coltivazione")
-        $("#cultivation_info_Show").html(parentElement.propagation_name)
-        $("#lottoName").html(parentElement.propagation_name)
-        $("#lottoCode").html(parentElement.code_propagation)
-        $("#harvest_Crd").show()
-        break;
-    }
-    $("#lottoStrain").html(parentElement.strain.code_strain)
-    $("#lottoPurchased").html(parentElement.purchased?"Si":"No")
-    $("#lottoContainer").html(parentElement.container.code_container+" "+parentElement.container.container_name)
-    $("#lottoNContainer").html(parentElement.n_container)
-    $("#lottoSubQt").html(parentElement.substrateQt?parentElement.substrateQt:"-")
-    $("#lottoSpnQt").html(parentElement.spawnQt?parentElement.spawnQt:"-")
-    $("#lottoPercInoc").html(parentElement.percInoculo?parentElement.percInoculo:"-")
-    
+  tableMushElement=$('#mushElement_Tbl').DataTable({responsive: true,order: [[5, 'desc']]})
+  $('#dt_start_DT').datetimepicker({locale: 'it', format:"DD-MM-YYYY"})
+  $('#dt_end_DT').datetimepicker({locale: 'it', format:"DD-MM-YYYY"})
+  $('#check_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY",autoclose:true})
+  $('#setExpectedMatDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+  $('#setRealMatDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+  $('#setExpectedFructDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+  $('#setRealFructDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+  $('#harvest_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+  $('#pickDate_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
+  
+  $('#harvest_date_DT').datetimepicker('date', new Date())
+  $('#check_date_DT').datetimepicker('date', new Date())
+  $('#pickDate_DT').datetimepicker('date', new Date())
+  
 
-    tableMushElement=$('#mushElement_Tbl').DataTable({responsive: true,order: [[5, 'desc']]})
-    $('#dt_start_DT').datetimepicker({locale: 'it', format:"DD-MM-YYYY"})
-    $('#dt_end_DT').datetimepicker({locale: 'it', format:"DD-MM-YYYY"})
-    $('#check_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY",autoclose:true})
-    $('#setExpectedMatDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
-    $('#setRealMatDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
-    $('#setExpectedFructDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
-    $('#setRealFructDate_DT ').datetimepicker({locale: 'it', format:"DD-MM-YY"})
-    $('#harvest_date_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
-    $('#pickDate_DT').datetimepicker({locale: 'it', format:"DD-MM-YY"})
-    
-    $('#harvest_date_DT').datetimepicker('date', new Date())
-    $('#check_date_DT').datetimepicker('date', new Date())
-    $('#pickDate_DT').datetimepicker('date', new Date())
-    
-
-     $("#dt_start_Fl").on("dp.change", function (e) {
-           let data=$('#dt_start_Fl').val()
-           $('#dt_stop_DT').val(data)
-       });
-    drawElementNote(mushElement.id)
-    console.log(mushElement)
-    drawElementHarvest(mushElement.mushElementHarvests)
+    $("#dt_start_Fl").on("dp.change", function (e) {
+          let data=$('#dt_start_Fl').val()
+          $('#dt_stop_DT').val(data)
+      });
+  drawElementNote(mushElement.id)
+  console.log(mushElement)
+  drawElementHarvest(mushElement.mushElementHarvests)
   $("#dt_start_DT").on("change.datetimepicker", function (e) {
             $('#dt_end_DT').datetimepicker('date', moment(e.date).add(15, 'd'));
         });
@@ -1608,472 +1658,473 @@ $(document).ready(async function () {
     }
   });
   // Delete mushElement
-    $(document).on("click",".deleteMushElement_Btn", async function(e){
-      e.preventDefault();
-      let id=$(this).attr("idMushElement")
-      let name=$(this).attr("mushElementName")
-      let spawnId=$(this).attr("spawnId")
-      let c=confirm(`Stai eliminando lotto di coltivazione ${name}, vuoi continuare? `)
-      if (c==true){
-        $.ajax({
-        type: "DELETE",
-        url: "/mushElement/deleteMushElement?id="+id+"&spawnId="+spawnId,
-        success: async function (response) {
-          await drawTable()
-        }
-      });
+  $(document).on("click",".deleteMushElement_Btn", async function(e){
+    e.preventDefault();
+    let id=$(this).attr("idMushElement")
+    let name=$(this).attr("mushElementName")
+    let spawnId=$(this).attr("spawnId")
+    let c=confirm(`Stai eliminando lotto di coltivazione ${name}, vuoi continuare? `)
+    if (c==true){
+      $.ajax({
+      type: "DELETE",
+      url: "/mushElement/deleteMushElement?id="+id+"&spawnId="+spawnId,
+      success: async function (response) {
+        await drawTable()
       }
-    })
+    });
+    }
+  })
 
-     $("#printCode_Btn").click(function (e) { 
-      e.preventDefault();
-      $.ajax({
-        type: "GET",
-        url: "/mushElement/getQrElement?elementCode="+mushElement.element_code,
-        success: function (response) {
-          console.log(response)
-          $("#qrCode_Img").html( `<img src="${response.qrCode} " alt="${mushElement.element_cod}" />`)
-          $("#qrCode_Mdl").modal("show")
-        },
-        error:function(err){
-          console.log(err)
-        }
-      });
-      
-    });
-   
-    // Element
-    $(document).on("click",".genQrCodeElement_Btn", function () {
-      let idElement=$(this).attr("idElement")
-      $.ajax({
-        type: "GET",
-        url: "/mushElement/getQrElement?id="+idElement,
-        success: function (response) {
-          console.log(response)
-          let img=`<img src="${response.qrCode}"  />`
-          $("#qrcode").html(img)
-          $("#qrCode_Mdl").modal("show")
-        }
-      });
-      
-    });
-
-    $("#modElement_Btn").click(function (e) { 
-      e.preventDefault();
-      $("#stageDD").val(mushElement.stage);
-      $("#showElement_Div").hide()
-      $("#modelement_Div").show()
-    });
-    $("#abortElement_Btn").click(function (e) { 
-      e.preventDefault();
-      resetForm("updateMushElement_Frm")
-      $("#showElement_Div").show()
-      $("#modelement_Div").hide()
-    });
-
-    $("#saveElement_Btn").click(function (e) { 
-      e.preventDefault();
-      $.ajax({
-        type: "PUT",
-        url: "/mushElement/modMushElement",
-        data: $("#updateMushElement_Frm").serialize(),
-        success: function (response) {
-          window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
-        }
-      });
-    });
-
-    $("#delElement_Btn").click(function (e) { 
-      e.preventDefault();
-      $('#pick_Mdl').modal('show')
+  $("#printCode_Btn").click(function (e) { 
+    e.preventDefault();
+    $.ajax({
+      type: "GET",
+      url: "/mushElement/getQrElement?elementCode="+mushElement.element_code,
+      success: function (response) {
+        console.log(response)
+        $("#qrCode_Img").html( `<img src="${response.qrCode} " alt="${mushElement.element_cod}" />`)
+        $("#qrCode_Mdl").modal("show")
+      },
+      error:function(err){
+        console.log(err)
+      }
     });
     
-    $("#moveElement_Btn").click(function (e) { 
-      e.preventDefault();
-      $("#movimentation_Mdl").modal("show")
-    });
-
-    $("#saveMovimentation_Btn").click(function (e) { 
-      e.preventDefault();
-      let toStorage=$("#toStorage_Fld option:selected").text();
-      let c=confirm("Procedere con lo spostamento dell'elemento verso il magazzino "+toStorage+" ?")
-      if (c==true){
-      $.ajax({
-        type: "POST",
-        url: "/mushElement/movimentazioneSingleElement",
-        data: $("#movimentation_Frm").serialize(),
-        success: function (response) {
-         window.location.reload();
-        }
-      });
-      }
-    });
-    $("#pickDelete_Btn").click(function (e) { 
-      e.preventDefault();
-
-      if (checkForm("pick_Frm")){
-        let deleteFlag=$("#deleteElem").is(":checked");
-        console.log(deleteFlag)
-        console.log("--")
-        if (confirm("Vuoi continuare?")){
-          $.ajax({
-            type: "PUT",
-            url: "/mushElement/pickElement",
-            data: $("#pick_Frm").serialize(),
-            success: function (response) {
-              if (deleteFlag==true){
-                window.location.replace("/mushElement/"); 
-              }else{
-                window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
-              }
-            }
-          });
-        } else {
-          $('#pick_Mdl').modal('hide')
-        }
-      }else{
-        alert("Compila i dati obbligatori")
-      }
-    });
-
-
-       // Element Note
-    $("#addMushElementNote_Btn").click(function (e) { 
-      e.preventDefault();
-       
-      $("#filterCategoryNote_Fld").val(filterCategory)
-      $("#insertNote_Mdl").modal("show")
-    });
+  });
   
-    $("#saveMushElementNote_Btn").click(async function (e) {
-      e.preventDefault();
-
-      const form = document.getElementById("mushElementNote_Form");
-      let formdata = new FormData(form);
-
-      let fileKey = null;
-      let file = null;
-
-      for (let [key, value] of formdata.entries()) {
-        if (value instanceof File && value.size > 0) {
-          fileKey = key;
-          file = value;
-          break;
-        }
+  // Element
+  $(document).on("click",".genQrCodeElement_Btn", function () {
+    let idElement=$(this).attr("idElement")
+    $.ajax({
+      type: "GET",
+      url: "/mushElement/getQrElement?id="+idElement,
+      success: function (response) {
+        console.log(response)
+        let img=`<img src="${response.qrCode}"  />`
+        $("#qrcode").html(img)
+        $("#qrCode_Mdl").modal("show")
       }
-
-      // 🔄 Convert + Resize
-      if (file) {
-        try {
-          const resizedBlob = await convertAndResizeImage(file, 1024);
-          const baseName = file.name
-            .replace(/\.[^/.]+$/, "")   // rimuove estensione
-            .replace(/\s+/g, "_");      // spazi → _
-
-          const newFile = new File(
-            [resizedBlob],
-            baseName + ".jpg",
-            { type: "image/jpeg" }
-          );
-
-          formdata.delete(fileKey);
-          formdata.append(fileKey, newFile);
-
-          console.log("Immagine convertita e ridimensionata");
-        } catch (err) {
-          console.error(err);
-          alert("Errore elaborazione immagine");
-          return;
-        }
-      }
-
-      $.ajax({
-        type: "POST",
-        url: "/mushElement/newMushElementNote?type="+filterCategory,
-        data: formdata,
-        processData: false,
-        contentType: false,
-        beforeSend: function () {
-          console.log("before")
-          $("#loadingOverlay").fadeIn(200);
-        },
-        
-        success: async function (response) {
-          console.log("Response")
-          console.log(response)
-            if (response.error==true){
-              alert(response.data)
-            }else{
-            drawElementNote(mushElement.id)
-            $("#insertNote_Mdl").modal("hide")
-            resetForm("mushElementNote_Form")
-          }
-        },
-        error: function(err){
-          console.log(err)
-        },
-        complete: function () {
-          console.log("Completato Upload")
-          $("#loadingOverlay").fadeOut(200);
-        }
-      });
-    });
-
-    $("#abortMushElementNote_Btn").click(function (e) { 
-      e.preventDefault();
-      $("#mushElementNote_Form").hide()
-      $("#mushElementNote_Tbl").show()
-      $("#addMushElementNote_Btn").show()
     });
     
-    $(document).on("click",".delMushElementNote", function (e) {
-      e.preventDefault()
-        let idMushElementNote=$(this).attr("idmushelementnote")
-        let idMushElement=$(this).attr("idmushelementnote")
-        console.log(idMushElementNote,idMushElement)
-        let c=confirm(`Stai eliminando una nota, vuoi continuare? `)
-        if (c==true){
-          $.ajax({
-            type: "DELETE",
-            url: "/mushElement/deleteMushElementNote?id="+idMushElementNote,
-            success: async function (response) {
-               await drawElementNote(idMushElement)
-            }
-          });
-        }
-    });
+  });
 
-    // area movimentation
-  function generaTabEGrafici(datiIot) {
-      const tabList = document.getElementById('myTab');
-      const tabContent = document.getElementById('myTabContent');
-      tabList.innerHTML = '';
-      tabContent.innerHTML = '';
-      const chiavi = Object.keys(datiIot);
-      chiavi.forEach((chiave, index) => {
-        const datiSensore = datiIot[chiave];
-        
-        // Sicurezza: controlla che sia un array valido e popolato
-        if (!datiSensore || !Array.isArray(datiSensore) || datiSensore.length === 0) return;
-        if (chiave=="") return;
-        const isFirst = index === 0;
-        const activeClass = isFirst ? 'active' : '';
-        const showActiveClass = isFirst ? 'show active' : '';
+  $("#modElement_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#stageDD").val(mushElement.stage);
+    $("#showElement_Div").hide()
+    $("#modelement_Div").show()
+  });
+  $("#abortElement_Btn").click(function (e) { 
+    e.preventDefault();
+    resetForm("updateMushElement_Frm")
+    $("#showElement_Div").show()
+    $("#modelement_Div").hide()
+  });
 
-        // --- CORREZIONE 1: Estrazione corretta dei dati dall'array ---
-        const values = datiSensore.map(d => Number(Number(d.val).toFixed(2))); // Converte in numeri puri
-        const labels = datiSensore.map(d => {
-          const data = new Date(d.last_triggered);
-          return data.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' }) + 
-                ' ' + 
-                data.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-        });
-
-        // IMPORTANTE: Prendi l'unità dal PRIMO elemento dell'array, non dall'array stesso
-        const unitaMisura = datiSensore[0].unit_of_measurement || '';
-        const nomeSensore = chiave.charAt(0).toUpperCase() + chiave.slice(1);
-
-        // --- 2. CREAZIONE DEL LINGUETTA (TAB LINK) ---
-        const li = document.createElement('li');
-        li.className = 'nav-item';
-        li.innerHTML = `
-          <a class="nav-link ${activeClass}" 
-            id="${chiave}-tab" 
-            data-toggle="tab" 
-            href="#pane-${chiave}" 
-            role="tab" 
-            aria-controls="pane-${chiave}" 
-            aria-selected="${isFirst}">
-            ${nomeSensore}
-          </a>
-        `;
-        tabList.appendChild(li);
-
-        // --- 3. CREAZIONE DEL PANNELLO CONTENITORE (TAB PANE) ---
-        const pane = document.createElement('div');
-        pane.className = `tab-pane fade ${showActiveClass}`;
-        pane.id = `pane-${chiave}`;
-        pane.setAttribute('role', 'tabpanel');
-        pane.setAttribute('aria-labelledby', `${chiave}-tab`);
-
-        pane.innerHTML = `
-          <div class="chart-container" style="position: relative; width: 100%; height: 400px; margin: 0 auto;">
-            <canvas id="canvas-${chiave}"></canvas>
-          </div>
-        `;
-        tabContent.appendChild(pane);
-        // Max min AVG
-        const minMaxAvg= document.createElement('div')
-        pane.innerHTML+=`<div class="col-12">
-            <div class="row w-100 m-2">
-              <div class="col text-center">
-                <dl>
-                  <dt>Val. minimo</dt>
-                  <dd >${Math.min(...values)}</dd>
-                </dl>
-              </div>
-              <div class="col text-center">
-                <dl>
-                  <dt>Val. massimo</dt>
-                  <dd >${Math.max(...values)}</dd>
-                </dl>
-              </div>
-              <div class="col text-center">
-                <dl>
-                  <dt>Val. medio</dt>
-                  <dd>${(values.reduce((a,e)=>a=a+e, 0)/values.length).toFixed(2)}</dd>
-                </dl>
-              </div>
-            </div>
-          </div>`
-       tabContent.appendChild(pane);
-        // --- 4. INIZIALIZZAZIONE CHART.JS ---
-        const ctx = document.getElementById(`canvas-${chiave}`).getContext('2d');
-        
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels, // Array di stringhe (date)
-            datasets: [{
-              label: `${nomeSensore} (${unitaMisura})`,
-              data: values,   // Array di numeri veri
-              borderColor: 'rgb(75, 192, 192)',
-              backgroundColor: 'rgba(75, 192, 192, 0.1)',
-              tension: 0.2,
-              fill: true
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: false, // Permette al grafico di zoommare sui dati reali
-                ticks: {
-                  callback: function(value) { return  Number(value).toFixed(1) + ' ' + unitaMisura; }
-                }
-              }
-            }
-          }
-        });
-      });
-}
-
-      // Forza il ricalcolo delle dimensioni del grafico al cambio della tab di Bootstrap 4
-  $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
-    const targetPaneId = $(e.target).attr('href'); // Es: #pane-humidity
-    const canvas = $(targetPaneId).find('canvas')[0];
-    if (canvas) {
-      const chartInstance = Chart.getChart(canvas); // Chart.js v3/v4
-      // Se usi Chart.js v2 usa invece: const chartInstance = window.Chart.instances[Object.keys(window.Chart.instances).find(k => window.Chart.instances[k].canvas === canvas)];
-      if (chartInstance) {
-        chartInstance.resize();
+  $("#saveElement_Btn").click(function (e) { 
+    e.preventDefault();
+    $.ajax({
+      type: "PUT",
+      url: "/mushElement/modMushElement",
+      data: $("#updateMushElement_Frm").serialize(),
+      success: function (response) {
+        window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
       }
+    });
+  });
+
+  $("#delElement_Btn").click(function (e) { 
+    e.preventDefault();
+    $('#pick_Mdl').modal('show')
+  });
+  
+  $("#moveElement_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#movimentation_Mdl").modal("show")
+  });
+
+  $("#saveMovimentation_Btn").click(function (e) { 
+    e.preventDefault();
+    let toStorage=$("#toStorage_Fld option:selected").text();
+    let c=confirm("Procedere con lo spostamento dell'elemento verso il magazzino "+toStorage+" ?")
+    if (c==true){
+    $.ajax({
+      type: "POST",
+      url: "/mushElement/movimentazioneSingleElement",
+      data: $("#movimentation_Frm").serialize(),
+      success: function (response) {
+        window.location.reload();
+      }
+    });
     }
   });
+  $("#pickDelete_Btn").click(function (e) { 
+    e.preventDefault();
 
-    $("#csvIotData").click(function() {
-      window.open("/mushElement/csvIotData?&from="+fromIotData+"&to="+toIotData+"&storageId="+storageIdIot+"&sampleSize=400", "_blank");
+    if (checkForm("pick_Frm")){
+      let deleteFlag=$("#deleteElem").is(":checked");
+      console.log(deleteFlag)
+      console.log("--")
+      if (confirm("Vuoi continuare?")){
+        $.ajax({
+          type: "PUT",
+          url: "/mushElement/pickElement",
+          data: $("#pick_Frm").serialize(),
+          success: function (response) {
+            if (deleteFlag==true){
+              window.location.replace("/mushElement/"); 
+            }else{
+              window.location.replace("/mushElement/singleMushElement?id="+idMushElement+"&filterCategory="+filterCategory ); 
+            }
+          }
+        });
+      } else {
+        $('#pick_Mdl').modal('hide')
+      }
+    }else{
+      alert("Compila i dati obbligatori")
+    }
+  });
+  
+  // Element Note
+  $("#addMushElementNote_Btn").click(function (e) { 
+    e.preventDefault();
+      
+    $("#filterCategoryNote_Fld").val(filterCategory)
+    $("#insertNote_Mdl").modal("show")
   });
 
-    $(document).on("click",".drawDataGraph",async function (e) { 
-      e.preventDefault();
-      storageIdIot=$(this).attr("storageId")
-      fromIotData=$(this).attr("from")
-      toIotData=$(this).attr("to")
-      let sensorData=await getSensorData(storageIdIot,fromIotData,toIotData)
-        if (sensorData){
-        await generaTabEGrafici(sensorData)
-        $("#graph_NoData").hide();
-        $("#graph_Div").show();
-      } 
-      else {
-        $("#graph_Div").hide();
-        $("#graph_NoData").show();
-        $("#classData_BtnGrp").hide();
+  $("#saveMushElementNote_Btn").click(async function (e) {
+    e.preventDefault();
+
+    const form = document.getElementById("mushElementNote_Form");
+    let formdata = new FormData(form);
+
+    let fileKey = null;
+    let file = null;
+
+    for (let [key, value] of formdata.entries()) {
+      if (value instanceof File && value.size > 0) {
+        fileKey = key;
+        file = value;
+        break;
       }
-        $("#sensorDataGraph_Mdl").modal("show")
-    });
+    }
 
-    // Are raccolto
-    $("#addHarvest_Btn").click(function (e) { 
-      e.preventDefault();
-      $("#insertHarvest_Mdl").modal('show')
-    });
-    $("#abortHarvest_Btn").click(function (e) { 
-      e.preventDefault();
-      $("#insertHarvest_Mdl").modal('hide')
-    });
+    // 🔄 Convert + Resize
+    if (file) {
+      try {
+        const resizedBlob = await convertAndResizeImage(file, 1024);
+        const baseName = file.name
+          .replace(/\.[^/.]+$/, "")   // rimuove estensione
+          .replace(/\s+/g, "_");      // spazi → _
 
-    $("#saveHarvest_Btn").click(function (e) { 
-      let c=checkForm("mushElementHarvest_Form")
-      e.preventDefault();
-      if(c==true){
-        $.ajax({ 
-        type: "POST",
-        url: "/mushElement/insertHarvest",
-        data: $("#mushElementHarvest_Form").serialize(),
-        success: function (response) {
-          $("#insertHarvest_Mdl").modal("hide")
-          $("#harvest_weight").val("").removeClass("border-danger border-success")
-          drawElementHarvest(response.harvest)
-        }     
-      });
+        const newFile = new File(
+          [resizedBlob],
+          baseName + ".jpg",
+          { type: "image/jpeg" }
+        );
+
+        formdata.delete(fileKey);
+        formdata.append(fileKey, newFile);
+
+        console.log("Immagine convertita e ridimensionata");
+      } catch (err) {
+        console.error(err);
+        alert("Errore elaborazione immagine");
+        return;
       }
-      });
+    }
 
-    $(document).on("click",".delMushElementHarvest", function (e) { 
-      e.preventDefault();
-      let idMushElementHarvest=$(this).attr("idmushelementharvest")
-      let c=confirm("Eliminare il raccolto selezionato?")
-      if(c==true){
+    $.ajax({
+      type: "POST",
+      url: "/mushElement/newMushElementNote?type="+filterCategory,
+      data: formdata,
+      processData: false,
+      contentType: false,
+      beforeSend: function () {
+        console.log("before")
+        $("#loadingOverlay").fadeIn(200);
+      },
+      
+      success: async function (response) {
+        console.log("Response")
+        console.log(response)
+          if (response.error==true){
+            alert(response.data)
+          }else{
+          drawElementNote(mushElement.id)
+          $("#insertNote_Mdl").modal("hide")
+          resetForm("mushElementNote_Form")
+        }
+      },
+      error: function(err){
+        console.log(err)
+      },
+      complete: function () {
+        console.log("Completato Upload")
+        $("#loadingOverlay").fadeOut(200);
+      }
+    });
+  });
+
+  $("#abortMushElementNote_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#mushElementNote_Form").hide()
+    $("#mushElementNote_Tbl").show()
+    $("#addMushElementNote_Btn").show()
+  });
+  
+  $(document).on("click",".delMushElementNote", function (e) {
+    e.preventDefault()
+      let idMushElementNote=$(this).attr("idmushelementnote")
+      let idMushElement=$(this).attr("idmushelementnote")
+      console.log(idMushElementNote,idMushElement)
+      let c=confirm(`Stai eliminando una nota, vuoi continuare? `)
+      if (c==true){
         $.ajax({
-        type: "DELETE",
-        url: "/mushElement/deleteHarvest?idMushElementHarvest="+idMushElementHarvest,
-        success: function (response) {
-          $.ajax({
-            type: "GET",
-            url: "/mushElement/getHarvest?id="+mushElement.id+"&filterCategoryHarvest="+mushElement.type,
-            success: function (response) {
-              drawElementHarvest(response.harvest)
-            }
-          });}
-      });
+          type: "DELETE",
+          url: "/mushElement/deleteMushElementNote?id="+idMushElementNote,
+          success: async function (response) {
+              await drawElementNote(idMushElement)
+          }
+        });
       }
+  });
+
+  // area movimentation
+  function generaTabEGrafici(datiIot) {
+    const tabList = document.getElementById('myTab');
+    const tabContent = document.getElementById('myTabContent');
+    tabList.innerHTML = '';
+    tabContent.innerHTML = '';
+    const chiavi = Object.keys(datiIot);
+    chiavi.forEach((chiave, index) => {
+      const datiSensore = datiIot[chiave];
+      
+      // Sicurezza: controlla che sia un array valido e popolato
+      if (!datiSensore || !Array.isArray(datiSensore) || datiSensore.length === 0) return;
+      if (chiave=="") return;
+      const isFirst = index === 0;
+      const activeClass = isFirst ? 'active' : '';
+      const showActiveClass = isFirst ? 'show active' : '';
+
+      // --- CORREZIONE 1: Estrazione corretta dei dati dall'array ---
+      const values = datiSensore.map(d => Number(Number(d.val).toFixed(2))); // Converte in numeri puri
+      const labels = datiSensore.map(d => {
+        const data = new Date(d.last_triggered);
+        return data.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' }) + 
+              ' ' + 
+              data.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      });
+
+      // IMPORTANTE: Prendi l'unità dal PRIMO elemento dell'array, non dall'array stesso
+      const unitaMisura = datiSensore[0].unit_of_measurement || '';
+      const nomeSensore = chiave.charAt(0).toUpperCase() + chiave.slice(1);
+
+      // --- 2. CREAZIONE DEL LINGUETTA (TAB LINK) ---
+      const li = document.createElement('li');
+      li.className = 'nav-item';
+      li.innerHTML = `
+        <a class="nav-link ${activeClass}" 
+          id="${chiave}-tab" 
+          data-toggle="tab" 
+          href="#pane-${chiave}" 
+          role="tab" 
+          aria-controls="pane-${chiave}" 
+          aria-selected="${isFirst}">
+          ${nomeSensore}
+        </a>
+      `;
+      tabList.appendChild(li);
+
+      // --- 3. CREAZIONE DEL PANNELLO CONTENITORE (TAB PANE) ---
+      const pane = document.createElement('div');
+      pane.className = `tab-pane fade ${showActiveClass}`;
+      pane.id = `pane-${chiave}`;
+      pane.setAttribute('role', 'tabpanel');
+      pane.setAttribute('aria-labelledby', `${chiave}-tab`);
+
+      pane.innerHTML = `
+        <div class="chart-container" style="position: relative; width: 100%; height: 400px; margin: 0 auto;">
+          <canvas id="canvas-${chiave}"></canvas>
+        </div>
+      `;
+      tabContent.appendChild(pane);
+      // Max min AVG
+      const minMaxAvg= document.createElement('div')
+      pane.innerHTML+=`<div class="col-12">
+          <div class="row w-100 m-2">
+            <div class="col text-center">
+              <dl>
+                <dt>Val. minimo</dt>
+                <dd >${Math.min(...values)}</dd>
+              </dl>
+            </div>
+            <div class="col text-center">
+              <dl>
+                <dt>Val. massimo</dt>
+                <dd >${Math.max(...values)}</dd>
+              </dl>
+            </div>
+            <div class="col text-center">
+              <dl>
+                <dt>Val. medio</dt>
+                <dd>${(values.reduce((a,e)=>a=a+e, 0)/values.length).toFixed(2)}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>`
+      tabContent.appendChild(pane);
+      // --- 4. INIZIALIZZAZIONE CHART.JS ---
+      const ctx = document.getElementById(`canvas-${chiave}`).getContext('2d');
+      
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels, // Array di stringhe (date)
+          datasets: [{
+            label: `${nomeSensore} (${unitaMisura})`,
+            data: values,   // Array di numeri veri
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+            tension: 0.2,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: false, // Permette al grafico di zoommare sui dati reali
+              ticks: {
+                callback: function(value) { return  Number(value).toFixed(1) + ' ' + unitaMisura; }
+              }
+            }
+          }
+        }
+      });
     });
- // print pdf
-$("#toggleFieldPdf_Btn").click(function (e) { 
-  e.preventDefault();
-  var checkboxes = $('#chk_Frm input[type="checkbox"]');
-  var almenoUnoSelezionato = checkboxes.filter(':checked').length > 0;
-  if (almenoUnoSelezionato) {        
-      checkboxes.prop('checked', false);
-      $(this).text('Seleziona Tutti');
-  } else {
-      checkboxes.prop('checked', true);
-      $(this).text('Deseleziona Tutti');
+}
+
+    // Forza il ricalcolo delle dimensioni del grafico al cambio della tab di Bootstrap 4
+  $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+  const targetPaneId = $(e.target).attr('href'); // Es: #pane-humidity
+  const canvas = $(targetPaneId).find('canvas')[0];
+  if (canvas) {
+    const chartInstance = Chart.getChart(canvas); // Chart.js v3/v4
+    // Se usi Chart.js v2 usa invece: const chartInstance = window.Chart.instances[Object.keys(window.Chart.instances).find(k => window.Chart.instances[k].canvas === canvas)];
+    if (chartInstance) {
+      chartInstance.resize();
+    }
   }
 });
 
- $("#printDataSheet_Btn").click(function (e) { 
-  e.preventDefault();
-  $("#generatePdf_Mdl").modal("show")
- });
+  $("#csvIotData").click(function() {
+    window.open("/mushElement/csvIotData?&from="+fromIotData+"&to="+toIotData+"&storageId="+storageIdIot+"&sampleSize=400", "_blank");
+});
 
- $("#genPdf_Btn").click(function (e) { 
-  e.preventDefault();
-  let chk=$("#chk_Frm").serialize()
-  console.log(chk)
-  window.open('/mushElement/generatePdf?elementCode='+mushElement.element_code+'&'+chk, '_blank');
-  
- });
-
-// Default
-    $("#backToMain_Btn").click(function (e) { 
-        e.preventDefault();
-         window.location='/mushElement?filterCategory='+filterCategory
-      });
+  $(document).on("click",".drawDataGraph",async function (e) { 
+    e.preventDefault();
+    storageIdIot=$(this).attr("storageId")
+    fromIotData=$(this).attr("from")
+    toIotData=$(this).attr("to")
+    let sensorData=await getSensorData(storageIdIot,fromIotData,toIotData)
+      if (sensorData){
+        $('#loadingOverlay').fadeIn(200);
+      await generaTabEGrafici(sensorData)
+      $('#loadingOverlay').fadeOut(200);
+      $("#graph_NoData").hide();
+      $("#graph_Div").show();
+    } 
+    else {
+      $("#graph_Div").hide();
+      $("#graph_NoData").show();
+      $("#classData_BtnGrp").hide();
     }
+      $("#sensorDataGraph_Mdl").modal("show")
+  });
+
+  // Are raccolto
+  $("#addHarvest_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#insertHarvest_Mdl").modal('show')
+  });
+  $("#abortHarvest_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#insertHarvest_Mdl").modal('hide')
+  });
+
+  $("#saveHarvest_Btn").click(function (e) { 
+    let c=checkForm("mushElementHarvest_Form")
+    e.preventDefault();
+    if(c==true){
+      $.ajax({ 
+      type: "POST",
+      url: "/mushElement/insertHarvest",
+      data: $("#mushElementHarvest_Form").serialize(),
+      success: function (response) {
+        $("#insertHarvest_Mdl").modal("hide")
+        $("#harvest_weight").val("").removeClass("border-danger border-success")
+        drawElementHarvest(response.harvest)
+      }     
+    });
+    }
+    });
+
+  $(document).on("click",".delMushElementHarvest", function (e) { 
+    e.preventDefault();
+    let idMushElementHarvest=$(this).attr("idmushelementharvest")
+    let c=confirm("Eliminare il raccolto selezionato?")
+    if(c==true){
+      $.ajax({
+      type: "DELETE",
+      url: "/mushElement/deleteHarvest?idMushElementHarvest="+idMushElementHarvest,
+      success: function (response) {
+        $.ajax({
+          type: "GET",
+          url: "/mushElement/getHarvest?id="+mushElement.id+"&filterCategoryHarvest="+mushElement.type,
+          success: function (response) {
+            drawElementHarvest(response.harvest)
+          }
+        });}
+    });
+    }
+  });
+  // print pdf
+  $("#toggleFieldPdf_Btn").click(function (e) { 
+    e.preventDefault();
+    var checkboxes = $('#chk_Frm input[type="checkbox"]');
+    var almenoUnoSelezionato = checkboxes.filter(':checked').length > 0;
+    if (almenoUnoSelezionato) {        
+        checkboxes.prop('checked', false);
+        $(this).text('Seleziona Tutti');
+    } else {
+        checkboxes.prop('checked', true);
+        $(this).text('Deseleziona Tutti');
+    }
+  });
+
+  $("#printDataSheet_Btn").click(function (e) { 
+    e.preventDefault();
+    $("#generatePdf_Mdl").modal("show")
+  });
+
+  $("#genPdf_Btn").click(function (e) { 
+e.preventDefault();
+let chk=$("#chk_Frm").serialize()
+console.log(chk)
+window.open('/mushElement/generatePdf?elementCode='+mushElement.element_code+'&'+chk, '_blank');
+
+});
+
+  // Default
+  $("#backToMain_Btn").click(function (e) { 
+      e.preventDefault();
+        window.location='/mushElement?filterCategory='+filterCategory
+    });
+  }
 });
     
 
