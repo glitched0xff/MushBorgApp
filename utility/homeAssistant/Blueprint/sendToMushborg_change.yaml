@@ -1,0 +1,42 @@
+  blueprint:
+    name: sendToMushborg_change
+    description: Invia i dati a mushborg
+    domain: automation
+    input:
+      monitoring_sensor:
+        name: "Sensori e relay"
+        description: Elenco dei sensori da monitorare
+        selector:
+          entity:
+            multiple: true
+
+      rest_url:
+        name: URL di Destinazione
+        description: Inserisci l'URL completo (es. http://mushborglab.local/sensorDataHa/insertData)
+        default: http://mushborglab.local/sensorDataHa/insertData
+        selector:
+          text:
+            multiline: false
+
+  mode: parallel
+  max: 100
+
+  trigger:
+    - platform: state
+      entity_id: !input monitoring_sensor
+
+  action:
+    - service: rest_command.send_data_action
+      data:
+        url: !input rest_url
+        # Sfruttiamo YAML per generare un JSON perfetto e pulito senza conflitti di graffe
+        payload: >
+          {
+            "sensor_code": "{{ trigger.entity_id }}",
+            "friendly_name": "{{ state_attr(trigger.entity_id, 'friendly_name') | default('Senza Nome', true) }}",
+            "val": "{{ trigger.to_state.state }}",
+            "unit_of_measurement": "{{ state_attr(trigger.entity_id, 'unit_of_measurement') | default('', true) }}",
+            "area": "{{ area_name(trigger.entity_id) | default('Nessuna', true) }}",
+            "class": "{{ state_attr(trigger.entity_id, 'device_class') | default('', true) }}",
+            "last_triggered": "{{ trigger.to_state.last_changed }}"
+          }

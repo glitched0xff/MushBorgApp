@@ -1,0 +1,61 @@
+blueprint:
+  name: sendToMushborg_timed
+  description: Invia i dati a mushborg a intervalli regolari
+  domain: automation
+  input:
+    monitoring_sensor:
+      name: "Sensori e relay"
+      description: Elenco dei sensori da monitorare
+      selector:
+        entity:
+          multiple: true
+
+    rest_url:
+      name: URL di Destinazione
+      description: Inserisci l'URL completo (es. http://mushborglab.local/sensorDataHa/insertData)
+      default: http://mushborglab.local/sensorDataHa/insertData
+      selector:
+        text:
+          multiline: false
+
+    interval_minutes:
+      name: Intervallo (minuti)
+      description: Invia i dati ogni X minuti
+      default: 5
+      selector:
+        number:
+          min: 1
+          max: 60
+          unit_of_measurement: min
+          mode: box
+
+mode: parallel
+max: 100
+
+# Il trigger si attiva ogni minuto senza generare errori di validazione
+trigger:
+  - platform: time_pattern
+    minutes: "/1"
+
+# La condizione verifica se il minuto attuale corrisponde all'intervallo impostato
+condition:
+  - condition: template
+    value_template: "{{ now().minute % (input_config.interval_minutes | int(5)) == 0 }}"
+
+action:
+  - repeat:
+      for_each: !input monitoring_sensor
+      sequence:
+        - service: rest_command.send_data_action
+          data:
+            url: !input rest_url
+            payload: >
+              {
+                "sensor_code": "{{ repeat.item }}",
+                "friendly_name": "{{ state_attr(repeat.item, 'friendly_name') | default('Senza Nome', true) }}",
+                "val": "{{ states(repeat.item) }}",
+                "unit_of_measurement": "{{ state_attr(repeat.item, 'unit_of_measurement') | default('', true) }}",
+                "area": "{{ area_name(repeat.item) | default('Nessuna', true) }}",
+                "class": "{{ state_attr(repeat.item, 'device_class') | default('', true) }}",
+                "last_triggered": "{{ states[repeat.item].last_changed | default(now(), true) }}"
+              }

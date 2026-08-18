@@ -224,8 +224,7 @@
                       fieldName:"exp_date",
                       label:"Data scadenza",
                     },
-                    { type:"endRow"},
-                    
+                    { type:"endRow"}, 
                     ]  
                 }) %>
                 
@@ -658,7 +657,7 @@
                       $("#createLot_Show").html(moment(data.createLot).format("DD-MM-YY"))
                       break;
                   case "exp_date":
-                    $("#exp_date_Show").html(moment(data.exp_date).format("DD-MM-YY"))
+                    $("#exp_date_Show").html(moment(data.exp_date).isValid()?moment(data.exp_date).format("DD-MM-YY"):"-")
                     break;
                   case "expected_maturation_date":
                     $("#expected_maturation_date_Show").html(moment(data.expected_maturation_date).format("DD-MM-YY"))

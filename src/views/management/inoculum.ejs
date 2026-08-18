@@ -216,7 +216,6 @@
                       classBox:"col-md-3 col-sm-6",
                       fieldName:"exp_date",
                       label:"Data scadenza",
-                      required:true
                     },
                     { type:"endRow"}
                     ]  
@@ -520,7 +519,7 @@ function drawTableChild(data,table,fields,topic,title) {
                   $("#substrateId_Fld").val(data.substrateId)
                   break;
                   case "exp_date":
-                    $("#exp_date_Show").html(moment(data.exp_date).format("DD-MM-YY"))
+                    $("#exp_date_Show").html(moment(data.exp_date).isValid()?moment(data.exp_date).format("DD-MM-YY"):"-")
                     break;
                   case "createLot":
                     $("#createLot_Show").html(moment(data.createLot).format("DD-MM-YY"))
