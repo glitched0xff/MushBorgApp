@@ -2033,7 +2033,10 @@ $(document).ready(async function () {
     let sensorData=await getSensorData(storageIdIot,fromIotData,toIotData)
       if (sensorData){
         $('#loadingOverlay').fadeIn(200);
+        console.log("ok")
       await generaTabEGrafici(sensorData)
+        console.log("ok")
+
       $('#loadingOverlay').fadeOut(200);
       $("#graph_NoData").hide();
       $("#graph_Div").show();
