@@ -21,13 +21,30 @@
                     </form>
                 </div>
             </div>
-            <% if ( result!= false) { %>
-              <div class="row w-100 mt-2" id="result_Div">
-              
-            </div>
-            <% } %>
-            
-        </div>
+              <div class="row w-100 mt-2" >
+                <div class="card w-100" >
+              <div class="card-body">
+                
+                <div class="table-responsive pb-3">
+                  <div class="col w-100 text-center small">
+                    Elementi trovati: <span id="elNum_Span"></span>
+                  </div>
+                  <table class="display table table-striped table-bordered compact" id="result_Tbl" style="width: 100%; display: none">
+                  <thead>
+                      <tr>
+                        <th style="width:20%"></th>
+                        <th style="width:40%">Codice</th>
+                        <th style="width:40%">Nome</th>
+                      </tr>
+                  </thead>
+                  <tbody id="result_Tblb">
+                    
+                  </tbody>
+                  </table>
+                  </div>
+              </div>
+                </div>
+              </div>
     </section>
     
   </div>
@@ -35,109 +52,118 @@
   <%- include ('jsLoad') %>
     
 <script>
-  let result= <%- JSON.stringify( result) %>
   let searchedString= "<%= searchedString %>"
-
-  function drawResult(data){
-    let html=""
-    if(data!=false){
+  let tableSearch
+  let requestCode
+  
+  function drawResult(requestCode){
     let total=0
-    data.forEach(elem => {   
-      if(elem.data.length>0){
-        for (let i = 0; i < elem.data.length; i++) {
-          total++
-          const el = elem.data[i];
-          let objVal={}
-          switch (elem.type) {
-            case "mushElement":
-              html+=`
-                    <div class="card w-100 col-8 mx-auto">
-                
-                <div class="card-body">
-                  <h4 class="card-title"><span class="badge badge-primary">Mush element</span></h4>
-                  <p class="card-text">
-                    <a href="/mushElement/singleMushElement?id=${el.id}&filterCategory=${el.type}" target="_blank">${el.element_code}<a><br>
-                    ${objVal.val3}<br>
-                    ${objVal.val4}</p>
-                </div>
-              </div>
-                    `
-              break;
-            case "propagation":
-              html+=`
-                    <div class="card w-100 col-8 mx-auto">
-                
-                <div class="card-body">
-                  <h4 class="card-title"><span class="badge badge-seconday">Propagation</span></h4>
-                  <p class="card-text">
-                    <a href="/propagation?redirectId=${el.id}">${el.propagation_name}<a><br>
-                    ${objVal.val3}<br>
-                    ${el.id}</p>
-                </div>
-              </div>
-                    `
-              break;
-            case "spawn":
-              html+=`
-                    <div class="card w-100 col-8 mx-auto">
-                
-                <div class="card-body">
-                  <h4 class="card-title"><span class="badge badge-danger">Spawn</span></h4>
-                  <p class="card-text">
-                    <a href="/spawn?redirectId=${el.id}">${el.spawn_name}<a><br>
-                    <br>
-                   ${el.id}</p>
-                </div>
-              </div>
-                    `
-              break;
-            case "inoculum":
-              html+=`
-                    <div class="card w-100 col-8 mx-auto">
-                
-                <div class="card-body">
-                  <h4 class="card-title"><span class="badge badge-danger">Inoculum</span></h4>
-                  <p class="card-text">
-                    <a href="/inculum?redirectId=${el.id}"">${el.inoculum_name}<a><br>
-                    <br>
-                   ${el.id}</p>
-                </div>
-              </div>
-                    `
+    let html=""
+    $.ajax({
+      type: "GET",
+      url: "/search/search?requestCode="+requestCode,
+      success: function (response) {
+      console.log(response)
+      tableSearch.clear();
+      data=response.result
+      data.forEach(elem => {   
+            let html
+            switch (elem.typeSearch) {
+              case "mushElement":
+                html=`<tr>
+                      <td><span class="badge badge-primary">Mush element</span></td>
+                      
+                      <td><a href="/mushElement/singleMushElement?id=${elem.id}&filterCategory=${elem.type}" target="_blank">${elem.element_code}<a></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                      `
                 break;
-            case "strain":
-              html+=`
-                    <div class="card w-100 col-8 mx-auto">
+              case "propagation":
+                html=`<tr>
+                      <td><span class="badge badge-secondary">Propagation</span></td>
+                      
+                      <td><a href="/propagation?redirectId=${elem.id}" target="_blank">${elem.code_propagation} <a></td>
+                      <td>${elem.propagation_name}</td>
+                      <td></td>
+                    </tr>`
+                break;
+              case "spawn":
+                html=`<tr>
+                      <td><span class="badge badge-success">Spawn</span></td>
+                      
+                      <td><a href="/spawn?redirectId=${elem.id}" target="_blank">${elem.code_spawn}<a></td>
+                      <td> ${elem.spawn_name}</td>
+                      <td></td>
+                    </tr>`
+                break;
+              case "inoculum":
+                html=`<tr>
+                      <td><span class="badge badge-warning">Inoculum</span></td>
+                      
+                      <td><a href="/inculum?redirectId=${elem.id}" target="_blank">${elem.code_inoculum}<a></td>
+                      <td> ${elem.inoculum_name}</td>
+                      <td></td>
+                    </tr>`
+                  break;
+              case "strain":
+                html=`<tr>
+                      <td><span class="badge badge-info">Strain</span></td>
+                      
+                      <td><a href="">${elem.strain_name}<a></td>
+                      <td></td>
+                      <td></td>
+                    </tr>`
                 
-                <div class="card-body">
-                  <h4 class="card-title"><span class="badge badge-alert">Strain</span></h4>
-                  <p class="card-text">
-                    <a href="">${el.strain_name}<a><br>
-                    <br>
-                   ${el.id}</p>
-                </div>
-              </div>
-                    `
-              objVal={val1:"Strain",val2:el.strain_name,val3:el.purchased,val4:el.id,pillowColor:"badge-alert"}
-              break;
-          }
-          }
+                break;
+            }
+            $("#elNum_Span").html(data.length);
+            tableSearch.rows.add($(html));
+        })
+        tableSearch.draw();
+        $("#result_Tbl").show();
       }
-    });
-    $("#result_Div").html(`<div class="col-8 mx-auto" id="searchString_Spn">Testo cercato:${searchedString} - trovati n° :${total}</div>`)
-    $("#result_Div").append(html)}
+      });
+   // $("#result_Div").html(`<div class="col-8 mx-auto" id="searchString_Spn">Testo cercato:${searchedString} - trovati n° :${total}</div>`)
+  
   }
 
-    $(document).ready(function () {
+    $(document).ready(async function () {
       $("#searchHeader").hide()
-      drawResult(result)
+      tableSearch = $('#result_Tbl')
+                         .DataTable({
+                                     paging: false,       // Disattiva la paginazione
+                                    scrollY: '500px',    // Attiva lo scrolling verticale (circa 25 righe)
+                                    scrollCollapse: true ,// Comprime l'altezza se ci sono meno di 25 righe
+                                    //pageLength: 25,
+                                    dom: 'tp',
+                                    columnDefs: [{ targets: 0, width: "20%", className: 'dt-center'},  
+                                                  { targets: 1, width: "40%",className: 'dt-center' }, 
+                                                  { targets: 2, width: "40%",className: 'dt-center' }, 
+                                                  
+                                              ]
+                                          });  
+      $('#result_Tbl').DataTable().columns.adjust().draw();
+      
+      await drawResult(searchedString)
+      $("#search_FieldPage").val(searchedString!="false"?searchedString:"")
+      
+      $("#search_FieldPage").on("input",async function (e) { 
+        let ss=$(this).val();
+        console.log(ss)
+        if (ss.length>=2){
+          await drawResult(ss)
+        }
+        if (ss.length==0){
+          await drawResult("")
+        }
+      });
 
-      $("#search_BtnPage").click(function (e) { 
+      $("#search_BtnPage").click(async function (e) { 
         e.preventDefault();
-        let code=$("#search_FieldPage").val()
-        console.log(code)
-        let url= "/search?code="+code
-        window.location=url
+        searchedString=$("#search_FieldPage").val()
+        console.log(searchedString)
+        await drawResult(searchedString)
       });
     });
 

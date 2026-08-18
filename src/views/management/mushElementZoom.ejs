@@ -74,6 +74,7 @@
               <% } else {%>
                 <i class="fa fa-times-circle text-danger" aria-hidden="true"></i> <span class="small"> <%= mushElement.pickReasonDesc %> <%= mushElement.pick_date %> </span>
               <% }%>
+              <button type="button" name="" id="printDataSheet_Btn" class="btn btn-danger btn-xs mx-2">Stampa scheda</button>
             </h2>
               <div class="row w-100">
               <div class="col">
@@ -1215,6 +1216,70 @@
     </div>
   </div>
  </div>
+ <!-- Modal genera pdf -->
+  <!-- Button trigger modal -->
+  
+  <div class="modal fade" id="generatePdf_Mdl" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Genera pdf</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+          Includi nel pdf: <button class="btn btn-secondary btn-sm p-0 small" id="toggleFieldPdf_Btn" style="font-size:0.7rem;padding: 2px !important;">Deseleziona Tutti</button>
+          <div class="row">
+            <form class="form w-100" id="chk_Frm">
+              <div class="col-12 pl-4">
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox"  id="datiLotto_Chk" name="datiLotto_Chk" checked value="1">
+                <label class="form-check-label" for="datiLotto_Chk">
+                  Dati lotto
+                </label>
+              </div>
+              </div>
+              <div class="col-12 pl-4">
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox"  id="raccolti_Chk" name="raccolti_Chk" checked value="1">
+                <label class="form-check-label" for="raccolti_Chk">
+                  Raccolti
+                </label>
+              </div>
+              </div>
+            <div class="col-12 pl-4">
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox"  id="note_Chk" name="note_Chk" checked value="1">
+                <label class="form-check-label" for="note_Chk">
+                  Note
+                </label>
+              </div>
+            </div>
+            <div class="col-12 pl-4">
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox"  id="strain_Chk" name="strain_Chk" checked value="1">
+                <label class="form-check-label" for="strain_Chk">
+                  Strain data
+                </label>
+              </div>
+            </div>
+            <div class="col-12 pl-4">
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox"  id="strain_Chk" name="movimentation_Chk" checked value="1">
+                <label class="form-check-label" for="movimentation_Chk">
+                  Movimentazioni
+                </label>
+              </div>
+            </div>
+            </form>
+            <button type="button" class="btn btn-primary btn-xs m-2" id="genPdf_Btn">Genera pdf</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
  <!-- Loading -->
 <style>
   #loadingOverlay {
@@ -1907,9 +1972,9 @@ $(document).ready(async function () {
     }
   });
 
-  $("#csvIotData").click(function() {
-    window.open("/mushElement/csvIotData?&from="+fromIotData+"&to="+toIotData+"&storageId="+storageIdIot+"&sampleSize=400", "_blank");
-});
+    $("#csvIotData").click(function() {
+      window.open("/mushElement/csvIotData?&from="+fromIotData+"&to="+toIotData+"&storageId="+storageIdIot+"&sampleSize=400", "_blank");
+  });
 
     $(document).on("click",".drawDataGraph",async function (e) { 
       e.preventDefault();
@@ -1917,7 +1982,7 @@ $(document).ready(async function () {
       fromIotData=$(this).attr("from")
       toIotData=$(this).attr("to")
       let sensorData=await getSensorData(storageIdIot,fromIotData,toIotData)
-       if (sensorData){
+        if (sensorData){
         await generaTabEGrafici(sensorData)
         $("#graph_NoData").hide();
         $("#graph_Div").show();
@@ -1929,8 +1994,6 @@ $(document).ready(async function () {
       }
         $("#sensorDataGraph_Mdl").modal("show")
     });
-
-  
 
     // Are raccolto
     $("#addHarvest_Btn").click(function (e) { 
@@ -1978,7 +2041,32 @@ $(document).ready(async function () {
       });
       }
     });
+ // print pdf
+$("#toggleFieldPdf_Btn").click(function (e) { 
+  e.preventDefault();
+  var checkboxes = $('#chk_Frm input[type="checkbox"]');
+  var almenoUnoSelezionato = checkboxes.filter(':checked').length > 0;
+  if (almenoUnoSelezionato) {        
+      checkboxes.prop('checked', false);
+      $(this).text('Seleziona Tutti');
+  } else {
+      checkboxes.prop('checked', true);
+      $(this).text('Deseleziona Tutti');
+  }
+});
 
+ $("#printDataSheet_Btn").click(function (e) { 
+  e.preventDefault();
+  $("#generatePdf_Mdl").modal("show")
+ });
+
+ $("#genPdf_Btn").click(function (e) { 
+  e.preventDefault();
+  let chk=$("#chk_Frm").serialize()
+  console.log(chk)
+  window.open('/mushElement/generatePdf?elementCode='+mushElement.element_code+'&'+chk, '_blank');
+  
+ });
 
 // Default
     $("#backToMain_Btn").click(function (e) { 

@@ -11,19 +11,22 @@ const moment=require("moment")
 const puppeteer=require("puppeteer")
 const fs=require("fs")
 const path=require("path")
+const { mushElement } = require("../models")
 
 // const { jsPDF } = require("jspdf");
 // const { JSDOM } = require("jsdom");
 
 /* Puppetter */
 module.exports=async (data,ejsTemplate,headerText=false,footerText=false)=>{
-    //console.log(data)
+    // console.log("gen")
+     console.log(data.mushElementObj.parentElement)
+
     //Converto il logo in Base64
     const logoPath = path.join(process.cwd(), "public/dist/img/", "LogoMushborgReport.png");
     const logoBuffer = fs.readFileSync(logoPath);
     const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
 
-    const html = await ejs.renderFile("views/report/"+ejsTemplate, { data: data,logoBase64:logoBase64 });
+    const html = await ejs.renderFile("views/report/"+ejsTemplate, { data: data.mushElementObj,logoBase64:logoBase64 });
     const headerTemplate= await ejs.renderFile("views/report/reportHeader.ejs", { today: moment().format("DD-MM-YY HH:MM") });
     const footerTemplate= await ejs.renderFile("views/report/reportFooter.ejs",{logoBase64:logoBase64});
    
