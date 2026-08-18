@@ -959,7 +959,7 @@ router.get('/singleMushElement',async  (req, res) => {
 
 
 router.get('/generatePdf',async (req,res)=>{
-    console.log(req.query)
+    //console.log(req.query)
     const publicPath = path.join(__dirname, '../../public/'); 
     let titoloFiltro=""
     let filterCategory
@@ -978,17 +978,13 @@ router.get('/generatePdf',async (req,res)=>{
             mushElementId=findPar.id        
             filterCategory=findPar.type
         }else{
-        //console.log(JSON.parse(JSON.stringify(findPar)))
-
             mushElementId=false
         }   
     }else{
         filterCategory=req.query.filterCategory?req.query.filterCategory.toUpperCase():null
         mushElementId=req.query.id?req.query.id:false
     }
-     
-    
-        let mushElement=await db.mushElement.findOne({where:{id:mushElementId,type:filterCategory},
+    let mushElement=await db.mushElement.findOne({where:{id:mushElementId,type:filterCategory},
                                                     include: [
                                                         {model: db.mushElementNote,attributes:[]},
                                                         {model: db.mushElementHarvest,attributes:[]}
@@ -1001,223 +997,223 @@ router.get('/generatePdf',async (req,res)=>{
                                                         })
 
         
-                                                        //console.log(mushElement)
-         let harvests= await db.mushElementHarvest.findAll({where:{mushElementId:mushElementId,type:mushElement.type}})
-        let notes= await db.mushElementNote.findAll({where:{mushElementId:mushElementId,type:mushElement.type}})
+                                                    //console.log(mushElement)
+    let harvests= await db.mushElementHarvest.findAll({where:{mushElementId:mushElementId,type:mushElement.type}})
+    let notes= await db.mushElementNote.findAll({where:{mushElementId:mushElementId,type:mushElement.type}})
 
-        mushElement=JSON.parse(JSON.stringify(mushElement))
-        mushElement.mushElementHarvests=JSON.parse(JSON.stringify(harvests))
-        mushElement.notes=JSON.parse(JSON.stringify(notes))
+    mushElement=JSON.parse(JSON.stringify(mushElement))
+    mushElement.mushElementHarvests=JSON.parse(JSON.stringify(harvests))
+    mushElement.notes=JSON.parse(JSON.stringify(notes))
 
-        let stageDD=await db.dDOption.findAll({where:{ddMenu:"stageMushElement"}})
-        let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
-        let parentElement
-        let seeds
-        let includeQuery=[
+    let stageDD=await db.dDOption.findAll({where:{ddMenu:"stageMushElement"}})
+    let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
+    let parentElement
+    let seeds
+    let includeQuery=[
                             // {model: db.spawn},
                             {model: db.strain},
                             {model:db.substrate,include:[{model:db.substrateElement,include:[{model:db.rawMaterial}]},{model:db.recipe}]},
                             {model:db.container},
                         ]
-       switch (filterCategory) {
-            case "INOCULUM":
-                parentElement=await db.inoculum.findOne({where:{id:mushElement.relatedId},
-                        include: includeQuery})
-                titoloFiltro="inoculi"
-                seeds=await db.seed.findAll({where:{relatedId:parentElement.id,typeDestination:"INOCULUM"}})
-                break;
-            case "SPAWN":
-            parentElement=await db.spawn.findOne({where:{id:mushElement.relatedId},
-                        include: includeQuery})
-                titoloFiltro="spawn"
-                seeds=await db.seed.findAll({where:{relatedId:parentElement.id,typeDestination:"SPAWN"}})
+    switch (filterCategory) {
+        case "INOCULUM":
+            parentElement=await db.inoculum.findOne({where:{id:mushElement.relatedId},
+                    include: includeQuery})
+            titoloFiltro="inoculi"
+            seeds=await db.seed.findAll({where:{relatedId:parentElement.id,typeDestination:"INOCULUM"}})
             break;
-            case "CULTIVATION":
-                parentElement=await db.propagation.findOne({where:{id:mushElement.relatedId},
-                        include: includeQuery})
-                titoloFiltro="elementi coltivazione"
-                seeds=await db.seed.findAll({where:{relatedId:parentElement.id,typeDestination:"CULTIVATION"}})
-                break;
-        }
-        
-            parentElement=JSON.parse(JSON.stringify(parentElement))
-            parentElement.exp_date=moment(parentElement.exp_date).format("DD-MM-YY")
-            parentElement.expected_maturation_date=moment(parentElement.expected_maturation_date).format("DD-MM-YY")
-            mushElement=JSON.parse(JSON.stringify(mushElement))
-            let storage= await db.storage.findAll()
-            let mushStorage=storage.find(el=> el.id == mushElement.storageId)
-             mushElement.storage=JSON.parse(JSON.stringify(mushStorage))
-            
-
-            //console.log(mushElement.storage)
-            stageDD=JSON.parse(JSON.stringify(stageDD))
-            pickReasonDD=JSON.parse(JSON.stringify(pickReasonDD))
-            let pickReasonDesc="N.D."
-            let stageDesc="--"
-            pickReasonDD.forEach(el => {
-                if (el.val===parseInt(mushElement.pick_reason)){
-                    pickReasonDesc=el.txt
-                }
-            });
-            stageDD.forEach(el => {
-                if (el.val==mushElement.stage){
-                    stageDesc=el.txt
-                }
-            });
-            mushElement.pickReasonDesc=pickReasonDesc
-            mushElement.stageDesc=stageDesc
-            mushElement.load_date=moment(mushElement.load_date).format("DD-MM-YY")
-            mushElement.expected_maturation_date=mushElement.expected_maturation_date?moment(mushElement.expected_maturation_date).format("DD-MM-YY"):"-"
-            mushElement.real_maturation_date=mushElement.real_maturation_date?moment(mushElement.real_maturation_date).format("DD-MM-YY"):"-"
-            mushElement.expected_fructification_date=mushElement.expected_fructification_date?moment(mushElement.expected_fructification_date).format("DD-MM-YY"):"-"
-            mushElement.real_fructification_date=mushElement.real_fructification_date?moment(mushElement.real_fructification_date).format("DD-MM-YY"):"-"
-            mushElement.pick_date=moment(mushElement.pick_date).format("DD-MM-YY")
-            mushElement.pick_reason=mushElement.pick_reason?mushElement.pick_reason:"--"
-            mushElement.stage=mushElement.stage
-            //mushElement.storage= await db.storage.findAll({where:{id:mushElement.storageId}})
-            switch (filterCategory) {
-                case "INOCULUM":
-                    mushElement.substrate_info=parentElement.substrate.name_substrate +" "+parentElement.substrate.recipe_name
-                    mushElement.qt_info=mushElement.qt +" "+ parentElement.container.uom
-                    mushElement.contenitore_info=parentElement.container.container_name
-                    parentElement.code_parent=parentElement.code_inoculum
-                    parentElement.parent_name=parentElement.inoculum_name
-                case "SPAWN":
-                    mushElement.substrate_info=parentElement.substrate.name_substrate +" "+parentElement.substrate.recipe_name
-                    mushElement.qt_info=mushElement.qt +" "+ parentElement.container.uom
-                    mushElement.contenitore_info=parentElement.container.container_name
-                    parentElement.code_parent=parentElement.code_spawn
-                    parentElement.parent_name=parentElement.spawn_name
-                    break;
-                case "CULTIVATION":
-                    mushElement.cultivation_info=parentElement.spawn?parentElement.spawn.strain.species_code +" "+parentElement.spawn.strain.strain_name:"-"
-                    mushElement.substrate_info=parentElement.substrate.name_substrate +" "+parentElement.substrate.recipe_name
-                    mushElement.qt_info=mushElement.qt +" "+ parentElement.container.uom
-                    mushElement.contenitore_info=parentElement.container.container_name
-                    parentElement.code_parent=parentElement.code_propagation
-                    parentElement.parent_name=parentElement.propagation_name
-                    break;
-            
-        }
-        // console.log("mushEle")
-        // console.log(mushElement)
-        let destination=await db.storage.findAll({where:{id:{
-                                                    [Op.ne]: mushElement.storageId
-                                                }}})
-        let destinationDD=[]
-        destination.forEach(elem => {
-                destinationDD.push({val:elem.id,txt:elem.code_storage+" - "+elem.name_storage})
-            });
-        // Movimentazioni
-        let movimentation= await db.movimentation.findAll({where:{relatedId:mushElement.id,type:mushElement.type}})
-        let storageStory=[]
-        if (movimentation.length==0){
-            let to
-            let from=moment(mushElement.createdAt).format("DD-MM-YY")
-            if (mushElement.active==1){
-                to=moment().toISOString()
-            }else{
-                to=mushElement.pick_date
-            }
-            let movStorage=storage.find(el=> el.id == mushElement.storageId)
-
-            storageStory.push({storage:movStorage.code_storage+" - "+movStorage.name_storage,from:from,to:to})
-            console.log(storageStory)
-        }else{
-            for (let i = 0; i < movimentation.length; i++) {
-                const el = movimentation[i];
-                let to
-                let from
-                // gestione ultima movimentazione
-                if ((i==movimentation.length-1)&&(i>0)){
-                    if (mushElement[0].active==1){
-                        to=moment().toISOString()
-                    }else{
-                        to=mushElement[0].pick_date
-                    }
-                    from=movimentation[i-1].createdAt
-                    //console.log(movimentation[i-1].createdAt)
-                    //console.log(from,to)
-                    storageStory.push({storageId:el.to,from:from,to:to})
-                } 
-                // Prima movimentazione
-                else if(i==0){
-                    from=mushElement[0].createdAt
-                    to=el.createdAt
-                    storageStory.push({storageId:el.to,from:from,to:to})
-                }
-                else{
-                    from=movimentation[i-1].createdAt
-                    to=el.createdAt
-                    storageStory.push({storageId:el.to,from:from,to:to})
-                }
-            }
-        }
-
-        // Recupero immagini note e le converto in base64
-        if((mushElement.notes)&&(mushElement.notes.length)){
-            for (let i = 0; i < mushElement.notes.length; i++) {
-                const el = mushElement.notes[i];
-                if(el.pict){
-                    const percorsoImmagine = path.join(
-                        __dirname,
-                        '..', '..', 
-                        'public', 
-                        'imgMushEleNote', 
-                        String(mushElement.element_code), 
-                        el.pict
-                    );
-                    let base64Image = null;
-                    try {
-                        if (fs.existsSync(percorsoImmagine)) {
-                            //const imageBuffer = fs.readFileSync(percorsoImmagine);
-                            
-                            const estensione = path.extname(el.pict).replace('.', '').toLowerCase();
-                            const mimeType = estensione === 'jpg' ? 'jpeg' : estensione;
-                            const image = await Jimp.read(percorsoImmagine);
-                            if (image.width > image.height) {
-                                image.resize({ w: 113 });
-                            } else {
-                                image.resize({ h: 113 });
-                            } 
-                            base64Image = await image.getBase64(`image/${mimeType}`);
-                            mushElement.notes[i].pict=base64Image
-                        } else {
-                            console.warn(`File non trovato al percorso: ${percorsoImmagine}`);
-                        }
-                    } catch (error) {
-                        console.error("Errore durante la conversione dell'immagine:", error);
-                    }
-                }
-            }
-        }
+        case "SPAWN":
+        parentElement=await db.spawn.findOne({where:{id:mushElement.relatedId},
+                    include: includeQuery})
+            titoloFiltro="spawn"
+            seeds=await db.seed.findAll({where:{relatedId:parentElement.id,typeDestination:"SPAWN"}})
+        break;
+        case "CULTIVATION":
+            parentElement=await db.propagation.findOne({where:{id:mushElement.relatedId},
+                    include: includeQuery})
+            titoloFiltro="elementi coltivazione"
+            seeds=await db.seed.findAll({where:{relatedId:parentElement.id,typeDestination:"CULTIVATION"}})
+            break;
+    }
     
-        let mushElementObj= {mushElement:mushElement,
-                            parentElement:parentElement,
-                            titoloFiltro:titoloFiltro,
-                            filterCategory:filterCategory,
-                            seeds:seeds,
-                            areaView:areaView,
-                            storageStory:storageStory,
-                            publicPath:publicPath}
-        // console.log("----")
-         //console.log(mushElementObj.mushElement.notes)
-        // console.log(mushElementObj.parentElement)
-        // console.log("----")
+        parentElement=JSON.parse(JSON.stringify(parentElement))
+        parentElement.exp_date=moment(parentElement.exp_date).format("DD-MM-YY")
+        parentElement.expected_maturation_date=moment(parentElement.expected_maturation_date).format("DD-MM-YY")
+        mushElement=JSON.parse(JSON.stringify(mushElement))
+        let storage= await db.storage.findAll()
+        let mushStorage=storage.find(el=> el.id == mushElement.storageId)
+            mushElement.storage=JSON.parse(JSON.stringify(mushStorage))
+        
 
-        try {
-                    const pdf=await generatePdfReport({mushElementObj:mushElementObj},"mushElementReport.ejs")
-                    if (getHtml==false){
-                        res.setHeader("Content-Type", "application/pdf");
-                        res.setHeader("Content-Disposition", "inline; filename=report_"+mushElement.element_code+".pdf");
-                        res.end(pdf); 
-                    } else {
-                        res.send(html)
-                    }
-                } catch (err) {
-                    console.error(err);
-                    res.status(500).send("Errore durante la generazione del PDF");
+        //console.log(mushElement.storage)
+        stageDD=JSON.parse(JSON.stringify(stageDD))
+        pickReasonDD=JSON.parse(JSON.stringify(pickReasonDD))
+        let pickReasonDesc="N.D."
+        let stageDesc="--"
+        pickReasonDD.forEach(el => {
+            if (el.val===parseInt(mushElement.pick_reason)){
+                pickReasonDesc=el.txt
+            }
+        });
+        stageDD.forEach(el => {
+            if (el.val==mushElement.stage){
+                stageDesc=el.txt
+            }
+        });
+        mushElement.pickReasonDesc=pickReasonDesc
+        mushElement.stageDesc=stageDesc
+        mushElement.load_date=moment(mushElement.load_date).format("DD-MM-YY")
+        mushElement.expected_maturation_date=mushElement.expected_maturation_date?moment(mushElement.expected_maturation_date).format("DD-MM-YY"):"-"
+        mushElement.real_maturation_date=mushElement.real_maturation_date?moment(mushElement.real_maturation_date).format("DD-MM-YY"):"-"
+        mushElement.expected_fructification_date=mushElement.expected_fructification_date?moment(mushElement.expected_fructification_date).format("DD-MM-YY"):"-"
+        mushElement.real_fructification_date=mushElement.real_fructification_date?moment(mushElement.real_fructification_date).format("DD-MM-YY"):"-"
+        mushElement.pick_date=moment(mushElement.pick_date).format("DD-MM-YY")
+        mushElement.pick_reason=mushElement.pick_reason?mushElement.pick_reason:"--"
+        mushElement.stage=mushElement.stage
+        //mushElement.storage= await db.storage.findAll({where:{id:mushElement.storageId}})
+        switch (filterCategory) {
+            case "INOCULUM":
+                mushElement.substrate_info=parentElement.substrate.name_substrate +" "+parentElement.substrate.recipe_name
+                mushElement.qt_info=mushElement.qt +" "+ parentElement.container.uom
+                mushElement.contenitore_info=parentElement.container.container_name
+                parentElement.code_parent=parentElement.code_inoculum
+                parentElement.parent_name=parentElement.inoculum_name
+            case "SPAWN":
+                mushElement.substrate_info=parentElement.substrate.name_substrate +" "+parentElement.substrate.recipe_name
+                mushElement.qt_info=mushElement.qt +" "+ parentElement.container.uom
+                mushElement.contenitore_info=parentElement.container.container_name
+                parentElement.code_parent=parentElement.code_spawn
+                parentElement.parent_name=parentElement.spawn_name
+                break;
+            case "CULTIVATION":
+                mushElement.cultivation_info=parentElement.spawn?parentElement.spawn.strain.species_code +" "+parentElement.spawn.strain.strain_name:"-"
+                mushElement.substrate_info=parentElement.substrate.name_substrate +" "+parentElement.substrate.recipe_name
+                mushElement.qt_info=mushElement.qt +" "+ parentElement.container.uom
+                mushElement.contenitore_info=parentElement.container.container_name
+                parentElement.code_parent=parentElement.code_propagation
+                parentElement.parent_name=parentElement.propagation_name
+                break;
+        
+    }
+    // console.log("mushEle")
+    // console.log(mushElement)
+    let destination=await db.storage.findAll({where:{id:{
+                                                [Op.ne]: mushElement.storageId
+                                            }}})
+    let destinationDD=[]
+    destination.forEach(elem => {
+            destinationDD.push({val:elem.id,txt:elem.code_storage+" - "+elem.name_storage})
+        });
+    // Movimentazioni
+    let movimentation= await db.movimentation.findAll({where:{relatedId:mushElement.id,type:mushElement.type}})
+    let storageStory=[]
+    if (movimentation.length==0){
+        let to
+        let from=moment(mushElement.createdAt).format("DD-MM-YY")
+        if (mushElement.active==1){
+            to=moment().toISOString()
+        }else{
+            to=mushElement.pick_date
+        }
+        let movStorage=storage.find(el=> el.id == mushElement.storageId)
+
+        storageStory.push({storage:movStorage.code_storage+" - "+movStorage.name_storage,from:from,to:to})
+        console.log(storageStory)
+    }else{
+        for (let i = 0; i < movimentation.length; i++) {
+            const el = movimentation[i];
+            let to
+            let from
+            // gestione ultima movimentazione
+            if ((i==movimentation.length-1)&&(i>0)){
+                if (mushElement[0].active==1){
+                    to=moment().toISOString()
+                }else{
+                    to=mushElement[0].pick_date
                 }
+                from=movimentation[i-1].createdAt
+                //console.log(movimentation[i-1].createdAt)
+                //console.log(from,to)
+                storageStory.push({storageId:el.to,from:from,to:to})
+            } 
+            // Prima movimentazione
+            else if(i==0){
+                from=mushElement[0].createdAt
+                to=el.createdAt
+                storageStory.push({storageId:el.to,from:from,to:to})
+            }
+            else{
+                from=movimentation[i-1].createdAt
+                to=el.createdAt
+                storageStory.push({storageId:el.to,from:from,to:to})
+            }
+        }
+    }
+
+    // Recupero immagini note e le converto in base64
+    if((mushElement.notes)&&(mushElement.notes.length)){
+        for (let i = 0; i < mushElement.notes.length; i++) {
+            const el = mushElement.notes[i];
+            if(el.pict){
+                const percorsoImmagine = path.join(
+                    __dirname,
+                    '..', '..', 
+                    'public', 
+                    'imgMushEleNote', 
+                    String(mushElement.element_code), 
+                    el.pict
+                );
+                let base64Image = null;
+                try {
+                    if (fs.existsSync(percorsoImmagine)) {
+                        //const imageBuffer = fs.readFileSync(percorsoImmagine);
+                        
+                        const estensione = path.extname(el.pict).replace('.', '').toLowerCase();
+                        const mimeType = estensione === 'jpg' ? 'jpeg' : estensione;
+                        const image = await Jimp.read(percorsoImmagine);
+                        if (image.width > image.height) {
+                            image.resize({ w: 113 });
+                        } else {
+                            image.resize({ h: 113 });
+                        } 
+                        base64Image = await image.getBase64(`image/${mimeType}`);
+                        mushElement.notes[i].pict=base64Image
+                    } else {
+                        console.warn(`File non trovato al percorso: ${percorsoImmagine}`);
+                    }
+                } catch (error) {
+                    console.error("Errore durante la conversione dell'immagine:", error);
+                }
+            }
+        }
+    }
+
+    let mushElementObj= {mushElement:mushElement,
+                        parentElement:parentElement,
+                        titoloFiltro:titoloFiltro,
+                        filterCategory:filterCategory,
+                        seeds:seeds,
+                        areaView:areaView,
+                        storageStory:storageStory,
+                        publicPath:publicPath}
+    // console.log("----")
+        //console.log(mushElementObj.mushElement.notes)
+    // console.log(mushElementObj.parentElement)
+    // console.log("----")
+
+    try {
+        const pdf=await generatePdfReport({mushElementObj:mushElementObj},"mushElementReport.ejs")
+        if (getHtml==false){
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader("Content-Disposition", "inline; filename=report_"+mushElement.element_code+".pdf");
+            res.end(pdf); 
+        } else {
+            res.send(html)
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Errore durante la generazione del PDF");
+    }
     
 })
 
