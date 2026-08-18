@@ -1521,6 +1521,7 @@ async function getMovimentation(){
 // get data sensor
 async function getSensorData(storageId,from,to,sampleSize=100) {
   let sensorData
+  $('#loadingOverlay').fadeIn(200); // Overlay con spinning
   await $.ajax({
     type: "GET",
     url: "/mushElement/getSensorDataHa",
@@ -2032,11 +2033,8 @@ $(document).ready(async function () {
     toIotData=$(this).attr("to")
     let sensorData=await getSensorData(storageIdIot,fromIotData,toIotData)
       if (sensorData){
-        $('#loadingOverlay').fadeIn(200);
-        console.log("ok")
+        
       await generaTabEGrafici(sensorData)
-        console.log("ok")
-
       $('#loadingOverlay').fadeOut(200);
       $("#graph_NoData").hide();
       $("#graph_Div").show();
