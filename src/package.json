@@ -39,7 +39,6 @@
     "mysql2": "^3.14.3",
     "node-cron": "^4.2.1",
     "node-schedule": "^2.1.1",
-    "node-telegram-bot-api": "^1.2.0",
     "pdfkit": "^0.19.1",
     "puppeteer": "^24.23.0",
     "qrcode": "^1.5.4",
