@@ -19,6 +19,22 @@ const { mushElement } = require("../models")
 /* Puppetter */
 module.exports=async (data,ejsTemplate,headerText=false,footerText=false)=>{
     // console.log("gen")
+    const launchOptions = {
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage', 
+            '--disable-accelerated-2d-canvas',
+            '--disable-gpu',           
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process' // Ottimo per il Raspberry, innocuo sul PC
+        ]
+        };
+    if (process.env.IS_DOCKER === "true") {
+        launchOptions.executablePath = '/usr/bin/chromium-browser';
+    }
+
      console.log(data.mushElementObj.parentElement)
 
     //Converto il logo in Base64
@@ -35,7 +51,18 @@ module.exports=async (data,ejsTemplate,headerText=false,footerText=false)=>{
                     args: ["--no-sandbox", "--disable-setuid-sandbox"],
                     });
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
+
+    // Rimuove i timeout (Su PC sarà istantaneo, il Raspberry si prenderà il suo tempo senza crashare)
+    await page.setDefaultNavigationTimeout(0);
+    await page.setDefaultTimeout(0);
+
+    // Esegui il setContent con il timeout disattivato
+    await page.setContent(html, { 
+    waitUntil: 'networkidle0',
+    timeout: 0 
+    });
+
+    //await page.setContent(html, { waitUntil: "networkidle0" });
     
     const pdf = await page.pdf({ format: "A4", 
                                     printBackground: true,
