@@ -28,7 +28,7 @@ router.get('/storageZoom',async  (req, res) => {
 });
 
 router.post('/newStorage',async (req,res)=>{
-    //console.log(req.body)
+    console.log(req.body)
     await db.storage.create({
         name_storage:req.body.name_storage,
         code_storage:req.body.code_storage,
@@ -39,9 +39,7 @@ router.post('/newStorage',async (req,res)=>{
         inoculum:req.body.inoculum?req.body.inoculum:0,
         spawn:req.body.spawn?req.body.spawn:0,
         propagation:req.body.propagation?req.body.propagation:0,
-        container:req.body.container?req.body.container:0,
-        mushElement:0,
-        strain:0
+        container:req.body.container?req.body.container:0
     }).then(result=>{
         res.status(200).json(result)
     }).catch(err=>{

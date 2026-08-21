@@ -17,13 +17,8 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull:false,
       },
-      data_storage:{
-        type: Sequelize.STRING,
-        allowNull:false,
-      },
       area_HomeAssistant:{
         type: Sequelize.STRING,
-        allowNull:false,
       },
       rawmaterial: {
         type: Sequelize.INTEGER},
