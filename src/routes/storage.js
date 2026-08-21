@@ -32,7 +32,6 @@ router.post('/newStorage',async (req,res)=>{
     await db.storage.create({
         name_storage:req.body.name_storage,
         code_storage:req.body.code_storage,
-        data_storage:req.body.data_storage,
         area_HomeAssistant:req.body.area_HomeAssistant,
         note:req.body.note,
         rawmaterial:req.body.rawmaterial?req.body.rawmaterial:0,
