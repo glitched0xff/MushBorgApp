@@ -1,29 +1,33 @@
-const dbConfig = require("../config/db.config.js");
-
-// Se process.env.HOST è "localhost" o non è definito, ma siamo dentro Docker (dove il database si chiama mariadb),
-// oppure se vogliamo dare priorità a una configurazione Docker.
-const HOST = process.env.HOST === "localhost" && process.env.IS_DOCKER ? "mariadb" : (process.env.HOST || "localhost");
-
-const USER=process.env.USERDB
-const PASSWORD=process.env.PASSWORDDB
-const DB=process.env.DB
-const DIALECT=process.env.DIALECT
+//const dbConfig = require("../config/db.config.js");
 
 const Sequelize = require("sequelize");
+
+// Se IS_DOCKER è true, usa tassativamente il nome del servizio Docker "mariadb". 
+// Altrimenti usa il valore del file .env (localhost).
+const HOST = process.env.IS_DOCKER === "true" ? "mariadb" : (process.env.HOST || "localhost");
+
+const USER = process.env.USERDB;
+const PASSWORD = process.env.PASSWORDDB;
+const DB = process.env.DB;
+const DIALECT = process.env.DIALECT || "mariadb";
+
+console.log(`Connessione in corso a ${DIALECT}://${USER}@${HOST}/${DB}...`);
 
 const sequelize = new Sequelize(DB, USER, PASSWORD, {
   host: HOST,
   dialect: DIALECT,
-  //operatorsAliases: false,
-  //logging:console.log,
   logging: false,
+  dialectOptions: {
+    connectTimeout: 15000 // Dai a MariaDB 15 secondi per l'handshake iniziale dentro Docker
+  },
   pool: {
-    max: dbConfig.pool.max,
-    min: dbConfig.pool.min,
-    acquire: dbConfig.pool.acquire,
-    idle: dbConfig.pool.idle,
+    max: (typeof dbConfig !== 'undefined' && dbConfig?.pool?.max) || 5,
+    min: (typeof dbConfig !== 'undefined' && dbConfig?.pool?.min) || 0,
+    acquire: (typeof dbConfig !== 'undefined' && dbConfig?.pool?.acquire) || 30000,
+    idle: (typeof dbConfig !== 'undefined' && dbConfig?.pool?.idle) || 10000,
   }
 });
+
 
 // const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
 //   host: dbConfig.HOST,
