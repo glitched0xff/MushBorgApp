@@ -28,7 +28,7 @@ router.get('/storageZoom',async  (req, res) => {
 });
 
 router.post('/newStorage',async (req,res)=>{
-    console.log(req.body)
+    //console.log(req.body)
     await db.storage.create({
         name_storage:req.body.name_storage,
         code_storage:req.body.code_storage,

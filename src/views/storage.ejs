@@ -250,7 +250,7 @@
                   <td>${el.code_storage}</td>
                   <td>${el.area_HomeAssistant}</td>
                   <td>${el.name_storage}</td>
-                  <td>${el.data_storage}</td>
+                  <td>${el.address?el.address:""} ${el.city?el.city:""} ${el.province?el.province:""} ${el.cap?el.cap:""}</td>
                 </tr>`
   
             })
