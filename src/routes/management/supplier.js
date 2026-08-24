@@ -19,7 +19,7 @@ router.get('/',async  (req, res) => {
   });
   
 router.post('/newSupplier', async(req,res) => {
-    console.log(req.body)
+    //console.log(req.body)
     let supplier_name = req.body.supplier_name?req.body.supplier_name:false
     let data=req.body
     if (supplier_name!=false){
@@ -36,7 +36,7 @@ router.post('/newSupplier', async(req,res) => {
         if (data.coltivazione){
             field.push("coltivazione")
         }
-        console.log(field)
+        //console.log(field)
         await Supplier.create({
                     supplier_name:data.supplier_name,
                     address:data.address,
@@ -72,7 +72,7 @@ router.get('/getAll',async  (req, res) => {
         let material=await RawMaterial.findAll({where:{supplierId:supplier.id}})
         material=JSON.parse(JSON.stringify(material))
         supplier.material=material
-        console.log(material)
+        //console.log(material)
         res.status(200).json({supplier:supplier})
     } else {
             res.status(522).json()
@@ -80,7 +80,7 @@ router.get('/getAll',async  (req, res) => {
   });
 
   router.put('/updateSupplier', async(req,res) => {
-    console.log(req.body)
+    //console.log(req.body)
     let idSupplier=req.body.id?req.body.id:false
     let data=req.body
     if (idSupplier!=false){

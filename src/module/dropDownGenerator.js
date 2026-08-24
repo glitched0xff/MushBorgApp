@@ -45,7 +45,6 @@ module.exports=async (nameDD,filter=false)=>{
                         })
             break;
         case "supplier":
-            console.log(filter)
             if (filter){
                 queryResult=await db.supplier.findAll({where: {
                                                                 field: {
@@ -55,7 +54,6 @@ module.exports=async (nameDD,filter=false)=>{
             }else{
                 queryResult=await db.supplier.findAll()
             }
-            console.log(JSON.parse(JSON.stringify(queryResult)))
             break;
         case "materialCategory":
             queryResult=await db.materialCategory.findAll()

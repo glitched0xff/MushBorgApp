@@ -39,7 +39,7 @@ router.get('/getAll',async  (req, res) => {
 let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(2, 'months').startOf('month')
 let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
 let rawMaterials
-console.log(fromDate,toDate)
+//console.log(fromDate,toDate)
     rawMaterials=await RawMaterial.findAll({
     where: { createdAt: { [Op.between]: [fromDate.toDate(), toDate.toDate()] }},
     attributes:["id","material_name","quantity","uom","createdAt"],
