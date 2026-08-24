@@ -959,7 +959,7 @@ router.get('/singleMushElement',async  (req, res) => {
 
 
 router.get('/generatePdf',async (req,res)=>{
-    //console.log(req.query)
+   // console.log(req.query)
     const publicPath = path.join(__dirname, '../../public/'); 
     let titoloFiltro=""
     let filterCategory
@@ -996,8 +996,6 @@ router.get('/generatePdf',async (req,res)=>{
                                                     group: ["mushElement.id"] // serve il group by per fare l’aggregazione
                                                         })
 
-        
-                                                    //console.log(mushElement)
     let harvests= await db.mushElementHarvest.findAll({where:{mushElementId:mushElementId,type:mushElement.type}})
     let notes= await db.mushElementNote.findAll({where:{mushElementId:mushElementId,type:mushElement.type}})
 
@@ -1107,6 +1105,7 @@ router.get('/generatePdf',async (req,res)=>{
     // Movimentazioni
     let movimentation= await db.movimentation.findAll({where:{relatedId:mushElement.id,type:mushElement.type}})
     let storageStory=[]
+   // console.log(mushElement)
     if (movimentation.length==0){
         let to
         let from=moment(mushElement.createdAt).format("DD-MM-YY")
@@ -1126,10 +1125,10 @@ router.get('/generatePdf',async (req,res)=>{
             let from
             // gestione ultima movimentazione
             if ((i==movimentation.length-1)&&(i>0)){
-                if (mushElement[0].active==1){
+                if (mushElement.active==1){
                     to=moment().toISOString()
                 }else{
-                    to=mushElement[0].pick_date
+                    to=mushElement.pick_date
                 }
                 from=movimentation[i-1].createdAt
                 //console.log(movimentation[i-1].createdAt)
@@ -1138,7 +1137,7 @@ router.get('/generatePdf',async (req,res)=>{
             } 
             // Prima movimentazione
             else if(i==0){
-                from=mushElement[0].createdAt
+                from=mushElement.createdAt
                 to=el.createdAt
                 storageStory.push({storageId:el.to,from:from,to:to})
             }
@@ -1196,10 +1195,6 @@ router.get('/generatePdf',async (req,res)=>{
                         areaView:areaView,
                         storageStory:storageStory,
                         publicPath:publicPath}
-    // console.log("----")
-        //console.log(mushElementObj.mushElement.notes)
-    // console.log(mushElementObj.parentElement)
-    // console.log("----")
 
     try {
         const pdf=await generatePdfReport({mushElementObj:mushElementObj},"mushElementReport.ejs")

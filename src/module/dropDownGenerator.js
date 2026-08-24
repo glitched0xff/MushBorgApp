@@ -45,7 +45,17 @@ module.exports=async (nameDD,filter=false)=>{
                         })
             break;
         case "supplier":
-            queryResult=await db.supplier.findAll()
+            console.log(filter)
+            if (filter){
+                queryResult=await db.supplier.findAll({where: {
+                                                                field: {
+                                                                [Op.like]: `%"${filter}"%` 
+                                                                }
+                                                            }})
+            }else{
+                queryResult=await db.supplier.findAll()
+            }
+            console.log(JSON.parse(JSON.stringify(queryResult)))
             break;
         case "materialCategory":
             queryResult=await db.materialCategory.findAll()

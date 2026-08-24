@@ -34,7 +34,7 @@ router.get('/',async  (req, res) => {
     let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
     let statoPropDD=await db.dDOption.findAll({where:{ddMenu:"statoProp"}})
     let spawnDD=await dropDownGenerator("spawn")
-    let supplierDD=await dropDownGenerator("supplier")
+    let supplierDD=await dropDownGenerator("supplier","cultivation")
     let container=await db.container.findAll({where:{
                                     [Op.or]: [
                                         { destination: "CULTIVATION" },

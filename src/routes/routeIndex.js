@@ -55,12 +55,70 @@ router.get('/',async (req, res) => {
     harvests.push({harvest:harvestYear,year:moment().year()})
 
       let storage=await db.storage.findAll()
+
+      // Last edit element
+    let lastEditElement = await db.mushElement.findAll({ 
+                                  subQuery: false,
+                                  include: [
+                                      { model: db.mushElementNote, attributes: [] },
+                                      { model: db.mushElementHarvest, attributes: [] },
+                                  ],
+                                  attributes: [
+                                      "id",
+                                      "element_code",
+                                      "type",
+                                      "stato",
+                                      "load_date",
+                                      "strainId",
+                                      "active",
+                                      "updatedAt", // ◄ Aggiungi esplicitamente la colonna di ordinamento qui
+                                      [fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
+                                      [fn("COUNT", col("mushElementNotes.id")), "totalNote"]
+                                  ],
+                                  group: ["mushElement.id"],
+                                  limit: 10,
+                                  order: [["updatedAt", "DESC"]] // ◄ Controlla che sul DB si chiami "updatedAt" e non "updateAt"
+                              });
+
+    if(lastEditElement){
+            lastEditElement=JSON.parse(JSON.stringify(lastEditElement))
+            
+            for (let i = 0; i < lastEditElement.length; i++) {
+                if (lastEditElement[i].strainId){
+                let strain=await db.strain.findOne({where:{id:lastEditElement[i].strainId}, attributes:["species"],raw:true})
+                lastEditElement[i].strainName=strain?strain.species:null
+                }
+            }
+        }
+    
+    let lastHarvest= await db.mushElementHarvest.findAll({
+                                  limit:10,
+                                  order:[["createdAt","DESC"]]
+    })
+    for (let i = 0; i < lastHarvest.length; i++) {
+      const e = lastHarvest[i];
+        let mushElement=await db.mushElement.findOne({where:{id:e.mushElementId},
+                                                      attributes: [
+                                                                "id",
+                                                                "element_code",
+                                                                "type",
+                                                                "stato",
+                                                                "load_date",
+                                                                "strainId",
+                                                                "active",
+                                                            ],})
+        let strain= await db.strain.findOne({where:{id:mushElement.strainId},attributes:["strain_name","species"]})
+      lastHarvest[i].mushElement=JSON.parse(JSON.stringify(mushElement))
+      lastHarvest[i].strain=JSON.parse(JSON.stringify(strain))
+    }
      res.render("index", { title: "Express" ,
                            nInoculum,
                            nSpawn,
                            nCultivation,
                           storage,
                           harvests,
+                          lastEditElement,
+                          lastHarvest,
                           config});
 });
 

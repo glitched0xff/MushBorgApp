@@ -37,7 +37,7 @@ router.get('/',async  (req, res) => {
     // Inoculi degli inoculi
     //let inoculums=await db.inoculum.findAll({include:{model:db.mushElement, where:{type:"INOCULUM"}}})
     let inoculumDD=[]
-    let supplierDD=await dropDownGenerator("supplier")
+    let supplierDD=await dropDownGenerator("supplier","inoculum")
     //console.log(req.query)
 
     let redirectId=req.query.redirectId?req.query.redirectId:null

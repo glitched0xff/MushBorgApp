@@ -17,7 +17,7 @@ const Substrate = db.substrate;
 
 router.get('/',async  (req, res) => {
     let redirectId=req.query.redirectId?req.query.redirectId:null
-    let supplierDD=await dropDownGenerator("supplier")
+    let supplierDD=await dropDownGenerator("supplier","materiali")
     let materialCategoryDD= await dropDownGenerator("materialCategory")
     let storageDD= await dropDownGenerator("storage")
     let destinationDD= await dropDownGenerator("destination")

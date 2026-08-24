@@ -19,15 +19,31 @@ router.get('/',async  (req, res) => {
   });
   
 router.post('/newSupplier', async(req,res) => {
+    console.log(req.body)
     let supplier_name = req.body.supplier_name?req.body.supplier_name:false
     let data=req.body
     if (supplier_name!=false){
+        let field=[]
+        if (data.materiali){
+            field.push("materiali")
+        }
+        if (data.inoculi){
+            field.push("inoculi")
+        }
+        if (data.spawn){
+            field.push("spawn")
+        }
+        if (data.coltivazione){
+            field.push("coltivazione")
+        }
+        console.log(field)
         await Supplier.create({
                     supplier_name:data.supplier_name,
                     address:data.address,
                     phone:data.phone,
                     mail:data.mail,
                     note:data.note,
+                    field:JSON.stringify(field)
                 })
                 .then(result=>{
                     res.status(200).json({data:result})
@@ -68,17 +84,32 @@ router.get('/getAll',async  (req, res) => {
     let idSupplier=req.body.id?req.body.id:false
     let data=req.body
     if (idSupplier!=false){
+        let field=[]
+        if (data.materiali){
+            field.push("materiali")
+        }
+        if (data.inoculi){
+            field.push("inoculi")
+        }
+        if (data.spawn){
+            field.push("spawn")
+        }
+        if (data.coltivazione){
+            field.push("coltivazione")
+        }
         await Supplier.update({
             supplier_name:data.supplier_name,
             address:data.address,
             phone:data.phone,
             mail:data.mail,
             note:data.note,
+            field:JSON.stringify(field)
             },{where:{id:idSupplier}})
         .then(result=>{
             res.status(200).json({data:result})
         })
         .catch(err =>{
+            console.log(err)
             res.status(522).json({message:err}) 
         })
                 

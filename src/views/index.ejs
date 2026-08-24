@@ -16,7 +16,7 @@
     </div>
     <section class="content">
       <div class="container-fluid">
-        <!-- Small boxes (Stat box) -->
+        <!-- Header page -->
         <div class="row">
           <div class="col-lg-4 col-6">
             <!-- small box -->
@@ -111,7 +111,7 @@
           
         </div>
         
-        <!-- Main row -->
+        <!-- ToDo Row-->
         <div class="row">
           <!-- Left col -->
           <section class="col-lg-12 connectedSortable">
@@ -199,6 +199,111 @@
             </div>
             
           </section>
+        </div>
+        <!-- Last harvest -->
+        <div class="row w-100">
+          <div class="col-12">
+            <div class="card w-100">
+            
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-spa"></i>
+                  Ultimi raccolti
+                </h3>
+                </div>
+              <div class="card-body">
+              <div class="row ">
+                <div style="width: 100%;max-height: 250px; overflow-y: scroll; ">
+                  <table class="table table-sm table-striped  w-100" style="border-collapse: collapse;">
+                  <thead class="">
+                    <tr>
+                      <th>Elemento</th>
+                      <th>Strain</th>
+                      <th>Specie</th>
+                      <th>Tipo</th>
+                      <th>Raccolto</th>
+                      <th>Creato il</th>
+                    </tr>
+                    </thead>
+                    <tbody class="">
+                      <% lastHarvest.forEach (el => {%>
+                        <% if (el.mushElement.active==0){%>
+                          <tr style="color:red">
+                        <% } else { %>
+                          <tr>
+                        <% } %>
+                         <td><a href="/mushElement/singleMushElement?id=<%= el.mushElement.id %>&filterCategory=<%= el.mushElement.type %>" target="_blank"><%= el.mushElement.element_code%></a></td>
+                                <td><%= el.strain.strain_name%></td>
+                                <td><%= el.strain.species%></td>
+                                <td><%= el.mushElement.type%></td>
+                                <td><%= el.harvest_weight%> g</td>
+                                <td ><%= new Date(el.createdAt).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) %>
+</td>
+                            </tr>
+                      <% }) %>
+                     
+                    </tbody>
+                </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          
+        </div>
+        <!-- Last element -->
+        <div class="row w-100">
+          <div class="col-12">
+            <div class="card w-100">
+            
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="ion ion-clipboard mr-1"></i>
+                  Ultimi elementi modificati
+                </h3>
+                </div>
+              <div class="card-body">
+              <div class="row ">
+                <div style="width: 100%;max-height: 250px; overflow-y: scroll; ">
+                  <table class="table table-sm table-striped  w-100" style="border-collapse: collapse;">
+                  <thead class="">
+                    <tr>
+                      <th>Elemento</th>
+                      <th>Strain</th>
+                      <th>Tipo</th>
+                      <th>Stato</th>
+                      <th>Note</th>
+                      <th>Raccolto</th>
+                      <th>Caricato il</th>
+                      <th>Aggiornato il</th>
+                    </tr>
+                    </thead>
+                    <tbody class="">
+                      <% lastEditElement.forEach (el => {%>
+                         <% if (el.active==0){%>
+                          <tr style="color:red">
+                        <% } else { %>
+                          <tr>
+                        <% } %>
+                         <td><a href="/mushElement/singleMushElement?id=<%= el.id %>&filterCategory=<%= el.type %>" target="_blank"><%= el.element_code%></a></td>
+                                <td><%= el.strainName%></td>
+                                <td><%= el.type%></td>
+                                <td><%= el.stato%> </td>
+                                <td><%= el.totalNote%></td>
+                                <td><%= el.totalHarvestWeight?el.totalHarvestWeight:"0"%> g</td>
+                                <td ><%= new Date(el.load_date).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) %></td>
+                                <td ><%= new Date(el.updatedAt).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) %></td>
+                            </tr>
+                      <% }) %>
+                     
+                    </tbody>
+                </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          
         </div>
       </div>
     </section>

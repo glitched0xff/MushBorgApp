@@ -9,7 +9,7 @@
         <div class="row mb-2">
           <div class="col-sm-6">
             <h1 class="m-0">Gestione fornitori 
-            <button class="btn btn-xs btn-primary" id="modSupplier_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifca substrate</button>
+            <button class="btn btn-xs btn-primary" id="modSupplier_Btn" style="display: none;"><i class="fas fa-plus"></i> Modifica fornitore</button>
               <button type="button" class="btn btn-xs btn-primary" id="newSupplier_Btn"><i class="fas fa-plus"></i> Nuova fornitore</button>
               <button class="btn btn-xs btn-primary" id="backToMain_Btn" style="display: none;"> <i class="fas fa-long-arrow-alt-left"></i> Torna a elenco fornitori</button>
             </h1>
@@ -91,7 +91,34 @@
                       fieldName:"note",
                       label:"Note",
                     },
+                    { type:"endRow"},
+                    { type:"startRow"},
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"materiali",
+                      label:"Materiali",
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"inoculi",
+                      label:"Inoculi",
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"spawn",
+                      label:"Spawn",
+                    },
+                    {
+                      type:"checkbox",
+                      classBox:"col-md-2 col-sm-6",
+                      fieldName:"coltivazione",
+                      label:"Coltivazione",
+                    },
                     { type:"endRow"}
+
                     ]  }) %>
   
                     </div>
@@ -212,7 +239,8 @@ async function elementBySupplier(){
   });
 }
 function drawElementTable(title,header,field,data,indexLink,route){
-const formatoISO = "YYYY-MM-DDTHH:mm:ss.SSSZ";
+  const formatoISO = "YYYY-MM-DDTHH:mm:ss.SSSZ";
+  
   let html= `
   <div class="col-12 my-2">
     <h4>${title}</h4>
@@ -269,6 +297,12 @@ $(document).ready(async function () {
     e.preventDefault();
     $("#cod_supplier_Fld").removeAttr("disabled")
     let f=checkForm("supplier_FRM")
+    if ($(".form-check-input:checked").length > 0) {
+        console.log("Almeno una checkbox con questa classe è selezionata!");
+    }else{
+      alert("Seleziona almeno un settore per il fornitore")
+      f=false
+    }
      if (f==true){
       let c=confirm("Inserire il fornitore? L'operazione non è annullabile")
         if(c==true){
@@ -303,7 +337,37 @@ $(document).ready(async function () {
               if($("#"+key+"_Fld").attr("tp")=="selectField"){
                 $("#"+key+"_Fld").val(value).change();
               }
-                $("#"+key+"_Show").html(value?value:"-")
+              switch (key) {
+                case "field":
+                  console.log(value)
+                  if (value){
+                    let field=JSON.parse(value)
+                    console.log(field)
+                    if (field.length>0){
+                      if (field.includes("materiali")){
+                        $("#materiali_Fld").prop("checked",1);
+                        $("#materiali_Show").html("Si")
+                      }else{$("#materiali_Show").html("No")}
+                      if (field.includes("inoculi")){
+                        $("#inoculi_Fld").prop("checked",1);
+                        $("#inoculi_Show").html("Si")
+                      }else{$("#inoculi_Show").html("No")}
+                      if (field.includes("spawn")){
+                        $("#spawn_Fld").prop("checked",1);
+                        $("#spawn_Show").html("Si")
+                      }else{$("#spawn_Show").html("No")}
+                      if (field.includes("coltivazione")){
+                        $("#coltivazione_Fld").prop("checked",1);
+                        $("#coltivazione_Show").html("Si")
+                      }else{$("#coltivazione_Show").html("No")}
+                    }
+                    }
+                  
+                  break;
+               default:
+                  $("#"+key+"_Show").html(value?value:"-")
+                  break;
+                }
             }
             $("#id_Fld").val(data.id)
           if (response.supplier.used>0){
@@ -342,6 +406,12 @@ $(document).ready(async function () {
    $("#saveModSupplier_Btn").click(function (e) { 
     e.preventDefault();
     let f=checkForm("supplier_FRM")
+    if ($(".form-check-input:checked").length > 0) {
+        console.log("Almeno una checkbox con questa classe è selezionata!");
+    }else{
+      alert("Seleziona almeno un settore per il fornitore")
+      f=false
+    }
      if (f==true){
       let c=confirm("Modificare il fornitore?")
         if(c==true){
@@ -350,18 +420,19 @@ $(document).ready(async function () {
               url: "/supplier/updateSupplier",
               data: $("#supplier_FRM").serialize(),   
               success: async function (response) {
-                await drawTable()
-                $("#showSupplier_Crd").hide()
-                $("#tableSupplier_Crd").show()
-                $("#newSupplier_Btn").show()
-                $("#modSupplier_Btn").hide()
-                $("#backToMain_Btn").hide()
-                $("#saveNewSupplier_Btn").hide()
-                $("#saveModSupplier_Btn").hide()
-                $("#saveSupplier_Btn").show()
-                $(".supplierForm").hide()
-                $(".supplierText").show()
-                $('#supplier_FRM')[0].reset();          
+                window.location.reload()
+                // await drawTable()
+                // $("#showSupplier_Crd").hide()
+                // $("#tableSupplier_Crd").show()
+                // $("#newSupplier_Btn").show()
+                // $("#modSupplier_Btn").hide()
+                // $("#backToMain_Btn").hide()
+                // $("#saveNewSupplier_Btn").hide()
+                // $("#saveModSupplier_Btn").hide()
+                // $("#saveSupplier_Btn").show()
+                // $(".supplierForm").hide()
+                // $(".supplierText").show()
+                // $('#supplier_FRM')[0].reset();          
               }
             });
         }
@@ -388,15 +459,16 @@ $(document).ready(async function () {
       // Back to main
       $("#backToMain_Btn").click(async function (e) { 
         e.preventDefault();
-        await drawTable()
-        $("#newSupplier_Btn").show()
-        $("#backToMain_Btn").hide()
-        $("#newSupplier_Crd").hide()
-        $("#showSupplier_Crd").hide()
-        $("#tableSupplier_Crd").show()
-        $("#modSupplier_Btn").hide()
-        $("#saveNewSupplier_Btn").hide()
-        $("#saveModSupplier_Btn").hide()
+        window.location.reload()
+        // await drawTable()
+        // $("#newSupplier_Btn").show()
+        // $("#backToMain_Btn").hide()
+        // $("#newSupplier_Crd").hide()
+        // $("#showSupplier_Crd").hide()
+        // $("#tableSupplier_Crd").show()
+        // $("#modSupplier_Btn").hide()
+        // $("#saveNewSupplier_Btn").hide()
+        // $("#saveModSupplier_Btn").hide()
       });  
   
   });
