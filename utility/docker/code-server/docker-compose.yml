@@ -1,0 +1,23 @@
+services:
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - PASSWORD=fY9tE£a|239&<^@hFX*D,S4Cbo>B
+    volumes:
+      - ~/docker/code-server/config:/config
+      - ~/docker/homeassistant/ha-config:/config/workspace
+    ports:
+      - 8443:8443
+#    labels:
+#      - homepage.group=Sviluppo
+#      - homepage.name=Code Server
+#      - homepage.icon=code-server.png
+#      - homepage.href=http://192.168.0.10:8443
+#      - homepage.description=VS Code nel browser
+#      - homepage.widget.type=docker
+#      - homepage.server=my-docker
+    restart: unless-stopped

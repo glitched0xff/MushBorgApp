@@ -1,0 +1,30 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:stable
+    volumes:
+      - /home/mushborg/docker/homeassistant/ha-config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+#    labels:
+#      - homepage.server=my-docker
+#      - homepage.group=Domotica
+#      - homepage.name=Home Assistant
+#      - homepage.icon=home-assistant.png
+#      - homepage.href=http://192.168.0.101:8123
+#      - homepage.description=Hub domotico per la smart home
+#      - homepage.widget.type=docker
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - /home/mushborg/docker/homeassistant/mosquitto/config:/mosquitto/config
+      - /home/mushborg/docker/homeassistant/mosquitto/data:/mosquitto/data
+      - /home/mushborg/docker/homeassistant/mosquitto/log:/mosquitto/log
+    restart: unless-stopped

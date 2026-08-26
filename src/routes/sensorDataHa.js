@@ -18,7 +18,8 @@ router.get('/',async  (req, res) => {
 });
 
 router.post('/insertData', async (req, res) => {
-    console.log("InsertData");
+    //console.log("InsertData");
+    //console.log(req.body);
     let timeFilter=180 // valore in secondi
     let HysteresisFilter=0.4 // valore di differenza per cui il dato sia salvato
     

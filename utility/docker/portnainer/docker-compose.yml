@@ -1,0 +1,27 @@
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:lts
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - 9443:9443
+      - 8000:8000  # Remove if you do not intend to use Edge Agents
+#    labels:
+#      - homepage.server=my-docker
+#      - homepage.group=Utility
+#      - homepage.name=Portainer
+#      - homepage.icon=portainer.png
+#      - homepage.href=https://192.168.1.101:9443 # Sostituisci con il tuo IP/dominio e porta (9000 o 9443 per HTTPS)
+#      - homepage.description=Gestione dei container Docker
+#      - homepage.widget.type=docker   
+
+volumes:
+  portainer_data:
+    name: portainer_data
+
+networks:
+  default:
+    name: portainer_network
