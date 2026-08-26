@@ -1,0 +1,20 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/services
+
+- Applicazioni:
+    - Mushborg:
+        href: http://192.168.0.101:3006/
+        description: Gestione coltivazione
+
+    - Home assistant:
+        href: http://192.168.0.101:8123/
+        description: Gestione sensori e apparati
+
+    - Portainer:
+        href: https://192.168.0.101:9443
+        description: Gestore container docker
+
+#    - VScode-server:
+#        href: http://192.168.0.101:8443
+#        description: Editor di codice visuale

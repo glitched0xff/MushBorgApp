@@ -1,0 +1,9 @@
+---
+services:
+  - auto: true
+
+# Configurazione nativa (stabile e senza crash React)
+background:
+  image: /images/background.png
+  blur: none          # Applica una leggera sfocatura nativa
+  brightness: 50    # Scurisce l'immagine per rendere leggibili i testi

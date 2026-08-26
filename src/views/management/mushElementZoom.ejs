@@ -79,9 +79,8 @@
         <div class="row m-3 my-4">
           <!-- Bottoni -->
               <div class="col-12 mb-3">
-                <div class="btn-group" role="group" aria-label="Basic example">
-                <% if(mushElement.active!=0) { %>
-
+                <% if(mushElement.active==1) { %>
+                <div class="btn-group" role="group" >
               <button type="button" name="" id="modElement_Btn" class="btn btn-secondary btn-xs"><i class="fas fa-pencil fa-sm   mx-1"></i> Modifica elemento</button>
               <button type="button" name="" id="moveElement_Btn" class="btn btn-secondary btn-xs"><i class="fas fa-route fa-sm   mx-1"></i> Sposta elemento</button>
               <button type="button" name="" id="delElement_Btn" class="btn btn-secondary btn-xs"><i class="fa fa-trash mx-1" aria-hidden="true"></i> Elimina elemento</button>
@@ -101,7 +100,6 @@
                     </a>
                 <% } %>
               <% if((filterCategory=="SPAWN")&&(mushElement.stage==null)){ %>
-                  
                   <button type="button" name="" id="fructElement_Btn" class="btn btn-secondary btn-xs">Metti in fruttificazione</button>
               <% } else if((filterCategory=="SPAWN")&&(mushElement.stage==2)){%>
                 <!-- <div class="col mx-auto text-center">Elemento in fruttificazione</div> -->
@@ -112,9 +110,7 @@
                 <!-- <div class="col mx-auto text-center">Elemento in fruttificazione</div> -->
                 <%}%>
               <button type="button" name="" id="printCode_Btn" class="btn btn-secondary p-1 btn-xs"><i class="fas fa-qrcode mx-1"></i> Stampa codice</button>
-              <% } else {%>
-                <i class="fa fa-times-circle text-secondary p-1 mx-1" aria-hidden="true"></i> <span class="small"> <%= mushElement.pickReasonDesc %> <%= mushElement.pick_date %> </span>
-              <% }%>
+              
               <button type="button" name="" id="printDataSheet_Btn" class="btn btn-secondary p-1 btn-xs">
                 <i class="fas fa-file-pdf mx-1"></i> Stampa scheda  
               </button>
@@ -122,6 +118,42 @@
                          <i class="fas fa-mobile fa-sm   mx-1"></i> Interfaccia semplificata 
                     </a>
               </div> 
+              
+               <% } else {%> 
+                <div class="row">
+                  <div class="col-5">
+                <div class="btn-group w-100" role="group" >
+                  <% if(filterCategory=="INOCULUM") {%>
+                  <a href="/inoculum?incoulumCode=<%= parentElement.code_inoculum %>" target="_blank" class="btn btn-secondary btn-xs p-1">
+                    <i class="fas fa-boxes fa-sm mx-1"></i>Vai al lotto
+                    </a>
+                  <% } %>
+              <% if(filterCategory=="SPAWN") {%>
+              <a href="/spawn?spawnCode=<%= parentElement.code_spawn %>" target="_blank" class="btn btn-secondary btn-xs p-1">
+                <i class="fas fa-boxes fa-sm mx-1"></i>Vai al lotto
+                    </a>
+                <% } %>
+                <% if(filterCategory=="CULTIVATION") {%>
+              <a href="/propagation?propagationCode=<%= parentElement.code_propagation %>" target="_blank" class="btn btn-secondary btn-xs p-1">
+                        <i class="fas fa-boxes fa-sm mx-1"></i> Vai al lotto
+                    </a>
+                <% } %>
+              <button type="button" name="" id="printCode_Btn" class="btn btn-secondary p-1 btn-xs"><i class="fas fa-qrcode mx-1"></i> Stampa codice</button>
+              
+              <button type="button" name="" id="printDataSheet_Btn" class="btn btn-secondary p-1 btn-xs">
+                <i class="fas fa-file-pdf mx-1"></i> Stampa scheda  
+              </button>
+              <a href="/mushElement/mushElementLanding?elementCode=<%= mushElement.element_code %>" class="btn btn-secondary btn-xs p-1">
+                         <i class="fas fa-mobile fa-sm   mx-1"></i> Interfaccia semplificata </a>
+              </div> 
+              </div>
+                <div class="col">
+                <i class="fa fa-times-circle text-danger p-1 mx-1" aria-hidden="true"></i> <span class=""> Messo in natura 18-08-26 </span>
+              </div>
+              
+
+              </div>
+              <%} %>
               </div>
           <div class="col-12">
           

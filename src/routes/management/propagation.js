@@ -25,6 +25,7 @@ moment.utc();
  * @returns Render ejs template "management/propagation"
  */
 router.get('/',async  (req, res) => {
+    console.log(req.query)
     //let searchCode=req.query.code?req.query.code:false
     let redirectId=req.query.redirectId?req.query.redirectId:null
     let strainDD=await dropDownGenerator("strain")
