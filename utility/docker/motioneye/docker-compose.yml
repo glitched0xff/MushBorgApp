@@ -1,0 +1,15 @@
+services:
+  motioneye:
+    image: ccrisan/motioneye:master-armhf
+    container_name: motioneye
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "8765:8765"
+      - "8083:8083"
+    devices:
+      - "/dev/video0:/dev/video0"
+    volumes:
+      - "./motioneye:/etc/motioneye"
+      - "./motioneye/var:/var/lib/motioneye"
+
