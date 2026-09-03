@@ -14,7 +14,6 @@ Prima di iniziare, è necessario installare l'ambiente Docker sul proprio comput
    
    [Documentazione ufficiale Docker](https://docs.docker.com/engine/install/debian/)
 
-   [] ( documentazione installazione ufficiale docker)
 
    ```
    # Add Docker's official GPG key:
