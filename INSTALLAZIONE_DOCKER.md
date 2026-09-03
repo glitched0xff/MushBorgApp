@@ -34,6 +34,9 @@ Prima di iniziare, è necessario installare l'ambiente Docker sul proprio comput
     EOF
     
     sudo apt update
+
+    sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
     ```
    
 2. Scegli la versione adatta al tuo sistema operativo (Mac con chip Apple/Intel, Windows o Linux).
