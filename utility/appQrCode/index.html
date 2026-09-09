@@ -1,15 +1,25 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
+    <!-- 
+    App web di scansione e decodifica Qrcode di Mushborg
+    - sostituisce l'app su vercel
+    - imposta url del server
+    - accoda la decodifica del Qrcode all'host
+    - salva l'host nel local storage del browser
+    - testato su IOS
+
+    Data: 09-09-2026
+    ver:0
+    Author: glitched0xff
+    License: CC0
+    -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-    <title>Hello, world!</title>
+    <title>Mushborg QrScanner</title>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
-    <!-- Utilizziamo l'ultima versione stabile della libreria -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
 
@@ -21,29 +31,41 @@
             width: 200px;
             display: none;
         }
+        #hostVal {
+            background: #fff;
+            border-radius: 5px;
+            max-width: 300px;
+            padding: 3px;
+            color:#3C4249
+        }
     </style>
   </head>
   <body>
     <div class="row">
 
         <div class="col h1 text-center">
-            <img src="LogoMushborgWeb.png" alt="logo mushborg">Mushborg QrScanner
+            <img src="LogoMushborgWeb.png" alt="logo mushborg" height="35px">
+            <span class="pt-1">Mushborg QrScanner</span>
         </div>
     </div>
-    
+    <!-- Qr result -->
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 text-center">
                <div id="qr-reader" class="mx-auto" style="max-width: 500px; width: 100%;"></div>
+               
             </div>
-             <div class="col-12 text-center my-3" id="qr-reader-results"></div>
+             <div class="col-md-5 col-sm-12 text-center my-3 bg-light text-dark mx-auto" style="display: none;" id="qr-reader-results"></div>
+             
             <div class="col-12 text-center">
-                <button type="button" id="goToPage_btn" style="width: 200px; display: none;" class="btn btn-primary btn-lg">Vai al link</button>
+                <!-- Go to page -->
+                <button type="button" id="goToPage_btn" style="width: 200px; display: none;" class="btn btn-success ">Vai al link</button>
+                <button type="button" name="" id="resumeScan_btn" class="btn btn-secondary" style="display: none;">Riavvia scansione</button>
             </div>
         </div>
-        
         <div class="row py-3">
-            <div class="col-md-6 mx-auto my-2" id="setHost_wrp">
+            <!-- Modifica host -->
+            <div class="col-md-4 col-sm-12 mx-auto my-2" id="setHost_wrp">
                 <form class="form">
                     <div class="form-group">
                         <label for="newHost">Inserisci l'indirizzo del server</label>
@@ -53,10 +75,11 @@
                     <button type="button" class="btn btn-primary" id="setHost_Btn">Salva il server</button>
                 </form>
             </div>
-            <div class="col-md-6 mx-auto my-2" id="showHost_wrp" style="display:none;">
+            <!-- Visualizza l'host -->
+            <div class="col-md-4 col-sm-12 mx-auto my-2" id="showHost_wrp" style="display:none;">
                 <div class="row align-items-center">
-                    <div class="col" id="hostVal"></div>
-                    <div class="col-auto">
+                    <!-- <div class="col" id="hostVal"></div> -->
+                    <div class="col-auto mx-auto">
                         <button type="button" class="btn btn-primary btn-sm" id="modHost_Btn">Modifica l'host</button>
                     </div>
                 </div>
@@ -68,90 +91,85 @@
         let qrDecoded;
         let host;
 
-        // Funzione che assegna le classi Bootstrap ai bottoni generati dalla libreria
-        function applicaStileBootstrap() {
-            $("#qr-reader button").addClass("btn btn-primary my-2 shadow-sm");
-            $("#qr-reader select").addClass("form-control mx-auto").css("max-width", "300px");
-            $("#html5-qrcode-button-camera-stop").addClass("btn btn-primary my-2 shadow-sm")
-        }
-
-        function docReady(fn) {
-            if (document.readyState === "complete" || document.readyState === "interactive") {
-                setTimeout(fn, 1);
-            } else {
-                document.addEventListener("DOMContentLoaded", fn);
+        var lastResult, countResults = 0;
+        /* Trigger della scansione del codice*/
+        function onScanSuccess(decodedText, decodedResult) {
+            if (decodedText) {
+                ++countResults;
+                lastResult = decodedText;
+                console.log(`Scan result ${decodedText}`, decodedResult);
+                qrDecoded = decodedText;
+                $('#qr-reader-results').html(host+qrDecoded).show()
+                $("#goToPage_btn").show();
+                $("#resumeScan_btn").show();
+                html5QrcodeScanner.pause(true); 
             }
-        }
-
-        docReady(function () {
-            var lastResult, countResults = 0;
-            /* Trigger della scansione del codice*/
-            function onScanSuccess(decodedText, decodedResult) {
-                if (decodedText !== lastResult) {
-                    ++countResults;
-                    lastResult = decodedText;
-                    console.log(`Scan result ${decodedText}`, decodedResult);
-                    qrDecoded = decodedText;
-                    document.getElementById('qr-reader-results').innerHTML = qrDecoded;
-                    $("#goToPage_btn").show();
-                }
-            }
-
-            setTimeout(applicaStileBootstrap(),100)
-            $("#qr-reader").on("click", "button", function() {
-                setTimeout(applicaStileBootstrap(),100)
-            });
-
-            // Configurazione ottimizzata per iOS di html5Qr
+            } 
+        $(document).ready(function () {
             var html5QrcodeScanner = new Html5QrcodeScanner(
-                "qr-reader", 
-                { 
-                    fps: 10, 
-                    qrbox: 250,
-                    rememberLastUsedCamera: true,
-                    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
-                }
-            );
-            html5QrcodeScanner.render(onScanSuccess);
-
-            $(document).ready(function () {
-                host = localStorage.getItem('host');
-                if (host && host !== "null") {
-                    $("#setHost_wrp").hide();
-                    $("#showHost_wrp").show();
-                    $("#hostVal").html(host);
-                } else {
-                    $("#setHost_wrp").show();
-                    $("#showHost_wrp").hide();
-                }
-                /* Salva l'host nel local storage*/
-                $("#setHost_Btn").click(function (e) { 
-                    e.preventDefault();
-                    let newHost = $("#newHost").val().trim();
-                    // Assicurati che l'host inizi con http:// o https:// altrimenti window.open fallirà
-                    if (!/^https?:\/\//i.test(newHost)) {
-                        newHost = 'http://' + newHost;
+                    "qr-reader", 
+                    { 
+                        fps: 10, 
+                        qrbox: 250,
+                        rememberLastUsedCamera: true,
+                        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
                     }
-                    localStorage.setItem('host', newHost);
-                    host = newHost;
-                    $("#hostVal").html(host);
-                    $("#setHost_wrp").hide();
-                    $("#showHost_wrp").show();
-                });
-                /* Modifica dell'host memorizzato nel local storage */
-                $("#modHost_Btn").click(function (e) { 
-                    e.preventDefault();
-                    $("#setHost_wrp").show();
-                    $("#showHost_wrp").hide();
-                    localStorage.setItem('host', null);
-                });
-                /* Go to link, on click concatena l'host con il link rilevato nel qr code*/
-                $("#goToPage_btn").click(function (e) { 
-                    e.preventDefault();
-                    let separator = (host.endsWith('/') || qrDecoded.startsWith('/')) ? '' : '/';
-                    let url = host + separator + qrDecoded;
-                    window.open(url, '_blank');
-                });
+                );
+            host = localStorage.getItem('host');
+            
+            html5QrcodeScanner.render(onScanSuccess);
+            if (host && host !== "null") {
+                $("#setHost_wrp").hide();
+                $("#showHost_wrp").show();
+                $("#hostVal").html(host);
+            } else {
+                $("#setHost_wrp").show();
+                $("#showHost_wrp").hide();
+            }
+            /* Modifica dell'host memorizzato nel local storage */
+            $("#modHost_Btn").click(function (e) { 
+                e.preventDefault();
+                host = localStorage.getItem('host');
+                $("#setHost_wrp").val(host).show();
+                $("#showHost_wrp").hide();
+               // localStorage.setItem('host', null);
+            });
+            /* Salva l'host nel local storage*/
+            $("#setHost_Btn").click(function (e) { 
+                e.preventDefault();
+                let newHost = $("#newHost").val().trim();
+                // Assicurati che l'host inizi con http:// o https:// altrimenti window.open fallirà
+                if (!/^https?:\/\//i.test(newHost)) {
+                    newHost = 'http://' + newHost;
+                }
+                localStorage.setItem('host', newHost);
+                host = newHost;
+                $("#hostVal").html(host);
+                $("#setHost_wrp").hide();
+                $("#showHost_wrp").show();
+                $('#qr-reader-results').html(host+qrDecoded).show()
+            });
+            
+            /* Go to link, on click concatena l'host con il link rilevato nel qr code*/
+            $("#goToPage_btn").click(function (e) { 
+                e.preventDefault();
+                let separator = (host.endsWith('/') || qrDecoded.startsWith('/')) ? '' : '/';
+                let url = host + separator + qrDecoded;
+                window.open(url, '_blank');
+            });
+            /* Riprendi la scansione */
+            $("#resumeScan_btn").click(function (e) {
+                e.preventDefault();
+                $("#goToPage_btn").hide();
+                $("#resumeScan_btn").hide();
+                $("#qr-reader-results").hide();
+                // Sblocca la telecamera all'istante senza richiedere permessi
+                try {
+                    html5QrcodeScanner.resume();
+                    console.log("Scansione ripresa con successo.");
+                } catch (err) {
+                    console.error("Errore nel riprendere la scansione: ", err);
+                }
             });
         });
     </script>
