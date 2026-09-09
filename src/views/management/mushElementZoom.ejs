@@ -158,11 +158,24 @@
           <div class="col-12">
           
             <!-- Visual -->
-            <div id="showElement_Div">
-              <h2>  <%= mushElement.element_code %>
-                 
-            </h2>
-            
+            <div id="showElement_Div" class="row w-100">
+              <div class="col-10 h2">  <%= mushElement.element_code %></div>
+              <div class="col p-0 m-0">
+                <%- include('../include/ejsForm',
+                  { classTxt: "",
+                    classField: "",
+                    form:[
+                    { 
+                      type:"rating", // Tipo di widget
+                      color:"#666", // colore stella
+                      readonly:true, // imposta il widget a readOnly
+                      setRate:mushElement.rank?mushElement.rank:0, // seleziona il valore da impostare
+                      starValue:ratingStarValue, // Array da dropDownGenerator [{txt:txt,val:value}]
+                      classBox: "col mx-auto",
+                      mobile:true, // attiva resize su mobile
+                      deleteRate:true
+                    }]}) %>
+              </div>              
               <div class="row w-100">
               <div class="col">
                 <div class="row w-100">
@@ -1602,6 +1615,8 @@ async function drawGraph(labels,dataSet,cl) {
 }
 // docReady
 $(document).ready(async function () {
+
+
   if (HttpError==false){
   $(document).on('click', '[data-toggle="lightbox"]', function(event) {
                 event.preventDefault();
@@ -2158,6 +2173,29 @@ console.log(chk)
 window.open('/mushElement/generatePdf?elementCode='+mushElement.element_code+'&'+chk, '_blank');
 
 });
+
+/* Rating */
+    $('.star').change(function(e) {
+      e.defaultPrevented
+      let rateValue = $(this).val();
+      //console.log(rateValue)
+      let c=confirm(rateValue>0?"Salvare il valore del rating?":"Azzerare il rating?")
+      if (c){
+          $.ajax({
+            type: "PUT",
+            url: "/mushElement/setRate?id="+mushElement.id+"&rateValue="+rateValue,
+            success: function (response) {
+              $('#rating_FRM .del-star').prop('checked', false);              
+              if(rateValue==0){
+                $('#rating_FRM .star').prop('checked', false);
+              }
+            }
+          }); 
+      }else{
+        $(this).prop('checked', false);
+      }
+    });
+   
 
   // Default
   $("#backToMain_Btn").click(function (e) { 

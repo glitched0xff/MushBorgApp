@@ -65,6 +65,9 @@ module.exports = (sequelize, Sequelize) => {
       perc:{
         type:Sequelize.FLOAT
       },
+      rank:{
+        type:Sequelize.INTEGER
+      },
       note:{
         type: Sequelize.STRING
       }

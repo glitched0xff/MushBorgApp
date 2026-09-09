@@ -29,11 +29,11 @@ router.get('/',async  (req, res) => {
     let filterCategory=req.query.filterCategory?req.query.filterCategory:false
     let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
     let active=req.query.active?parseInt(req.query.active):1
-    
+    let ratingStarValue=await db.dDOption.findAll({where:{ddMenu:"rankElement"}})
     res.render("management/mushElement",{searchCode:searchCode,
                                         pickReasonDD:pickReasonDD,
                                         filterCategory:filterCategory,
-                                        active:active})
+                                        active:active, ratingStarValue: JSON.parse(JSON.stringify(ratingStarValue))})
   });
 
 router.get('/getAll',async  (req, res) => {
@@ -69,6 +69,7 @@ router.get('/getAll',async  (req, res) => {
                                 "stato",
                                 "load_date",
                                 "strainId",
+                                "rank",
                                 "active",
                              [fn("SUM", col("mushElementHarvests.harvest_weight")), "totalHarvestWeight"],
                                 [fn("COUNT", col("mushElementNotes.id")), "totalNote"]
@@ -89,6 +90,8 @@ router.get('/getAll',async  (req, res) => {
             }
         }
     }
+    
+
     res.status(200).json({mushElements:mushElements,fromDate:fromDate, toDate:toDate})
 });
 
@@ -125,6 +128,8 @@ router.get('/singleMushElement',async  (req, res) => {
     let titoloFiltro=""
     let filterCategory
     let mushElementId=false
+    let ratingStarValue=await db.dDOption.findAll({where:{ddMenu:"rankElement"}})
+
     if(req.query.elementCode){
         let findPar=await db.mushElement.findOne({where:{element_code:req.query.elementCode}, attributes:['id','type']})
         if (findPar){
@@ -259,6 +264,7 @@ router.get('/singleMushElement',async  (req, res) => {
                                                     filterCategory:filterCategory,
                                                     destinationDD:destinationDD,
                                                     seeds:seeds,
+                                                    ratingStarValue:ratingStarValue,
                                                 error:false})
     } else {
             res.render("management/mushElementZoom",{error:true,
@@ -269,6 +275,7 @@ router.get('/singleMushElement',async  (req, res) => {
                                                     titoloFiltro:false,
                                                     filterCategory:false,
                                                     destinationDD:false,
+                                                    ratingStarValue:ratingStarValue,
                                                     seeds:false,
             })
         }   
@@ -900,7 +907,7 @@ router.get('/mushElementLanding',async (req,res)=>{
         
         let mushElement=await db.mushElement.findOne({where:{element_code:elementCode}})
         let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
-
+        let ratingStarValue=await db.dDOption.findAll({where:{ddMenu:"rankElement"}})
         let pickReasonDesc
         mushElement=JSON.parse(JSON.stringify(mushElement))
         pickReasonDD.forEach(el => {
@@ -922,13 +929,29 @@ router.get('/mushElementLanding',async (req,res)=>{
 
         res.render("management/mushElementLanding",{mushElement:mushElement,
                                                     pickReasonDD:pickReasonDD,
-                                                    destinationDD:destinationDD})
+                                                    destinationDD:destinationDD,
+                                                    ratingStarValue:ratingStarValue})
     } else {
                 res.status(422).json()
             }
     
 })
-
+// Set Rank
+router.put('/setRate',async (req,res)=>{
+    let idElement=req.query.id?req.query.id:false
+    let rateValue=req.query.rateValue?req.query.rateValue:false
+    console.log(idElement,rateValue)
+    if (idElement && rateValue){
+        db.mushElement.update({rank:rateValue},{where:{id:idElement}})
+                        .then(result=>{
+                            res.status(200).json(result)
+                        })
+                        .catch(err=>{
+                            console.log(err)
+                            res.status(422).json(err)
+                        })
+    }
+})
 /**
  * @route GET /mushElement/liveSearch
  * @group MushElement - Operazioni relative agli elementi seed
@@ -951,11 +974,11 @@ router.get('/liveSearch',async (req,res)=>{
 })
 
 
-router.get('/singleMushElement',async  (req, res) => {
-    //console.log(req.query)
+// router.get('/singleMushElement',async  (req, res) => {
+//     //console.log(req.query)
     
     
-  });
+//   });
 
 
 router.get('/generatePdf',async (req,res)=>{

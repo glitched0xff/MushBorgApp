@@ -1,9 +1,9 @@
 <% 
 if (classField==""){
-    classField=="hidden"
+    classField="hidden"
 }
 if(classTxt==""){
-    classTxt=="hidden"
+    classTxt="hidden"
 }
 form.forEach(el => { %>  
     <%# Plain text with no field%>  
@@ -259,4 +259,110 @@ form.forEach(el => { %>
     <% if (el.type=="endRow") {%>
         </div>
         <% } %>
+     <%# STAR RATING TEMPLATE %>
+     <%# 
+     Snippet widget rate
+    { 
+        type:"rating", // Tipo di widget
+        color:"#666", // colore stella
+        readonly:true, // imposta il widget a readOnly
+        setRate:1, // seleziona il valore da impostare
+        deleteRate:true, // abilita il tasto di reset stelle
+        starValue:ratingStarValue // Array da dropDownGenerator [{txt:txt,val:value}]
+        classBox: //classe per il wrapper
+        mobile:true // attiva resize per dispositivi mobile piccoli
+    }
+
+    // Rating Jquery
+    $('.star').change(function(e) {
+        e.defaultPrevented
+        let rateValue = $(this).val();
+        console.log(rateValue)
+        let c=confirm(rateValue>0?"Salvare il valore del rating?":"Azzerare il rating?")
+        if (c){
+            $.ajax({
+              type: "PUT",
+              url: "/mushElement/setRate?id="+mushElement.id+"&rateValue="+rateValue,
+              success: function (response) {
+                $('#rating_FRM .del-star').prop('checked', false);              
+                if(rateValue==0){
+                  $('#rating_FRM .star').prop('checked', false);
+                }
+              }
+            }); 
+        }else{
+          $(this).prop('checked', false);
+        }
+    });
+    
+     %>
+    <% if (el.type=="rating") {%>
+         <div class="<%= el.classBox ?? "col-12" %>">
+          <style>
+        /* Contenitore delle stelle invertito per far funzionare il selettore CSS "~" */
+        .rating-group {
+            display: inline-flex;
+            flex-direction: row-reverse;
+            font-size: 1.5rem;
+        }
+
+        /* Nascondiamo i radio button reali */
+        .rating-group input {
+            display: none;
+        }
+
+        /* Stile di base della stella (vuota) */
+        .rating-group label {
+            color: #ddd;
+            cursor: pointer;
+            margin: 0 4px;
+            transition: color 0.2s ease;
+        }
+
+        .rating-group input:checked ~ label{
+            color: <%= el.color ?? "#ffc107" %>
+        }
+        <% if (el.mobile){ %>
+        @media (max-width: 575.98px) {
+            .rating-group {
+                font-size: 1.8rem;
+            }
+             .rating-group label {
+                margin: 0 8px;
+            }
+        }
+        <% } %>
+        <% if (!el.readonly){ %>
+            .rating-group label:hover,
+            .rating-group label:hover ~ label {
+                color: <%= el.color ?? "#ffc107" %>
+            }
+        <% } %>
+    </style>
+  <div class="row justify-content-center">
+    <div class="col-md-12">
+        <form id="rating_FRM">
+      <div class="rating-group">
+        <% if (el.deleteRate){%>
+          <input type="radio" id="del-star" name="del-star" value="0" class="star"><label for="del-star" class="fas fa-times"></label >
+        <% } %>
+        <% if (el.starValue){
+            el.starValue.reverse().forEach ((elem,i)=> {
+                let num=el.starValue.length - i %>
+          <input type="radio" id="star<%= num %>" name="rating" 
+                elNumber="<%= num %>" 
+                value="<%= elem.val %>" 
+                descVal="<%=  elem.txt %>" 
+                class="star" 
+                <%= el.setRate==elem.val?"checked=\"checked\"":"" %> 
+                >
+          <label for="star<%= num %>" class="fas fa-star"></label>
+        <% })} %>
+         
+      </div>
+      </form>
+  </div>
+  </div>
+        </div>
+    <% } %>
 <% }); %>  

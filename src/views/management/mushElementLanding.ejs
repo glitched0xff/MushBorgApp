@@ -2,6 +2,9 @@
 <%- include ('../navbar') %>
 <%- include ('../sidebar') %>
 
+
+
+
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -18,11 +21,28 @@
         </div>
       </div>
     </div>
+    
     <section class="content">
       <div class="mushElement-fluid" >
           <div class="card w-100" id="">
             <div class="row m-3">
               <h4 class="mx-auto"><%= mushElement.element_code %></h4>
+
+              <%- include('../include/ejsForm',
+                  { classTxt: "",
+                    classField: "",
+                    form:[
+                    { 
+                      type:"rating", // Tipo di widget
+                      color:"#666", // colore stella
+                      readonly:true, // imposta il widget a readOnly
+                      setRate:mushElement.rank?mushElement.rank:0, // seleziona il valore da impostare
+                      starValue:ratingStarValue, // Array da dropDownGenerator [{txt:txt,val:value}]
+                      classBox: "col-12 text-center",
+                      mobile:true, // attiva resize su mobile
+                      deleteRate:true
+                    }]}) %>
+
               <% if (mushElement.active==0){%>
               <div class="col-12 text-center">
                 <i class="fa fa-times-circle text-danger" aria-hidden="true"></i> 
@@ -468,7 +488,7 @@ function drawHarvestTable(limit=0) {
         } else {
           html=`<tr class="bg-danger txt-white text-center" > <td colspan="4">Non sono presenti raccolti</td></tr>`
         }
-        console.log(html)
+       // console.log(html)
         $("#harvestTable_Tblb").html(html)
       $("#countHarvest").html(total+" g")
       $("#mushElementHarvest_Frm_Wrp").hide();
@@ -753,13 +773,11 @@ $(document).ready(async function () {
       }
     });
 
-    /** Movimentation */
-    
+    /** Movimentation */  
     $("#movimentationElement_Btn").click(function (e) { 
       e.preventDefault();
       $("#movimentation_Wrp").toggle()
     });
-
     $("#saveMovimentation_Btn").click(function (e) { 
       e.preventDefault();
       let toStorage=$("#toStorage_Fld option:selected").text();
@@ -777,6 +795,28 @@ $(document).ready(async function () {
       }
     });
 
+    /* Rating */
+    $('.star').change(function(e) {
+      e.defaultPrevented
+      let rateValue = $(this).val();
+      //console.log(rateValue)
+      let c=confirm(rateValue>0?"Salvare il valore del rating?":"Azzerare il rating?")
+      if (c){
+          $.ajax({
+            type: "PUT",
+            url: "/mushElement/setRate?id="+mushElement.id+"&rateValue="+rateValue,
+            success: function (response) {
+              $('#rating_FRM .del-star').prop('checked', false);              
+              if(rateValue==0){
+                $('#rating_FRM .star').prop('checked', false);
+              }
+            }
+          }); 
+      }else{
+        $(this).prop('checked', false);
+      }
+    });
+   
 
     /** Utility */
     $(document).on("click","#backListNote_Btn", function (e) {

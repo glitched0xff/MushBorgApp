@@ -5,7 +5,7 @@ const db = require("../models");
 /* 
 Funzione generazione elenco per dropdown
 */
-module.exports=async (nameDD,filter=false)=>{
+module.exports=async (nameDD,filter=false,order=false)=>{
 //    console.log("nameDD:", nameDD, " filter:", filter)
     let queryResult
     switch (nameDD) {
@@ -74,7 +74,7 @@ module.exports=async (nameDD,filter=false)=>{
             queryResult=[["INOCULUM","Inoculo"],["SPAWN","Spawn"],["CULTIVATION","Coltivazione"],["ALL","Generico"]]
             break;
         case "dropDown":
-            queryResult=await db.dDOption.findAll({where:{ddMenu:filter}, order:[["val","ASC"]]})
+            queryResult=await db.dDOption.findAll({where:{ddMenu:filter}, order:order?order:[["val","ASC"]]})
             break;
         default:
             queryResult=null
