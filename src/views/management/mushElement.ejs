@@ -173,6 +173,7 @@
 let tableMushElement
 let fromDate
   let toDate
+
 // Draw and update table
 async function  drawTable (fromDate="",toDate=""){
   let url
@@ -246,28 +247,8 @@ async function  drawTable (fromDate="",toDate=""){
                 else{
                   html+=`<i class="fa fa-circle fa-sm text-danger mx-1" aria-hidden="true"></i>`
                 }
-                let star=`<div class="col m-0 p-0">`
-                console.log(el.rank)
-                console.log(ratingStarValue)
-                const indexStar = ratingStarValue.findIndex(e => e.val == el.rank);
-                if (indexStar==-1){
-                  for (let i = 0; i < ratingStarValue.length; i++) {
-                  star+=`
-                    <i class="far fa-star" style="font-size:0.5rem"></i>
-                  `}
                 
-                }else{
-                  for (let i = 0; i < indexStar; i++) {
-                  star+=`
-                    <i class="fas fa-star" style="font-size:0.5rem"></i>
-                  `}
-                  for (let i = 0; i < ratingStarValue.length-indexStar; i++) {
-                  star+=`
-                    <i class="far fa-star" style="font-size:0.5rem"></i>
-                  `}
-                }
-                star+="</div>"
-
+                let star=drawStar(ratingStarValue,el.rank)
                   html+=`       </td>
                   <td>${el.element_code}</td>
                                 <td>${el.strainName}</td>

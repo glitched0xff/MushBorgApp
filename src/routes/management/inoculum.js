@@ -29,6 +29,8 @@ router.get('/',async  (req, res) => {
     
     let strainDD=await dropDownGenerator("strain")
     let containerDD=await dropDownGenerator("container","INOCULUM")
+    let ratingStarValue=await db.dDOption.findAll({where:{ddMenu:"rankElement"},raw:true})
+
     //console.log(containerDD)
     let storagesDD=await dropDownGenerator("storage")
     let substrateDD=await dropDownGenerator("substrate","INOCULUM")
@@ -60,7 +62,8 @@ router.get('/',async  (req, res) => {
                                       storagesDD:storagesDD,
                                       substrateDD:substrateDD,
                                       sampleTypeDD:sampleTypeDD,
-                                      supplierDD:supplierDD //,
+                                      supplierDD:supplierDD,
+                                      ratingStarValue:ratingStarValue,
                                         //inoculumDD:inoculumDD
                                     })
   });

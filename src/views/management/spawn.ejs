@@ -388,6 +388,8 @@
   let idSpawn
   let redirectId= <%- JSON.stringify( redirectId) %>
     let storagesDD= <%- JSON.stringify( storagesDD) %>
+  let ratingStarValue= <%- JSON.stringify(ratingStarValue) %>
+
   let dataElement
   let filterCategory="SPAWN"
   let inoculiList
@@ -612,6 +614,7 @@ console.log(dt.text());
           classTr="text-danger"
           enableDD="disabled"
         }
+        let star=drawStar(ratingStarValue,elem.rank)
         html+=`<tr class="${classTr}">
         <td>
           <button type="button" name="" id="showChildBtn_${elem.id}" 
@@ -621,7 +624,10 @@ console.log(dt.text());
                 </button>
         </td>
         <td>${elem.element_code}</td>
-        <td>${elem.stato}</td>
+        <td><div class="row">
+            <div class="col-5">${elem.stato}</div> 
+            ${star}
+          </div>  </td>
         <td>${elem.stage==2?"Fruttificazione":"Propagazione"}</td>
         <td>${elem.storage.name_storage}</td>
         <td>${elem.mushElementNotes.length}</td>

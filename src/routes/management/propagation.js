@@ -30,6 +30,8 @@ router.get('/',async  (req, res) => {
     let redirectId=req.query.redirectId?req.query.redirectId:null
     let strainDD=await dropDownGenerator("strain")
     //let containerDD=await dropDownGenerator("container","CULTIVATION")
+    let ratingStarValue=await db.dDOption.findAll({where:{ddMenu:"rankElement"},raw:true})
+    
     let storagesDD=await dropDownGenerator("storage")
     let substrateDD=await dropDownGenerator("substrate","CULTIVATION")
     let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
@@ -54,7 +56,8 @@ router.get('/',async  (req, res) => {
                                             statoPropDD:statoPropDD,
                                             storagesDD:storagesDD,
                                             supplierDD:supplierDD,
-                                        redirectId:redirectId})
+                                            redirectId:redirectId,
+                                            ratingStarValue: ratingStarValue    })
   });
 
   /**

@@ -458,6 +458,8 @@
   let redirectId= <%- JSON.stringify( redirectId) %>
   let spawnDD= <%- JSON.stringify( spawnDD) %>
   let storagesDD= <%- JSON.stringify( storagesDD) %>
+  let ratingStarValue= <%- JSON.stringify(ratingStarValue) %>
+
   let dataElement
   let filterCategory="CULTIVATION"
   let inoculiList
@@ -520,6 +522,7 @@
         if(elem.stage==2){
           enableFruct="disabled"
         }
+        let star=drawStar(ratingStarValue,elem.rank)
         html+=`<tr class="${classTr}">
         <td>
           <button type="button" name="" id="showChildBtn_${elem.id}" 
@@ -537,7 +540,12 @@
         <td>${elem.element_code}</td>
         <td>${elem.stage==2?"Fruttificazione":"Propagazione"}</td>
 
-        <td>${elem.stato}</td>
+        <td>
+          <div class="row">
+            <div class="col-5">${elem.stato}</div> 
+            ${star}
+          </div>                        
+         </td>
         <td>${elem.storage.name_storage}</td>
         <td>${harvest} g</td>
         <td>${elem.mushElementNotes.length}</td>
@@ -555,7 +563,7 @@
     }
     $("#mushElement_Tblb").html(html).parent().show()
   }
-
+  /* Interfaccia elenco propagazioni */
   async function  drawTablePropagation (fromDate="",toDate=""){
    await $.ajax({
         type: "GET",
@@ -615,7 +623,7 @@
     $("#propagation_Data").hide();
     $("#newPropagation_Btn").show();
 }
-
+/* Show propagation data */
   async function drawShowPropagation(id) {
     $("#propagation_Data").show();
     $("#propagation_Table").hide();
@@ -755,7 +763,7 @@
       });   
 
   }
-  
+  /* Restituisce il peso totale del lotto */
   async function getTotalWeight(id){
     $.ajax({
       type: "get",

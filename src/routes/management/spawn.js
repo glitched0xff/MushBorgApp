@@ -30,6 +30,8 @@ const Op = db.Sequelize.Op;
 router.get('/',async  (req, res) => {
     //let redirectId=req.query.redirectId?req.query.redirectId:null
         let strainDD=await dropDownGenerator("strain")
+        let ratingStarValue=await db.dDOption.findAll({where:{ddMenu:"rankElement"},raw:true})
+        
         //let containerDD=await dropDownGenerator("container","SPAWN")
         let storagesDD=await dropDownGenerator("storage")
         let substrateDD=await dropDownGenerator("substrate","SPAWN")
@@ -60,7 +62,8 @@ router.get('/',async  (req, res) => {
                                           storagesDD:storagesDD,
                                           substrateDD:substrateDD,
                                           supplierDD:supplierDD,
-                                        inoculumDD:inoculumDD})
+                                        inoculumDD:inoculumDD,
+                                    ratingStarValue:ratingStarValue})
 
   });
 

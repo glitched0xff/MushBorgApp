@@ -29,11 +29,11 @@ router.get('/',async  (req, res) => {
     let filterCategory=req.query.filterCategory?req.query.filterCategory:false
     let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
     let active=req.query.active?parseInt(req.query.active):1
-    let ratingStarValue=await db.dDOption.findAll({where:{ddMenu:"rankElement"}})
+    let ratingStarValue=await db.dDOption.findAll({where:{ddMenu:"rankElement"},raw:true})
     res.render("management/mushElement",{searchCode:searchCode,
                                         pickReasonDD:pickReasonDD,
                                         filterCategory:filterCategory,
-                                        active:active, ratingStarValue: JSON.parse(JSON.stringify(ratingStarValue))})
+                                        active:active, ratingStarValue:ratingStarValue})
   });
 
 router.get('/getAll',async  (req, res) => {
