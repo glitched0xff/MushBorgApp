@@ -219,6 +219,8 @@ router.get('/singleMushElement',async  (req, res) => {
                     stageDesc=el.txt
                 }
             });
+
+                
             mushElement.pickReasonDesc=pickReasonDesc
             mushElement.stageDesc=stageDesc
             mushElement.load_date=moment(mushElement.load_date).format("DD-MM-YY")
