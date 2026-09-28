@@ -36,6 +36,7 @@ router.get('/',async  (req, res) => {
         let storagesDD=await dropDownGenerator("storage")
         let substrateDD=await dropDownGenerator("substrate","SPAWN")
         let supplierDD=await dropDownGenerator("supplier","spawn")
+        console.log(supplierDD)
         let inoculums=await db.inoculum.findAll()
         let container=await db.container.findAll({where:{
                                     [Op.or]: [

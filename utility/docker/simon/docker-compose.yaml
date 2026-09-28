@@ -1,0 +1,15 @@
+services:
+  simon:
+    image: alibahmanyar/simon
+    hostname: simon-monitor
+    ports:
+      - "30000:30000"
+    environment:
+      # Creare l'hash bcrypt della password con un tool gratuito e sostituirla a questa
+      # l'hash inserito è derivato dalla password mushborg0x0 usata per l'accesso
+      SIMON_PASSWORD_HASH: "$$2a$$12$$LLwaWENxk3PCPttGQHREmu8T5pF/EODBLSWAsNqxnkrGhfs8VKfJ2"
+    volumes:
+      - /sys:/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/fs:ro
+      - ./simon-data:/app/simon-data

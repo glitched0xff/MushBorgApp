@@ -9,9 +9,12 @@
 const ejs=require("ejs")
 const moment=require("moment")
 const puppeteer=require("puppeteer")
+const wkhtmltopdf = require('wkhtmltopdf');
+
 const fs=require("fs")
 const path=require("path")
-const { mushElement } = require("../models")
+const { mushElement } = require("../models");
+const { all } = require("heic-convert");
 
 // const { jsPDF } = require("jspdf");
 // const { JSDOM } = require("jsdom");
@@ -73,7 +76,7 @@ module.exports=async (data,ejsTemplate,headerText=false,footerText=false)=>{
                             });
     await browser.close();
     return pdf
-}
+} 
 
 
 // module.exports = async (data, ejsTemplate, headerText = false, footerText = false) => {

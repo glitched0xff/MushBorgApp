@@ -106,3 +106,5 @@ src/public/imgMushEleNote/*
 # 🟢 AGGIUNTA: Esclude completamente la cartella noUpload e i suoi sottofolder
 noUpload/
 **/noUpload/
+
+
