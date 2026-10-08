@@ -826,16 +826,16 @@ $('#customSearch').on('keyup', function () {
               success: async function (response) {
                 console.log(response)
                 let newId=response.data.id
-                let subElementLen= $('#recipeElement_Tbl tr').length;
-                //console.log(subElementLen)
+                let subElementLen= $('#recipeElement_Tbl tr').length-1;
+                console.log(subElementLen)
                 for (let i = 0; i <subElementLen; i++) {
-                  // console.log(">> "+i)
+                   console.log(">> "+i)
                   let substrateId=1
                   let materialCategoryId =$("#materialCategoryId_"+i).val()
                   let rawMaterialId=$("#subElemFld_"+i).val()
-                  // console.log(rawMaterialId)
+                   console.log(rawMaterialId)
                   rawMaterialId=rawMaterialId.split("|")[0]
-                  // console.log(rawMaterialId)
+                   console.log(rawMaterialId)
                   let qt_hum=parseFloat($("#qtPerc_"+i).html())
                   let qt_dry=parseFloat($("#materialDry_"+i).html())
                   let data={
@@ -852,16 +852,20 @@ $('#customSearch').on('keyup', function () {
                     url: "/substrateElement/newSubstrateElement",
                     data: data,
                     success: async function (response) {
-                      window.location="/substrate?redirectId="+newId
+                      // console.log("ok")
+                     // window.location="/substrate?redirectId="+newId
                     },
                     error: function(err){
                       alert(err)
                     }
                   });
                 }
+                window.location="/substrate?redirectId="+newId
+              },
+              error: function (response) {
+                console.log(response)
               }
             });
-   
         }
       }
       });

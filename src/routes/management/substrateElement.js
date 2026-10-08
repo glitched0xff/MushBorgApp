@@ -33,6 +33,15 @@ router.post('/newSubstrateElement', async(req,res) => {
     let data=req.body
     if ((substrateId!=false)&&(materialCategoryId!=false)&&(rawMaterialId!=false))
     {
+        let obj={
+                    substrateId:data.substrateId,
+                    materialCategoryId:data.materialCategoryId,
+                    rawMaterialId:data.rawMaterialId,
+                    materialName:data.materialName,
+                    qt_dry:qt_dry,
+                    qt_hum:qt_hum,
+                }
+        console.log(obj)
         await SubstrateElement.create({
                     substrateId:data.substrateId,
                     materialCategoryId:data.materialCategoryId,
