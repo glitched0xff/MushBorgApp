@@ -921,6 +921,8 @@
     //Live search
     $("#liveSearch").keyup(function (e) { 
       e.preventDefault();
+
+      let str=$(this).val()
       let strainFilter=$("#strainId_Fld").val().split("|")[0]
       //console.log(strainFilter)
       //console.log(str)
