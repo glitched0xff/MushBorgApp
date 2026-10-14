@@ -104,7 +104,8 @@ router.get('/ask_substrate',async (req,res)=>{
     await db.substrate.findAll({
         where:{destination:"CULTIVATION",batched:0},
         include:[{model: db.recipe, where:{pretreatmentId:4}}],
-        attributes:["cod_substrate","recipeId"],
+        attributes:["cod_substrate","recipeId","id"],
+        order:[['id','DESC']]
     })
     .then((result)=>{
        // console.log(JSON.parse(JSON.stringify(result)))
