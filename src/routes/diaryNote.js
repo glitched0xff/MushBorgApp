@@ -8,9 +8,10 @@ const DiaryNote = db.diaryNote;
 
 async function getGroupedNotes(dtFrom,dtTo) {
   // Recupero le note ordinate per data
+  // console.log(dtFrom)
+  // console.log(dtTo)
 
-
-  let notes = await DiaryNote.findAll({
+  let notes = await db.diaryNote.findAll({
     where:{dataNota: {
           [Op.gte]: dtFrom,
           [Op.lte]: dtTo},
@@ -26,7 +27,7 @@ async function getGroupedNotes(dtFrom,dtTo) {
     order: [["dataNota", "DESC"]],
     raw: true
   });
-
+  console.log(notes)
   // Raggruppo per giorno/mese
   let grouped = {};
 
@@ -62,12 +63,14 @@ router.get('/',async  (req, res) => {
 });
 
 router.get('/getall',async (req, res) => {
-  //console.log(req.query)
-  let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(1, 'months').startOf('month')
-  let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
+  console.log(req.query)
+  let fromDate=req.query.fromDate?moment(req.query.fromDate).toDate():moment().subtract(1, 'months').startOf('month').toDate()
+  let toDate=req.query.toDate?moment(req.query.toDate).endOf('day').toDate():moment().endOf('day').toDate()
   let data=await getGroupedNotes(fromDate,toDate)
+  console.log(fromDate,toDate)
   data.fromDate=fromDate
   data.toDate=toDate
+  console.log(data)
   res.status(200).json(data);
 });
 

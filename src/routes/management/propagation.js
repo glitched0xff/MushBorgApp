@@ -225,7 +225,7 @@ router.post('/newPropagation', async(req,res) => {
                 })  
             }
             /** Create diary */
-            await db.diaryNote.create({nota:`Creato lotto di coltivazione ${result.code_propagation} con n° ${data.n_container} elementi di coltivazione`,tag:"",area:""})   
+            await db.diaryNote.create({nota:`Creato lotto di coltivazione ${result.code_propagation} con n° ${data.n_container} elementi di coltivazione`,tag:"",area:"",dataNota:moment()})   
             res.status(200).json({data:result})
             })
         .catch(err=>{

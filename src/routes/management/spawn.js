@@ -329,7 +329,9 @@ router.post('/newSpawn', async(req,res) => {
                         console.log(err)
                     })  
                 }
-                await db.diaryNote.create({nota:`Creato lotto di coltivazione ${result.code_spawn} con n° ${data.n_container} elementi di spawn`,tag:"",area:""}) 
+                await db.diaryNote.create({nota:`Creato lotto di coltivazione ${result.code_spawn} con n° ${data.n_container} elementi di spawn`,tag:"",area:"",dataNota:moment()})
+                .then(result=> console.log(result))
+                .catch(err => console.log(err)) 
                 res.status(200).json({data:result})
             })
         .catch(err =>{

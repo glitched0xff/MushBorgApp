@@ -233,7 +233,7 @@ router.post('/newInoculum', async(req,res) => {
                     console.log(err)
                 })  
             }
-            await db.diaryNote.create({nota:`Creato lotto di inoculo ${result.code_inoculum} con n° ${data.n_container} elementi di inoculo`,tag:"",area:""})  
+            await db.diaryNote.create({nota:`Creato lotto di inoculo ${result.code_inoculum} con n° ${data.n_container} elementi di inoculo`,tag:"",area:"",dataNota:moment()})  
             res.status(200).json({data:result})
         })
     .catch(err =>{

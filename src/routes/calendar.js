@@ -132,4 +132,9 @@ router.get('/isCompleted',async  (req, res) => {
     }
   })
 
+  router.get('/syncbaikal',async (req,res)=>{
+      let result=await BaiKal.syncAllEventM2B(baikalconfig)
+      res.status(200).json({data:result})
+  })
+
 module.exports=router;

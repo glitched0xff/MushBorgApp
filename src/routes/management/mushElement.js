@@ -320,7 +320,7 @@ router.get('/changeStage',async (req,res)=>{
     //console.log(req.query)
     await db.mushElement.update({stage:stage,real_maturation_date:moment()},{where:{id:idElement}})
     .then(async result=>{ 
-        await db.diaryNote.create({nota:`Elemento ${codElement} messo in fruttificazione`,tag:"",area:""}) 
+        await db.diaryNote.create({nota:`Elemento ${codElement} messo in fruttificazione`,tag:"",area:"",dataNota:moment()}) 
         res.status(200).json({result:result})
     })
 })
@@ -511,7 +511,7 @@ router.put('/pickElement', async(req,res) => {
                     }
                 });
                 //console.log(pickReasonDesc)
-                await db.diaryNote.create({nota:`Pick dell'elemento ${mushElement.element_code} motivazione: ${pickReasonDesc}`,tag:"",area:""}) 
+                await db.diaryNote.create({nota:`Pick dell'elemento ${mushElement.element_code} motivazione: ${pickReasonDesc}`,tag:"",area:"",dataNota:moment()}) 
                 res.status(200).json({message:"ok"})
             })
             .catch(err =>{
