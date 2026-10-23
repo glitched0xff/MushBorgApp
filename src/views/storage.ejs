@@ -204,10 +204,37 @@
                   </div>
                   </div>
                 </div>
-                  </div>
+                <!-- Element -->
+                <div class="row m-3" id="elementList_WRP" style="display: none; ">
+                <div class="col-12 h3">Elementi in magazzino: <span id="nElements"></span></div>
+                <div class="col" style="max-height: 300px; /* Regola l'altezza a seconda delle tue esigenze */
+    overflow-y: auto;">
+                <table class="table table-sm">
+                  <thead style="position: sticky;top: 0;background-color: #f4f4f4; z-index: 1;">
+                    <tr>
+                      <th>Elementi in magazzino</th>
+                      <th>Stage</th>
+                      <th>Data modifica</th>
+                    </tr>
+                  </thead>
+                  <tbody id="elementList_Tblb">
+                    <tr>
+                      <td scope="row"></td>
+                    </tr>
+                  </tbody>
+                </table>
                 </div>
+              </div>
+                  </div>
+                  
+                </div>
+                
+              
               </div>  
           </div>
+      </div>
+      
+
       </div>
     </section>
   </div>
@@ -276,7 +303,7 @@
         success: async function (response) {
           console.log(response)
           let data=response.storage
-          
+          let mushElements=response.elements
             // Populate GUI
             for (const [key, value] of Object.entries(data)) {
               if($("#"+key+"_Fld").attr("tp")=="textField"){
@@ -285,7 +312,7 @@
               if($("#"+key+"_Fld").attr("tp")=="selectField"){
                 $("#"+key+"_Fld").val(value).change();
               }
-              console.log(key,data[key])
+             // console.log(key,data[key])
               switch (key) {
               case "indoor":
                   $("#"+key+"_Show").html((value===1)?"Sì":"No")
@@ -311,6 +338,33 @@
               }
             }
             let html=""
+            let nElements=0
+            if (mushElements.length>0){
+              nElements=mushElements.length
+              mushElements.forEach(el=>{
+              let dateClass
+              if(moment().diff(moment(el.updatedAt), 'months')>2){
+                dateClass="bg-danger"
+              }
+
+              html+=`
+                <tr class="${dateClass}">
+                      <td scope="row">
+                        <a href="/mushElement/singleMushElement?elementCode=${el.element_code}" target="_blank">${el.element_code}</a>
+                      </td>
+                      <td>
+                        ${el.stage}
+                      </td>
+                      <td>
+                        ${moment(el.updatedAt).format("DD-MM-YYYY HH:mm")}
+                      </td>
+                    </tr>
+              `
+              })
+            }
+            $("#elementList_Tblb").html(html)
+            $("#elementList_WRP").show()
+            $("#nElements").html(nElements)
             $(".storageForm").hide()
             $(".storageText").show()
             $("#tableStorage_Crd").hide();
@@ -401,6 +455,7 @@
       // Back to main
     $("#backToMain_Btn").click(function (e) { 
           e.preventDefault();
+          $("elementList_Tblb").hide()
           window.location='/storage'
         });
     });

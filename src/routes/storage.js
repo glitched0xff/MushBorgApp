@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const db = require("../models");
-const dropDownGenerator= require("../module/dropDownGenerator")
+const dropDownGenerator= require("../module/dropDownGenerator");
+const { where } = require('sequelize');
 
 const Storage = db.storage;
 
@@ -62,7 +63,9 @@ router.get('/getOneStorage',async (req,res)=>{
     let storageId=req.query.storageId?req.query.storageId:null
     console.log(storageId)
     const storage=await Storage.findOne({where:{id:storageId}})
-    res.status(200).json({storage:storage})
+    const elements=await db.mushElement.findAll({where:{storageId:storageId,active:1}})
+    // INSERIRE ULTIMA MOVIMENTAZIONE
+    res.status(200).json({storage:storage,elements:elements})
 })
 
 router.get('/getRawMaterial',async (req,res)=>{
