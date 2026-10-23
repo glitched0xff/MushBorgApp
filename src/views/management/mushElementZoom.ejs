@@ -1633,7 +1633,7 @@ $(document).ready(async function () {
       $("#cultivation_info_Show").html(parentElement.inoculum_name)
       $("#lottoExpDate").html(parentElement.exp_date)
       $("#lottoName").html(parentElement.inoculum_name)
-      $("#lottoCode").html(parentElement.code_inoculum)
+      $("#lottoCode").html(`<a href="/inoculum?incoulumCode=${parentElement.code_inoculum}" target="_blank">${parentElement.code_inoculum}</a>`)
       $("#harvest_Crd").hide()
       break;
 
@@ -1643,7 +1643,7 @@ $(document).ready(async function () {
       $("#cultivation_info_Show").html(parentElement.spawn_name)
       // $("#storageId_Show").parent().parent().hide()
       $("#lottoName").html(parentElement.spawn_name)
-      $("#lottoCode").html(parentElement.code_spawn)
+      $("#lottoCode").html(`<a href="/spawn?spawnCode=${parentElement.code_spawn}" target="_blank">${parentElement.code_spawn}</a>`)
       $('#lottoExpDate').closest('div').hide();
       if (mushElement.mushElementHarvests.length>0){
       $("#harvest_Crd").show()
@@ -1659,11 +1659,11 @@ $(document).ready(async function () {
       $("#titoloFiltro").html("elemento coltivazione")
       $("#cultivation_info_Show").html(parentElement.propagation_name)
       $("#lottoName").html(parentElement.propagation_name)
-      $("#lottoCode").html(parentElement.code_propagation)
+      $("#lottoCode").html(`<a href="/propagation?propagationCode=${parentElement.code_propagation}" target="_blank">${parentElement.code_propagation}</a>`)
       $("#harvest_Crd").show()
       break;
   }
-  $("#lottoStrain").html(parentElement.strain.code_strain)
+  $("#lottoStrain").html(`<a href="/strain?redirectId=${mushElement.strainId}" target="_blank">${parentElement.strain.code_strain}</a>`)
   $("#lottoPurchased").html(parentElement.purchased?"Si":"No")
   $("#lottoContainer").html(parentElement.container.code_container+" "+parentElement.container.container_name)
   $("#lottoNContainer").html(parentElement.n_container)

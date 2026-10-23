@@ -28,6 +28,12 @@ router.get('/',async  (req, res) => {
     console.log(req.query)
     //let searchCode=req.query.code?req.query.code:false
     let redirectId=req.query.redirectId?req.query.redirectId:null
+    
+    if(req.query.propagationCode){
+                redirectId=await db.propagation.findOne({where:{code_propagation:req.query.propagationCode},attributes:["id"]}, { raw: true })
+                redirectId=redirectId.id
+               // console.log(redirectId)
+            }
     let strainDD=await dropDownGenerator("strain")
     //let containerDD=await dropDownGenerator("container","CULTIVATION")
     let ratingStarValue=await db.dDOption.findAll({where:{ddMenu:"rankElement"},raw:true})

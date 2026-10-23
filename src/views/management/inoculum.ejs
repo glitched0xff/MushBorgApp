@@ -512,11 +512,11 @@ function drawTableChild(data,table,fields,topic,title) {
                   $("#storageId_Show").html(data.storage?data.storage.code_storage+" "+data.storage.name_storage:"-")
                   break;     
                 case "strainId":
-                  $("#strainId_Show").html(data.strain.species_code+" - "+ data.strain.strain_name)
+                  $("#strainId_Show").html(`<a href="/strain?redirectId=${data.strainId}" target="_blank">${data.strain.species_code} - ${data.strain.strain_name}</a>`)
                   $("#strainId_Fld").val(data.strainId)
                   break;
                 case "substrateId":
-                  $("#substrateId_Show").html(data.substrate.name_substrate)
+                  $("#substrateId_Show").html(`<a href="/substrate?redirectId=${data.substrateId}" target="_blank">${data.substrate.name_substrate}</a>`)
                   $("#substrateId_Fld").val(data.substrateId)
                   break;
                   case "exp_date":
@@ -578,8 +578,11 @@ function drawTableChild(data,table,fields,topic,title) {
               for (let i = 0; i < seeds.length; i++) {
                 const elem = seeds[i];
                 html+=`<tr>
-                  <td>${elem.mushElementCode}</td>
-                  <td></td>
+                   <td>
+                        <a href="/mushElement/singleMushElement?elementCode=${elem.mushElementCode}" target="_blank">
+                          ${elem.mushElementCode}
+                        </a>
+                      </td>
                   </tr>`
               }
              $("#setSeed_Tblb").html(html)

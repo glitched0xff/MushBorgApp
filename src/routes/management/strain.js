@@ -26,8 +26,6 @@ const path=require("path")
  * Route serving login form.
  * @name /
  * @memberof Strain
- * @param {string} path - Express path
- * @param {callback} middleware - Express middleware.
  */
 router.get('/',async  (req, res) => {
     let redirectId=req.query.redirectId?req.query.redirectId:null
