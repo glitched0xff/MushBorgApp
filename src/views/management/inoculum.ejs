@@ -726,18 +726,11 @@ function drawTableChild(data,table,fields,topic,title) {
       e.preventDefault();
       let f=checkForm("inoculi_FRM")
       if (f==true){
-      let c=confirm("Inserire l'elemento inoculo? L'operazione non è annullabile")
+        let c=confirm("Inserire l'elemento inoculo? L'operazione non è annullabile")
         if(c==true){
-        $.ajax({
-          type: "POST",
-          url: "/inoculum/newInoculum",
-          data: $("#inoculi_FRM").serialize(),
-          success: function (response) {
-            console.log(response)
-            drawTableInoculi()
-          } 
-        });
-      }}
+           window.location='/inoculum'
+        }
+      }
     });
 
     $("#modInoculo_Btn").click(function (e) { 
