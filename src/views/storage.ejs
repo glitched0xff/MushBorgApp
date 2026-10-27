@@ -207,7 +207,7 @@
                 <!-- Element -->
                 <div class="row m-3" id="elementList_WRP" style="display: none; ">
                 <div class="col-12 h3">Elementi in magazzino: <span id="nElements"></span></div>
-                <div class="col" style="max-height: 300px; /* Regola l'altezza a seconda delle tue esigenze */
+                <div class="col" style="max-height: 500px; /* Regola l'altezza a seconda delle tue esigenze */
     overflow-y: auto;">
                 <table class="table table-sm">
                   <thead style="position: sticky;top: 0;background-color: #f4f4f4; z-index: 1;">
@@ -249,6 +249,7 @@
 
     let storages 
     let redirectId= <%- JSON.stringify( redirectId) %>
+    let stages= <%- JSON.stringify( stages) %>
     let idStorage=redirectId
     
 
@@ -346,14 +347,18 @@
               if(moment().diff(moment(el.updatedAt), 'months')>2){
                 dateClass="bg-danger"
               }
-
+              let stage="-"
+              if (el.stage){            
+                let elementoTrovato = stages.find(item => item.val === el.stage);
+                stage = elementoTrovato ? elementoTrovato.txt : "-";
+              }
               html+=`
                 <tr class="${dateClass}">
                       <td scope="row">
                         <a href="/mushElement/singleMushElement?elementCode=${el.element_code}" target="_blank">${el.element_code}</a>
                       </td>
                       <td>
-                        ${el.stage}
+                        ${stage}
                       </td>
                       <td>
                         ${moment(el.updatedAt).format("DD-MM-YYYY HH:mm")}

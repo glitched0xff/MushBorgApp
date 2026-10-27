@@ -8,8 +8,8 @@ const Storage = db.storage;
 
 router.get('/',async  (req, res) => {
     let redirectId=req.query.redirectId?req.query.redirectId:null
-    const storages=await Storage.findAll()
-  res.render("storage",{redirectId:redirectId})
+    const stages=await dropDownGenerator("dropDown","stageMushElement")
+    res.render("storage",{redirectId:redirectId,stages:stages})
 });
 
 router.get('/getAll',async (req,res)=>{
