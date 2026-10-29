@@ -157,7 +157,7 @@ router.get('/getOneSubstrate',async  (req, res) => {
 
         //     substrate.recipe.recipeElements[i].isWater=isWater?true:false
         // }
-        let cookCurve= await db.pastorizzazioneBatches.findAll({where:{code_substrate:substrate.cod_substrate}})
+        let cookCurve= await db.pastorizzazioneBatch.findAll({where:{code_substrate:substrate.cod_substrate}})
         substrate.cook=cookCurve
         res.status(200).json({substrate:substrate})
     } else {
