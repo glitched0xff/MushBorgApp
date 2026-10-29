@@ -216,3 +216,14 @@ exports.deleteEventFromBaikal = async (uid, config = {}) => {
     throw error;
   }
 };
+
+/**
+ * Funzione per la sincronizzazione del calendario da 0
+ */
+exports.syncAllEventM2B = async ()=>{
+  /**
+   * La funzione và applicata e và bloccata ...
+   * Ciclo per inserire un uid nel db
+   * Estraggo tutti i dati del db e ciclo la funzione exports.saveEventToBaikal(eventData, config)
+   */
+}
