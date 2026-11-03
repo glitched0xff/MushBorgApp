@@ -198,7 +198,7 @@
                 </div>
                 </div>
                 <hr>
-            <div class="row m-3" id="rowRecipe" style="display: none;">
+            <div class="row mx-3" id="rowRecipe" style="display: none;">
               <div class="col-12">
                 <div class="row">
                   <dl class="col-3">
@@ -240,13 +240,13 @@
                 </div>
             </div>
               </div>
-            <div class="row m-3" id="rowCookCurve" style="display: none;">
-            <div class="col-12 h4">Grafico</div>
-            <div class="col mx-auto" style="height: 400px; position: relative;">
+            <div class="row mx-3" id="rowCookCurve" style="display: none;">
+            <div class="col-12 h5">Grafico</div>
+            <div class="col mx-auto" style="height: 300px; position: relative;">
                 <canvas id="cookCurve_grp"></canvas>
             </div>
         </div>
-            <div class="row m-3" id="rowSubstrate">
+            <div class="row mx-3" id="rowSubstrate">
                           <hr>
               <div class="col">
                  <div class="row" >
@@ -270,7 +270,7 @@
                  </div>
               </div>
             </div>
-            <div class="row m-3" id="rowInoculum" style="display: none;">
+            <div class="row mx-3" id="rowInoculum" style="display: none;">
                           <hr>
               <div class="col">
                  <div class="row" >
@@ -388,8 +388,7 @@ let cookChart = null;
 function aggiornaGrafico(data) {
   if (!data.cook || data.cook.length === 0) return;
 
-  // 1. Aggiorna i dati direttamente sull'oggetto esistente
-  dataCurve.labels = data.cook.map(el => el.stato);
+  dataCurve.labels = data.cook.map(el => moment(el.last_updated).format("HH:mm"));
   dataCurve.datasets = [{
     label: 'Temperatura Pastorizzazione',
     data: data.cook.map(el => el.tempPastorizzazione),
@@ -397,16 +396,55 @@ function aggiornaGrafico(data) {
     tension: 0.1,
     fill: false
   }];
-  // 2. Mostra il contenitore HTML
   $("#rowCookCurve").show();
 
-  // 3. Se il grafico non esiste ancora, crealo. Altrimenti aggiornalo!
   if (!cookChart) {
     cookChart = new Chart(ctx, configCurve);
   } else {
-    cookChart.update(); // Molto più efficiente!
+    cookChart.update(); 
   }
 }
+
+// cook Curve grph
+const dataCurve = {
+  labels: [],
+  datasets: []
+};
+
+const configCurve = {
+  type: 'line',
+  data: dataCurve,
+  options: {
+     responsive: true,
+    plugins: {
+      title: {
+        display: false,
+        text: 'Curva di cottura'
+      },
+    },
+    interaction: {
+      intersect: false,
+    },
+    scales: {
+      x: {
+        display: true,
+        title: {
+          display: true
+        }
+      },
+      y: {
+        display: true,
+        title: {
+          display: true,
+          text: 'Value'
+        },
+        suggestedMin: 10,
+        suggestedMax: 100
+      }
+    }
+  },
+};
+
 
   async function  drawTable (fromDate="",toDate=""){
    await $.ajax({
@@ -618,45 +656,7 @@ function drawShowSubstrate(id) {
       });   
 }    
      
-// cook Curve grph
-const dataCurve = {
-  labels: [],
-  datasets: []
-};
 
-const configCurve = {
-  type: 'line',
-  data: dataCurve,
-  options: {
-     responsive: true,
-    plugins: {
-      title: {
-        display: true,
-        text: 'Curva di cottura'
-      },
-    },
-    interaction: {
-      intersect: false,
-    },
-    scales: {
-      x: {
-        display: true,
-        title: {
-          display: true
-        }
-      },
-      y: {
-        display: true,
-        title: {
-          display: true,
-          text: 'Value'
-        },
-        suggestedMin: 10,
-        suggestedMax: 100
-      }
-    }
-  },
-};
 $(document).ready(async function () {
   // init
   

@@ -32,9 +32,10 @@
                   <table class="display table table-striped table-bordered compact" id="result_Tbl" style="width: 100%; display: none">
                   <thead>
                       <tr>
-                        <th style="width:20%"></th>
-                        <th style="width:40%">Codice</th>
-                        <th style="width:40%">Nome</th>
+                        <th></th>
+                        <th>Codice</th>
+                        <th>Nome</th>
+                        <th ">Stato</th>
                       </tr>
                   </thead>
                   <tbody id="result_Tblb">
@@ -70,12 +71,17 @@
             let html
             switch (elem.typeSearch) {
               case "mushElement":
+              let attivo={label:"Attivo",class:"bg-success"}
+              let stato=elem.stato
+                if(elem.active==0){
+                        attivo={label:"Eliminato",class:"bg-danger text-white"}
+                        }
                 html=`<tr>
                       <td><span class="badge badge-primary">Mush element</span></td>
                       
                       <td><a href="/mushElement/singleMushElement?id=${elem.id}&filterCategory=${elem.type}" target="_blank">${elem.element_code}<a></td>
-                      <td></td>
-                      <td></td>
+                      <td class="${attivo.class}">${attivo.label}</td>
+                      <td>${stato}</td>
                     </tr>
                       `
                 break;
@@ -138,8 +144,9 @@
                                     //pageLength: 25,
                                     dom: 'tp',
                                     columnDefs: [{ targets: 0, width: "20%", className: 'dt-center'},  
-                                                  { targets: 1, width: "40%",className: 'dt-center' }, 
-                                                  { targets: 2, width: "40%",className: 'dt-center' }, 
+                                                  { targets: 1, width: "30%",className: 'dt-center' }, 
+                                                  { targets: 2, width: "30%",className: 'dt-center' }, 
+                                                  { targets: 3, width: "20%",className: 'dt-center' }, 
                                                   
                                               ]
                                           });  

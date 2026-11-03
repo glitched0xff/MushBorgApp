@@ -159,7 +159,7 @@
                     
                     { type:"endRow"},
                      {type:"startRow",class:"mb-2"},
-                     {type:"title",title:"Magazino adibito a:",class:"h4 py-2"},
+                     {type:"title",title:"Magazzino adibito a:",class:"h5 py-2 font-weight-normal"},
                     {
                       type:"checkbox",
                       classBox:"col-md-2 col-sm-6",
@@ -206,7 +206,7 @@
                 </div>
                 <!-- Element -->
                 <div class="row m-3" id="elementList_WRP" style="display: none; ">
-                <div class="col-12 h3">Elementi in magazzino: <span id="nElements"></span></div>
+                <div class="col-12 h5">Elementi in magazzino: <span id="nElements"></span></div>
                 <div class="col" style="max-height: 500px; /* Regola l'altezza a seconda delle tue esigenze */
     overflow-y: auto;">
                 <table class="table table-sm">
@@ -345,7 +345,7 @@
               mushElements.forEach(el=>{
               let dateClass
               if(moment().diff(moment(el.updatedAt), 'months')>2){
-                dateClass="bg-danger"
+                dateClass="bg-danger text-white"
               }
               let stage="-"
               if (el.stage){            
@@ -355,7 +355,7 @@
               html+=`
                 <tr class="${dateClass}">
                       <td scope="row">
-                        <a href="/mushElement/singleMushElement?elementCode=${el.element_code}" target="_blank">${el.element_code}</a>
+                        <a href="/mushElement/singleMushElement?elementCode=${el.element_code}" target="_blank" class="${dateClass}">${el.element_code}</a>
                       </td>
                       <td>
                         ${stage}

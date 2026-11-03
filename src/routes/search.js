@@ -32,6 +32,8 @@ router.get('/search',async (req,res)=>{
                         "id", 
                         "type",
                         "element_code",
+                        "active",
+                        "stato",
                         [db.Sequelize.literal("'mushElement'"), "typeSearch"] // Genera la colonna al volo con il valore 'mushElement'
                     ],
             where: { element_code: { [Op.like]: `%${requestCode}%` } }
@@ -40,6 +42,7 @@ router.get('/search',async (req,res)=>{
             attributes: [ "id",
                         "code_propagation",
                         "propagation_name",
+                        "createLot",
                         [db.Sequelize.literal("'propagation'"), "typeSearch"]
             ],
             where: { code_propagation: { [Op.like]: `%${requestCode}%` } }
@@ -48,6 +51,7 @@ router.get('/search',async (req,res)=>{
             attributes: ["id",
                         "code_spawn",
                         "spawn_name",
+                        "createLot",
                         [db.Sequelize.literal("'spawn'"), "typeSearch"]
             ],
             where: { code_spawn: { [Op.like]: `%${requestCode}%` } }
@@ -57,6 +61,7 @@ router.get('/search',async (req,res)=>{
                 "id",
                         "code_inoculum",
                         "inoculum_name",
+                        "createLot",
                         [db.Sequelize.literal("'inoculum'"), "typeSearch"]
             ],
             where: { code_inoculum: { [Op.like]: `%${requestCode}%` } }
@@ -73,6 +78,7 @@ router.get('/search',async (req,res)=>{
     ]);
 
     recordInfo=result.flat()
+    console.log(result)
     res.status(200).json({result:recordInfo,searchedString:requestCode})
 })
 
