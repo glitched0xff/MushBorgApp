@@ -17,7 +17,7 @@ router.get('/',async (req,res)=>{
 
 // Search engine
 router.get('/search',async (req,res)=>{
-    console.log(req.query)
+   // console.log(req.query)
     let requestCode=req.query.requestCode?req.query.requestCode:false
        
     if (!requestCode || requestCode.trim() === "") {
@@ -78,7 +78,6 @@ router.get('/search',async (req,res)=>{
     ]);
 
     recordInfo=result.flat()
-    console.log(result)
     res.status(200).json({result:recordInfo,searchedString:requestCode})
 })
 
