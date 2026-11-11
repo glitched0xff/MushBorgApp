@@ -725,10 +725,20 @@ function drawTableChild(data,table,fields,topic,title) {
     $("#saveNewInoculo_Btn").click(function (e) { 
       e.preventDefault();
       let f=checkForm("inoculi_FRM")
+      
       if (f==true){
         let c=confirm("Inserire l'elemento inoculo? L'operazione non è annullabile")
         if(c==true){
-           window.location='/inoculum'
+          console.log("inserisco")
+          $.ajax({
+            type: "POST",
+            url: "/inoculum/newInoculum",
+            data: $("#inoculi_FRM").serialize(),
+            success: function (response) {
+              console.log(response)
+              window.location='/inoculum'
+            }
+          });
         }
       }
     });

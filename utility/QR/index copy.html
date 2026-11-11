@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Scanner</title>
+
+  <!-- PWA Meta Tags & Web App Manifest -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#2b3138">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="QR Decoder">
+  <link rel="apple-touch-icon" href="./LogoMushborgWeb.png">
+  
+  <!-- Pico CSS (v2) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <!-- HTML5 QR Code Library -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    /* Palette Colori & Reset Squadrato */
+    :root {
+      --pico-background-color: #2b3138;
+      --pico-card-background-color: #373f47;
+      --pico-card-border-color: #454f59;
+      --pico-color: #e1e7ed;
+      --pico-muted-color: #9aa7b4;
+      --pico-primary: #8fa0b0;
+      --pico-primary-background: #4a5663;
+      --pico-primary-hover: #5a6877;
+      --pico-primary-border: #5a6877;
+      --pico-border-radius: 0px !important;
+    }
+
+    * {
+      border-radius: 0 !important;
+    }
+
+    body {
+      background-color: var(--pico-background-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+      margin: 0;
+    }
+
+    .container-custom {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    /* Header e Logo */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      padding-top: 1rem;
+    }
+
+    /* Componenti Card */
+    .card-box {
+      background-color: var(--pico-card-background-color);
+      border: 1px solid var(--pico-card-border-color);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Scanner Camera */
+    #reader {
+      width: 100%;
+      background: #1e2227;
+      border: 1px solid #454f59;
+      overflow: hidden;
+    }
+
+    #reader video {
+      object-fit: cover;
+      width: 100% !important;
+    }
+
+    /* Risultati e Pulsanti */
+    .result-box {
+      word-break: break-all;
+      background-color: #23282e;
+      border: 1px solid #454f59;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-family: monospace;
+      color: #72f2b9;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .btn-group button {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    /* Accordion Configurazione */
+    details summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--pico-color);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-custom">
+    <!-- Header con Logo -->
+    <div class="brand-header">
+      <img src="./LogoMushborgWeb.png" style="max-height: 70px;" alt="Logo">
+      <h3 style="margin: 0; color: #c5ced6; font-size:large">QR Decoder</h3>
+    </div>
+
+    <!-- Area Scanner & Risultato -->
+    <div class="card-box">
+      <!-- Box Fotocamera -->
+      <div id="cam-container">
+        <div id="reader"></div>
+      </div>
+
+      <!-- Result Box e Azioni (Nascosti all'inizio) -->
+      <div id="result-container" class="hidden">
+        <label for="result-text">Codice Decodificato:</label>
+        <div id="result-text" class="result-box"></div>
+
+        <div class="btn-group">
+          <button id="btn-go" onclick="goToLink()">Vai al link</button>
+          <button id="btn-rescan" class="secondary" onclick="resetScanner()">Scannerizza ancora</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accordion Impostazioni URL (Posizionato in basso) -->
+    <div class="card-box">
+      <details id="config-accordion">
+        <summary>⚙️ Configurazione URL Base</summary>
+        <div style="margin-top: 1rem;">
+          <label for="base-url-input">URL Base (salvato nel browser):</label>
+          <input type="text" id="base-url-input" placeholder="http://localhost:3000/mushElement/mushElementLanding?elementCode=" />
+          <button onclick="saveBaseUrl()" style="width: 100%;">Salva URL</button>
+          <small id="save-msg" style="color: #72f2b9; display: none;">URL salvato con successo!</small>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <script>
+    let html5QrCode = null;
+    let decodedResultValue = "";
+
+    // Registrazione Service Worker per installazione PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registrato:', reg.scope))
+          .catch(err => console.error('Errore registrazione Service Worker:', err));
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Carica URL base salvato se presente
+      const savedUrl = localStorage.getItem("qr_base_url");
+      if (savedUrl) {
+        document.getElementById("base-url-input").value = savedUrl;
+      }
+      
+      // Avvia lo scanner
+      startScanner();
+    });
+
+    function startScanner() {
+      document.getElementById("cam-container").classList.remove("hidden");
+      document.getElementById("result-container").classList.add("hidden");
+
+      html5QrCode = new Html5Qrcode("reader");
+      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        onScanSuccess,
+        onScanFailure
+      ).catch(err => {
+        console.warn("Impossibile avviare la fotocamera posteriore, provo quella predefinita...", err);
+        html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, onScanFailure);
+      });
+    }
+
+    function onScanSuccess(decodedText) {
+      decodedResultValue = decodedText;
+      
+      // Ferma la fotocamera e nascondi la boxcam
+      if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+          document.getElementById("cam-container").classList.add("hidden");
+          document.getElementById("result-text").innerText = decodedResultValue;
+          document.getElementById("result-container").classList.remove("hidden");
+        }).catch(err => console.error("Errore nell'arresto dello scanner:", err));
+      }
+    }
+
+    function onScanFailure(error) {
+      // Scansione continua in corso
+    }
+
+    function resetScanner() {
+      startScanner();
+    }
+
+    function saveBaseUrl() {
+      const urlValue = document.getElementById("base-url-input").value.trim();
+      localStorage.setItem("qr_base_url", urlValue);
+      
+      const msg = document.getElementById("save-msg");
+      msg.style.display = "block";
+      setTimeout(() => { msg.style.display = "none"; }, 2000);
+    }
+
+    function goToLink() {
+      if (!decodedResultValue) return;
+
+      const rawCode = decodedResultValue.trim();
+
+      // Se il QR scansionato è già un URL completo, naviga direttamente lì
+      if (/^https?:\/\//i.test(rawCode)) {
+        window.location.href = rawCode;
+        return;
+      }
+
+      // Altrimenti recupera l'URL base impostato
+      let baseUrl = localStorage.getItem("qr_base_url") || document.getElementById("base-url-input").value.trim();
+
+      if (!baseUrl) {
+        alert("Inserisci prima un URL Base nella sezione Configurazione.");
+        document.getElementById("config-accordion").open = true;
+        return;
+      }
+
+      // Decodifica eventuali caratteri già codificati per evitare errori di sintassi URL
+      let cleanCode = rawCode;
+      try {
+        cleanCode = decodeURIComponent(rawCode);
+      } catch (e) {
+        console.warn("Codice non decodificabile con decodeURIComponent, uso il valore originale.");
+      }
+
+      // Costruzione pulita dell'URL finale
+      let finalTarget = "";
+      if (baseUrl.includes("?")) {
+        // Se l'URL base contiene già dei parametri (es. ...?elementCode=)
+        finalTarget = baseUrl + encodeURIComponent(cleanCode);
+      } else {
+        // Se l'URL base è un percorso semplice
+        const formattedBase = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
+        const formattedCode = cleanCode.startsWith("/") ? cleanCode.substring(1) : cleanCode;
+        finalTarget = formattedBase + formattedCode;
+      }
+
+      // Effettua la navigazione direttamente nella stessa pagina
+      window.location.href = finalTarget;
+    }
+  </script>
+</body>
+</html>

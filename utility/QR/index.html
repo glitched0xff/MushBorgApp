@@ -80,6 +80,23 @@
       width: 100% !important;
     }
 
+    /* Pulsante Flash */
+    .flash-btn-container {
+      margin-top: 0.75rem;
+    }
+
+    #btn-flash {
+      background-color: #4a5663;
+      border-color: #5a6877;
+      color: #e1e7ed;
+    }
+
+    #btn-flash.flash-on {
+      background-color: #d97706; /* Arancione/Giallo quando attivo */
+      border-color: #f59e0b;
+      color: #ffffff;
+    }
+
     /* Risultati e Pulsanti */
     .result-box {
       word-break: break-all;
@@ -128,6 +145,10 @@
       <!-- Box Fotocamera -->
       <div id="cam-container">
         <div id="reader"></div>
+        <!-- Pulsante Torcia / Flash -->
+        <div id="flash-container" class="flash-btn-container hidden">
+          <button id="btn-flash" onclick="toggleFlash()">🔦 Accendi Flash</button>
+        </div>
       </div>
 
       <!-- Result Box e Azioni (Nascosti all'inizio) -->
@@ -159,6 +180,7 @@
   <script>
     let html5QrCode = null;
     let decodedResultValue = "";
+    let flashOn = false;
 
     // Registrazione Service Worker per installazione PWA
     if ('serviceWorker' in navigator) {
@@ -183,6 +205,8 @@
     function startScanner() {
       document.getElementById("cam-container").classList.remove("hidden");
       document.getElementById("result-container").classList.add("hidden");
+      flashOn = false;
+      updateFlashButtonStyle();
 
       html5QrCode = new Html5Qrcode("reader");
       const config = { fps: 10, qrbox: { width: 250, height: 250 } };
@@ -192,15 +216,71 @@
         config,
         onScanSuccess,
         onScanFailure
-      ).catch(err => {
+      ).then(() => {
+        // Controlla se il dispositivo supporta il flash sulla fotocamera attiva
+        checkFlashSupport();
+      }).catch(err => {
         console.warn("Impossibile avviare la fotocamera posteriore, provo quella predefinita...", err);
         html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, onScanFailure);
       });
     }
 
+    function checkFlashSupport() {
+      try {
+        const track = html5QrCode.getRunningTrack();
+        const capabilities = track.getCapabilities();
+        if (capabilities.torch) {
+          document.getElementById("flash-container").classList.remove("hidden");
+        } else {
+          document.getElementById("flash-container").classList.add("hidden");
+        }
+      } catch (e) {
+        console.warn("Impossibile verificare il supporto flash:", e);
+        document.getElementById("flash-container").classList.add("hidden");
+      }
+    }
+
+    function toggleFlash() {
+      if (!html5QrCode) return;
+
+      try {
+        const track = html5QrCode.getRunningTrack();
+        flashOn = !flashOn;
+        track.applyConstraints({
+          advanced: [{ torch: flashOn }]
+        }).then(() => {
+          updateFlashButtonStyle();
+        }).catch(err => {
+          console.error("Errore nell'attivazione del flash:", err);
+          flashOn = !flashOn; // Ripristina stato in caso di errore
+        });
+      } catch (e) {
+        console.error("Flash non supportato da questo stream:", e);
+      }
+    }
+
+    function updateFlashButtonStyle() {
+      const btn = document.getElementById("btn-flash");
+      if (flashOn) {
+        btn.innerText = "🔦 Spegni Flash";
+        btn.classList.add("flash-on");
+      } else {
+        btn.innerText = "🔦 Accendi Flash";
+        btn.classList.remove("flash-on");
+      }
+    }
+
     function onScanSuccess(decodedText) {
       decodedResultValue = decodedText;
       
+      // Spegni eventuale flash attivo prima di fermare la camera
+      if (flashOn && html5QrCode) {
+        try {
+          const track = html5QrCode.getRunningTrack();
+          track.applyConstraints({ advanced: [{ torch: false }] });
+        } catch(e) {}
+      }
+
       // Ferma la fotocamera e nascondi la boxcam
       if (html5QrCode) {
         html5QrCode.stop().then(() => {

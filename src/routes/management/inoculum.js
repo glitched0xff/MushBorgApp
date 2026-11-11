@@ -77,7 +77,7 @@ router.get('/',async  (req, res) => {
 router.get('/getAll',async  (req, res) => {
     let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(2, 'months').startOf('month')
     let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
-    console.log(fromDate,toDate)
+    //console.log(fromDate,toDate)
     let inoculum=await Inoculum.findAll({
                                         where: {
                                         createLot: {
@@ -130,7 +130,7 @@ router.get('/getAll',async  (req, res) => {
  */
 router.post('/newInoculum', async(req,res) => {
     let data=req.body
-    //console.log(req.body)
+    console.log(req.body)
     let species_code=data.strainId.split("|")[1]
     let strainSubcode=data.strainId.split("|")[2]
     let recipeSubCode=data.substrateId.split("|")[1]
@@ -141,7 +141,7 @@ router.post('/newInoculum', async(req,res) => {
     let codeGen=await codeGenerator(data.createLot,species_code,strainSubcode,recipeSubCode,type,nrContiner,duplicateCodeIndex)
     let code_inoculum=codeGen.element_code
     duplicateCodeIndex=codeGen.duplicateCodeIndex
-    
+    console.log(codeGen)
     await Inoculum.create({    
         code_inoculum: code_inoculum,
         inoculum_name: data.inoculum_name,
