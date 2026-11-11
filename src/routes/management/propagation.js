@@ -39,7 +39,7 @@ router.get('/',async  (req, res) => {
     let ratingStarValue=await db.dDOption.findAll({where:{ddMenu:"rankElement"},raw:true})
     
     let storagesDD=await dropDownGenerator("storage")
-    let substrateDD=await dropDownGenerator("substrate","CULTIVATION")
+    let substrateDD=await dropDownGenerator("substrate","CULTIVATION","DESC",30)
     let pickReasonDD=await db.dDOption.findAll({where:{ddMenu:"pickReason"}})
     let statoPropDD=await db.dDOption.findAll({where:{ddMenu:"statoProp"}})
     let spawnDD=await dropDownGenerator("spawn")

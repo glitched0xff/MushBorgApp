@@ -26,15 +26,14 @@ Inoculum.associate(db)
  * @returns Render ejs template "management/inoculum"
  */
 router.get('/',async  (req, res) => {
-    
+
     let strainDD=await dropDownGenerator("strain")
     let containerDD=await dropDownGenerator("container","INOCULUM")
     let ratingStarValue=await db.dDOption.findAll({where:{ddMenu:"rankElement"},raw:true})
 
     //console.log(containerDD)
     let storagesDD=await dropDownGenerator("storage")
-    let substrateDD=await dropDownGenerator("substrate","INOCULUM")
-    //console.log(substrateDD)
+    let substrateDD=await dropDownGenerator("substrate","INOCULUM","DESC",0)
     let sampleTypeDD=await dropDownGenerator("dropDown","sampleType")
     // Inoculi degli inoculi
     //let inoculums=await db.inoculum.findAll({include:{model:db.mushElement, where:{type:"INOCULUM"}}})
@@ -48,9 +47,9 @@ router.get('/',async  (req, res) => {
         redirectId=redirectId.id
         console.log(redirectId)
     }
-    
+
     //console.log(JSON.parse(JSON.stringify(inoculums)))
-    
+
     // inoculums.forEach(elem => {
     //     if (elem.mushElements.length>0){
     //         inoculumDD.push({val:elem.id,txt:elem.code_inoculum+" - "+ elem.inoculum_name})
@@ -68,12 +67,12 @@ router.get('/',async  (req, res) => {
                                     })
   });
 
-/**
- * @route GET /inoculum/getAll
- * @group Inoculum - Operazioni relative agli elementi inoculum
- * @summary Restituisce la lista degli inoculi
- * @returns 200 - Lista inoculi con join dei dati collegati
- */
+    /**
+     * @route GET /inoculum/getAll
+     * @group Inoculum - Operazioni relative agli elementi inoculum
+     * @summary Restituisce la lista degli inoculi
+     * @returns 200 - Lista inoculi con join dei dati collegati
+     */
 router.get('/getAll',async  (req, res) => {
     let fromDate=req.query.fromDate?moment(req.query.fromDate):moment().subtract(2, 'months').startOf('month')
     let toDate=req.query.toDate?moment(req.query.toDate).endOf('day'):moment().endOf('day')
@@ -81,7 +80,7 @@ router.get('/getAll',async  (req, res) => {
     let inoculum=await Inoculum.findAll({
                                         where: {
                                         createLot: {
-                                            [Op.between]: [fromDate.toDate(), toDate.toDate()] 
+                                            [Op.between]: [fromDate.toDate(), toDate.toDate()]
                                             }
                                         },
                                         attributes:["id","code_inoculum","inoculum_name","n_container","createLot","createdAt"],
@@ -100,19 +99,19 @@ router.get('/getAll',async  (req, res) => {
                                                 ],
                                     order:[['createLot', 'DESC']],
                                     limit:15
-                                }) 
+                                })
         toDate=inoculum[0].createLot
         fromDate=inoculum[inoculum.length-1].createLot
     }
     res.status(200).json({inoculum:inoculum,fromDate:fromDate,toDate:toDate})
 });
 
- 
+
 /**
  * @route POST /inoculum/newInoculum
  * @group Inoculum - Operazioni relative agli elementi inoculum
  * @summary Inserimento nuovo inoculo
- * @param {string}inoculum_name 
+ * @param {string}inoculum_name
  * @param {number}strainId
  * @param {number}containerId
  * @param {number}n_container
@@ -125,8 +124,8 @@ router.get('/getAll',async  (req, res) => {
  * @param {number}fromSample
  * @param {number}sampleType
  * @param {string}note
- * @returns 200 - Conferma inserimento con dati del nuovo inoculo inserito 
- * @returns 400 - Errore per codice duplicato 
+ * @returns 200 - Conferma inserimento con dati del nuovo inoculo inserito
+ * @returns 400 - Errore per codice duplicato
  */
 router.post('/newInoculum', async(req,res) => {
     let data=req.body
@@ -137,12 +136,12 @@ router.post('/newInoculum', async(req,res) => {
     let type="I"
     let nrContiner=0
     let duplicateCodeIndex=0
-    
+
     let codeGen=await codeGenerator(data.createLot,species_code,strainSubcode,recipeSubCode,type,nrContiner,duplicateCodeIndex)
     let code_inoculum=codeGen.element_code
     duplicateCodeIndex=codeGen.duplicateCodeIndex
     console.log(codeGen)
-    await Inoculum.create({    
+    await Inoculum.create({
         code_inoculum: code_inoculum,
         inoculum_name: data.inoculum_name,
         strainId: data.strainId.split("|")[0],
@@ -181,10 +180,10 @@ router.post('/newInoculum', async(req,res) => {
                 data.inoculumElementId=tempArray
                 //console.log("---")
                 //console.log(data.inoculumElementId)
-                
+
                 for (let i = 0; i < data.inoculumElementId.length; i++) {
                     let elem=data.inoculumElementId[i]
-                    
+
                     await db.seed.create({
                                 relatedId:result.id,
                                 mushElementId:elem[1],
@@ -231,9 +230,9 @@ router.post('/newInoculum', async(req,res) => {
                 })
                 .catch(err=>{
                     console.log(err)
-                })  
+                })
             }
-            await db.diaryNote.create({nota:`Creato lotto di inoculo ${result.code_inoculum} con n° ${data.n_container} elementi di inoculo`,tag:"",area:"",dataNota:moment()})  
+            await db.diaryNote.create({nota:`Creato lotto di inoculo ${result.code_inoculum} con n° ${data.n_container} elementi di inoculo`,tag:"",area:"",dataNota:moment()})
             res.status(200).json({data:result})
         })
     .catch(err =>{
@@ -265,9 +264,9 @@ router.put('/updateInoculum', async(req,res) => {
 
         })
         .catch(err =>{
-            res.status(522).json({message:err.errors[0].message}) 
+            res.status(522).json({message:err.errors[0].message})
         })
-                
+
     } else {
         res.status(522).json()
     }
@@ -304,7 +303,7 @@ router.delete('/deleteInoculum',async  (req, res) => {
     else {
         res.status(422).json({message:"Elemento utilizzato"})
     }
-   
+
   });
 
 /**
@@ -315,7 +314,7 @@ router.delete('/deleteInoculum',async  (req, res) => {
  * @returns 200 - Inoculo trovato
  * @returns {Error} 404 - Lotto non trovato
  */
-router.get('/getOneInoculum',async  (req, res) => {    
+router.get('/getOneInoculum',async  (req, res) => {
           //console.log(req.query)
     let inoculumId=req.query.id?req.query.id:false
 
@@ -369,7 +368,7 @@ router.get('/liveSearch',async (req,res)=>{
  * @param {bool} getHtml Può avere valore true - false e renderizza il form in html
  * @returns 200 - File pdf/html
  */
-router.get('/pdf',async (req,res)=>{        
+router.get('/pdf',async (req,res)=>{
     let inoculumId=req.query.idInoculum?req.query.idInoculum:false
     let getHtml=req.query.getHtml?req.query.getHtml:false
     if (inoculumId!=false){
@@ -409,7 +408,7 @@ router.get('/pdf',async (req,res)=>{
             if (getHtml==false){
                 res.setHeader("Content-Type", "application/pdf");
                 res.setHeader("Content-Disposition", "inline; filename=report_"+inoculum.code_inoculum+".pdf");
-                res.end(pdf); 
+                res.end(pdf);
             } else {
                 res.send(html)
             }

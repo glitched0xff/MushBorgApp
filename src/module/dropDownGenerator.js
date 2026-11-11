@@ -2,10 +2,21 @@
 const { where,Op } = require("sequelize");
 const db = require("../models");
 
+/**
+ * @function /module/dropDownGenerator.js
+ * @summary Restituisce la lista degli elementi nameDD per creare le dropDown
+ * @param nameDD {string} Nome DD codificato [device,selectDevice,container,storage,species,strain,substrate,supplier,materialCategory,recipe,pretreatment,spawn,supplier,destination,dropDown]
+ * @param filter {string} Inserisce un filtro
+ * @param order {string} Inserisci un'ordine per data di creazione o creazione lotto in base allam query
+ * @param limitDate {number} Restituisce solo i record più giovani di x giorni, default 360
+ * @returns 200 - Lista egli elementi
+ */
+
 /* 
 Funzione generazione elenco per dropdown
+- LimitDate espresso in giorni e ritorna solo i record degli ultimi X giorni.
 */
-module.exports=async (nameDD,filter=false,order=false)=>{
+module.exports=async (nameDD,filter=false,order=false,limitDate=360)=>{
 //    console.log("nameDD:", nameDD, " filter:", filter)
     let queryResult
     switch (nameDD) {
@@ -35,13 +46,22 @@ module.exports=async (nameDD,filter=false,order=false)=>{
             queryResult=await db.strain.findAll()
             break;
         case "substrate":
+            
+            if (order){
+                order=[['createdAt', order]]
+            }
+            let interval= new Date()
+            interval.setDate(interval.getDate()-limitDate)
             queryResult=await db.substrate.findAll({
-                    where: {
-                            [Op.or]: [
+                    where: {[Op.or]: [
                                 { destination: filter },
                                 { destination: "ALL" }
-                            ]},
-                    include:[{model:db.recipe}]        
+                            ],
+                            createdAt: {
+                                [Op.gte]: interval
+                            }},
+                            include:[{model:db.recipe}],
+                            order:order,     
                         })
             break;
         case "supplier":

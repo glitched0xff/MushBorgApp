@@ -34,7 +34,8 @@ router.get('/',async  (req, res) => {
         
         //let containerDD=await dropDownGenerator("container","SPAWN")
         let storagesDD=await dropDownGenerator("storage")
-        let substrateDD=await dropDownGenerator("substrate","SPAWN")
+        let substrateDD=await dropDownGenerator("substrate","SPAWN","DESC",30)
+        console.log(substrateDD)
         let supplierDD=await dropDownGenerator("supplier","spawn")
         console.log(supplierDD)
         let inoculums=await db.inoculum.findAll()
