@@ -123,6 +123,8 @@ router.put('/startBatch',async (req,res)=>{
     await db.pastorizzazioneBatch.create({
             code_substrate:code_substrate,
             stato:"START_BATCH",
+            tempPastorizzazione:req.body.tempValue ? req.body.tempValue : null,
+            tempAmbiente:req.body.tempAmbiente ? req.body.tempAmbiente : null,
             last_updated:moment()
         }).then(result=>{
             console.log("Start batch")
@@ -141,6 +143,8 @@ router.post('/stopBatch',async (req,res)=>{
     await db.pastorizzazioneBatch.create({
             code_substrate:code_substrate,
             stato:"STOP_BATCH",
+            tempPastorizzazione:req.body.tempValue ? req.body.tempValue : null,
+            tempAmbiente:req.body.tempAmbiente ? req.body.tempAmbiente : null,
             last_updated:moment()
         }).then(result=>{
             //console.log(JSON.parse(JSON.stringify(result)))
