@@ -11,7 +11,8 @@ services:
       - src/.env                # 1. Carica tutte le variabili dal file locale (.env)
     environment:
       - HOST=mariadb              
-      - IS_DOCKER=true            # 🟢 AGGIUNGI QUESTA RIGA
+      - IS_DOCKER=true
+      - TZ=Europe/Rome
     volumes:
       # Usa il volume logico per mappare la cartella interna del container
       - mushborg_images:/app/public/imgMushEleNote   

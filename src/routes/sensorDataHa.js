@@ -149,7 +149,6 @@ router.post('/stopBatch',async (req,res)=>{
         }).then(result=>{
             //console.log(JSON.parse(JSON.stringify(result)))
                 console.log("Stop batch")
-
             res.status(200).json(result)
         }).catch(err=>{
             console.log(err)
