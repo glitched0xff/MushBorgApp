@@ -22,10 +22,11 @@ const Op = db.Sequelize.Op;
 // Propagation.associate(db)
 
 router.get('/',async  (req, res) => {
-    let recipeDD=await dropDownGenerator("recipe")
+    let recipeDD=await dropDownGenerator("recipe",false,"DESC")
     let pretreatmentDD=await dropDownGenerator("pretreatment")
     let redirectId=req.query.redirectId?req.query.redirectId:null
-    let recipes=await db.recipe.findAll({order:["createdAt"],raw:true})
+    let recipes=await db.recipe.findAll({order:[['createdAt', 'DESC']]})
+    console.log(recipes)
     let destinationDD=await dropDownGenerator("destination")
     let storageDD=await dropDownGenerator("storage")
     let udmDD=await db.dDOption.findAll({where:{ddMenu:"udmSelect"}})

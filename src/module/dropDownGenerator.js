@@ -19,6 +19,7 @@ Funzione generazione elenco per dropdown
 module.exports=async (nameDD,filter=false,order=false,limitDate=360)=>{
 //    console.log("nameDD:", nameDD, " filter:", filter)
     let queryResult
+    let interval
     switch (nameDD) {
         case "device":
             queryResult=await db.device.findAll()
@@ -50,7 +51,7 @@ module.exports=async (nameDD,filter=false,order=false,limitDate=360)=>{
             if (order){
                 order=[['createdAt', order]]
             }
-            let interval= new Date()
+            interval= new Date()
             interval.setDate(interval.getDate()-limitDate)
             queryResult=await db.substrate.findAll({
                     where: {[Op.or]: [
@@ -79,16 +80,16 @@ module.exports=async (nameDD,filter=false,order=false,limitDate=360)=>{
             queryResult=await db.materialCategory.findAll()
             break;
         case "recipe":
-            queryResult=await db.recipe.findAll()
+             if (order){
+                order=[['createdAt', order]]
+            }
+            queryResult=await db.recipe.findAll({order:order})
             break;
         case "pretreatment":
             queryResult=await db.pretreatment.findAll()
             break;
         case "spawn":
             queryResult=await db.spawn.findAll({include:[{model:db.container}]})
-            break;
-        case "supplier":
-            queryResult=await db.supplier.findAll()
             break;
         case "destination":
             queryResult=[["INOCULUM","Inoculo"],["SPAWN","Spawn"],["CULTIVATION","Coltivazione"],["ALL","Generico"]]
