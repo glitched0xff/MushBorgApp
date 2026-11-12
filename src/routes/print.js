@@ -26,7 +26,8 @@ router.get('/massivePrintCSV',async (req,res)=>{
       csvObj.push({
                   element_code:elem.element_code,
                   createAt:moment(elem.load_date).format("DD-MM-YY"),
-                  qrCode:"/mushElement/mushElementLanding?elementCode="+elem.element_code
+                  qrCode:"/m/"+elem.element_code
+                  //qrCode:"/mushElement/mushElementLanding?elementCode="+elem.element_code
               })
       }
     console.log(csvObj)

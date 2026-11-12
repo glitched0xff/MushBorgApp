@@ -868,7 +868,8 @@ router.get('/csvLotto',async (req,res)=>{
         csvObj.push({
             element_code:elem.element_code,
             createAt:moment( elem.load_date).format("DD-MM-YY"),
-            qrCode:"/mushElement/mushElementLanding?elementCode="+elem.element_code
+            //qrCode:"/mushElement/mushElementLanding?elementCode="+elem.element_code
+            qrCode:"/m/"+elem.element_code
         })
     }
     const csv = await converter.json2csv(csvObj,{prependHeader:false});
@@ -882,7 +883,8 @@ router.get('/getQrElement',async  (req, res) => {
     let element=await db.mushElement.findOne({where:{element_code:elementCode}})
     //console.log(JSON.parse(JSON.stringify(element)))
     //console.log(element )
-    let string="/mushElement/mushElementLanding?elementCode="+elementCode
+    let string="/m/"+elementCode
+    //let string="/mushElement/mushElementLanding?elementCode="+elementCode
     let url=await QRCode.toDataURL(string,{ errorCorrectionLevel: 'H',margin: 3})
     let textDAta = generateSync(elementCode,{
                 maxWidth: 188,

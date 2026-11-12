@@ -4,7 +4,9 @@ const { Op,where,fn,col } = require('sequelize');
 const moment=require("moment")
 
 const db = require("../models");
-
+/**
+ * Gestione della dashboard di home
+ */
 router.get('/',async (req, res) => {
     let config=req.app.locals.config
    // console.log(config)
@@ -121,6 +123,15 @@ router.get('/',async (req, res) => {
                           lastHarvest,
                           config});
 });
+
+/**
+ * Redirect short code per mushElement
+ */
+router.get('/m/:code', (req, res) => {
+  const code = req.params.code;
+  res.redirect(`/mushElement/mushElementLanding?elementCode=${encodeURIComponent(code)}`);
+});
+
 
 // router.get('/getStoragesData',async (req,res)=>{
 //  await db.storage.findAll({include:[{model:db.associateActuator},
