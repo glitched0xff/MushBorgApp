@@ -117,7 +117,7 @@ router.get('/ask_substrate',async (req,res)=>{
 })
 
 /** Avvia il batch per la pastorizzazione */
-router.put('/startBatch',async (req,res)=>{
+router.post('/startBatch',async (req,res)=>{
     //console.log(req.body)
     let code_substrate=req.body.substrateCode
     await db.pastorizzazioneBatch.create({
