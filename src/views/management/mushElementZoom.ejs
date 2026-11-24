@@ -500,7 +500,17 @@
           <div class="card w-100 " id="harvest_Crd">
             <div class="card-header "  > 
               <!--  data-card-widget="collapse" -->
-              <h3 class="card-title">Raccolto elemento: <span id="totalWeight"></span>
+              <h3 class="card-title " style="width: 600px;">
+                <div class="row  m-0 p-0">
+                  <div class="col-6">
+                Raccolto elemento: <span id="totalWeight"></span>
+
+                </div>
+                <div class="col-6">
+                Efficienza: <span id="bEf"></span>%
+
+                </div>
+                </div>
                 
               </h3>
               <div class="card-tools">
@@ -1613,6 +1623,9 @@ async function drawGraph(labels,dataSet,cl) {
       sensorChart.data=data
       sensorChart.update()
 }
+
+
+
 // docReady
 $(document).ready(async function () {
 
@@ -1661,6 +1674,15 @@ $(document).ready(async function () {
       $("#lottoName").html(parentElement.propagation_name)
       $("#lottoCode").html(`<a href="/propagation?propagationCode=${parentElement.code_propagation}" target="_blank">${parentElement.code_propagation}</a>`)
       $("#harvest_Crd").show()
+      /* Restituisce il peso totale del lotto e il coerfficiente biologico */
+      $.ajax({
+            type: "get",
+            url: "/mushElement/efficency?elementCode="+mushElement.element_code,
+            success: function (response) {
+              console.log(response)
+              $("#bEf").html(response.bEf)
+            }
+          });
       break;
   }
   $("#lottoStrain").html(`<a href="/strain?redirectId=${mushElement.strainId}" target="_blank">${parentElement.strain.code_strain}</a>`)

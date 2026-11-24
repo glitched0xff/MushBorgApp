@@ -268,21 +268,23 @@
                         <div class="col-2">
                         Elementi lotto 
                         </div>
-                        <div class="col-2">
+                        <div class="col-2" style="display: none;">
                         <button type="button"  data-toggle="modal" data-target="#movimentazioni_Mdl" 
-                          class="btn btn-primary btn-xs mx-2 movimentazioneBtn" disabled type="all">
+                          class="btn btn-primary btn-xs mx-2 movimentazioneBtn" disabled type="all" >
                           <i class="fas fa-truck-moving"></i>Movimenta elementi</button>
                         </div>
                         <div class="col-2">
                         <button type="button" class="btn btn-primary btn-xs mx-2" id="exportCsv_Btn">
                           <i class="fas fa-file-csv"></i> Esporta csv</button>
                         </div>
-                        <div class="col-2">
+                        <div class="col-2" style="display: none;">
                         <button type="button" class="btn btn-primary btn-xs mx-2" id="insertHArvestBulk_Btn"
-                          data-toggle="modal" data-target="#insertBulk_Mdl">
+                          data-toggle="modal" data-target="#insertBulk_Mdl"  >
                           <i class="fas fa-file-csv"></i> Inserisci raccolto bulk</button>
 </div>
-                          <div class="text-right col-2 border-danger">Raccolto totale: <span id="totalWeight"></span>g</div>
+                          <div class="text-right text-small col-2 border-danger">Raccolto totale: <span id="totalWeight"></span>g</div>
+                          <div class="text-right text-small col-2 border-danger">Eff. biologica: <span id="bEf"></span>%</div>
+                          
                       </div>
                     <table class="table table-sm " id="mushElement_Tbl">
                       <thead>
@@ -766,13 +768,14 @@
       });   
 
   }
-  /* Restituisce il peso totale del lotto */
+  /* Restituisce il peso totale del lotto e il coerfficiente biologico */
   async function getTotalWeight(id){
     $.ajax({
       type: "get",
-      url: "/propagation/getWeightPropagation?id="+id,
+      url: "/propagation/efficency?id="+id,
       success: function (response) {
-        $("#totalWeight").html(response.total)
+        $("#totalWeight").html(response.totalHarvest)
+        $("#bEf").html(response.bEf)
       }
     });
   }

@@ -22,6 +22,7 @@ const heicConverter=require("heic-convert")
 const Op = db.Sequelize.Op;
 const { v4: uuidv4 } = require('uuid');
 const generatePdfReport= require("../../module/generatePdfReport")
+const bioEfficencyLot=require ("../../module/BioEfficencyPropagation")
 
 router.get('/',async  (req, res) => {
     
@@ -940,6 +941,30 @@ router.get('/mushElementLanding',async (req,res)=>{
             }
     
 })
+
+// Biological Efficency = peso fresco totale dei funghi raccolti ÷ peso secco del substrato × 100
+router.get('/efficency',async (req,res)=>{
+    let elementCode=req.query.elementCode?req.query.elementCode:false
+    
+    if (elementCode){
+        let mushElement= await db.mushElement.findOne({where:{element_code:elementCode},raw:true})
+        console.log(mushElement)
+        let efficencyLot=await bioEfficencyLot(mushElement.relatedId)
+        console.log(efficencyLot)
+        let dryInBag=efficencyLot.totalQtDry/efficencyLot.propagation
+        const totalHarvestWeight = await db.mushElementHarvest.sum('harvest_weight', {
+                                        where: {mushElementId: mushElement.id,
+                                                type: mushElement.type},
+                                        });
+        let bEf=(totalHarvestWeight/1000)/dryInBag*100
+        res.status(200).json({bEf:bEf.toFixed(2),totalHarvestWeight:totalHarvestWeight})
+    } else {
+            res.status(522).json()
+        }
+})
+
+
+
 // Set Rank
 router.put('/setRate',async (req,res)=>{
     let idElement=req.query.id?req.query.id:false

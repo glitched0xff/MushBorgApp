@@ -11,6 +11,7 @@ const codeGenerator= require("../../module/codeGenerationElement")
 const {createEvent,updateEvent,deleteEvent}=require("../../module/calendarEvent")
 const dropDownGenerator= require("../../module/dropDownGenerator")
 const generatePdfReport= require("../../module/generatePdfReport")
+const bioEfficency=require ("../../module/BioEfficencyPropagation")
 const db = require("../../models");
 const { where,fn,col } = require('sequelize');
 const Propagation = db.propagation
@@ -371,6 +372,7 @@ router.get('/getQrElement',async  (req, res) => {
     
 });
 
+// Deprecato 24-11-26
 router.get('/getWeightPropagation',async (req,res)=>{
     let propId=req.query.id
     let total=await db.mushElement.findAll({
@@ -389,6 +391,8 @@ router.get('/getWeightPropagation',async (req,res)=>{
         });
     res.status(200).json({total:total[0].totalHarvestWeight})
 })
+//
+
 /**
  * @route GET /propagation/pdf
  * @group Propagation - Operazioni relative agli elementi propagation
@@ -461,5 +465,19 @@ router.get('/pdf',async (req,res)=>{
             res.status(522).json()
         }
 })
+
+/** Biological Efficency = peso fresco totale dei funghi raccolti ÷ peso secco del substrato × 100  */
+router.get('/efficency',async (req,res)=>{
+    let propagationId=req.query.id?req.query.id:false
+    
+    if (propagationId){
+        
+        let result= await bioEfficency(propagationId)
+        res.status(200).json(result)
+    } else {
+            res.status(522).json()
+        }
+})
+
 
 module.exports=router;
