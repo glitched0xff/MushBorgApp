@@ -7,7 +7,6 @@ module.exports=async (propagationId)=>{
         let recipeDrain= await db.recipe.findOne({where:{id:substrateInfo.recipeId},attributes:["drain"]})
         let substrateElement= await db.substrateElement.findAll({where:{substrateId:propagation.substrateId},attributes:["qt_dry"]})
         substrateElement=JSON.parse(JSON.stringify(substrateElement)).map(item => item.qt_dry)
-        console.log(substrateElement)
         if (recipeDrain==0){
             substrateElement.sort((a, b) => a - b)
         }

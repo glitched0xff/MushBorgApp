@@ -241,7 +241,7 @@
             </div>
               </div>
             <div class="row mx-3" id="rowCookCurve" style="display: none;">
-            <div class="col-12 h5">Grafico</div>
+            <div class="col-12 h5">Grafico <span class="text-small" id="batchDuration"></span></div>
             <div class="col mx-auto" style="height: 300px; position: relative;">
                 <canvas id="cookCurve_grp"></canvas>
             </div>
@@ -403,6 +403,15 @@ function aggiornaGrafico(data) {
     fill: false
   }];
   $("#rowCookCurve").show();
+
+  const start = moment(dataCurve.labels, 'YYYY-MM-DD HH:mm');
+  const end = moment(dataCurve.labels, 'YYYY-MM-DD HH:mm');
+  const diffMs = end.diff(start);
+  const durata = moment.duration(diffMs);
+  const ore = String(Math.floor(durata.asHours())).padStart(2, '0');
+  const minuti = String(durata.minutes()).padStart(2, '0');
+
+  $("#batchDuration").html(`Durata: ${ore}:${minuti}`);
 
   if (!cookChart) {
     cookChart = new Chart(ctx, configCurve);
@@ -649,6 +658,8 @@ function drawShowSubstrate(id) {
             let myChart = null; // Da dichiarare fuori dalla funzione/scopo se necessario
 
             aggiornaGrafico(data)
+            
+
             $("#titoloForm").html("Substrato "+data.cod_substrate);
             //drawTableChild(data.spawns,"usedInSpawn_Tblb",["code_spawn","spawn_name"],"spawn","Spawn")
           //$("#modSubstrate_Btn").show()
